@@ -14,7 +14,7 @@ collider = 0
 energy   = 13.0
 
 # Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW)
-Q    = 400.0
+Q    = 100.0
 xmuf = 1.0
 
 

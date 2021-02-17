@@ -1,0 +1,24 @@
+#################### Parameters for the dyn3lo program ####################
+
+### Common parameters for the all channels: ###
+
+# Parton distribution functions:
+PDFset = PDF4LHC15_nnlo_mc
+PDFnum = 0
+
+# QCD order up to which the results are presented: 0 (LO) to 3 (N3LO)
+order = 3
+
+# Collider parameters: pp (0) or ppbar (1). Hadronic energy in TeV
+collider = 0
+energy   = 13.0
+
+# Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW)
+Q    = 400.0
+xmuf = 1.0
+
+
+### Only for the charged (W) channel: ###
+
+# Choice of the W+ (1) or W- (-1) channel
+channel = 1

@@ -1,0 +1,91 @@
+#!/bin/sh
+
+######## Main script for the main program: cross section calculations at N3LO in QCD ########
+
+maindir=$(pwd)
+
+# Parameters read from the command-line:
+#   lattice size
+#   neutral (0) or charged (1) drell-yan or (2) inclusive W+H production (DY-type contributions only)
+#   optional flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
+
+if [ "$#" -gt 3 ]; then
+    echo "You cannot use more than three arguments"
+    exit
+fi
+if [ "$#" -lt 2 ]; then
+    if [ $1 == "-h" ] || [ $1 == "--help" ]
+    then
+	echo ""
+	echo "## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##"
+	echo "Usage: ./n3loxs a b c with:"
+	echo "a: Lattice size (integer)"
+	echo "b: Choice of the process: 0 for neutral (gamma*) Drell-Yan, 1 for charged (W+ or W-) Drell-Yan,"
+	echo "   2 for inclusive WH Higgs-strahlung production (DY-type contributions only)"
+	echo "c: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
+	echo ""
+	exit
+    else
+	echo "You must use at least two arguments"
+	exit
+    fi
+fi
+
+
+lattice=$1
+type=$2
+
+if [[ "$#" -eq 3 ]]
+then
+    scale=$3
+else
+    scale=
+fi
+
+# Now read the input parameters from the input file dy_parameters.in
+inputfile="./n3loxs_parameters.in";
+while read LINE
+do
+    if grep -q "PDFset =" <<< $LINE
+    then
+	pdfset="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "PDFnum =" <<< $LINE
+    then
+	pdfnum="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "order =" <<< $LINE
+    then
+	qcd="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "collider =" <<< $LINE
+    then
+	collider="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "energy =" <<< $LINE
+    then
+	energy="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "Q =" <<< $LINE
+    then
+	q="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "xmuf =" <<< $LINE
+    then
+	xmuf="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "channel =" <<< $LINE
+    then
+	wtype="$(cut -d' ' -f 3 <<< $LINE)"
+    fi
+done < $inputfile
+
+
+if [ $type -eq 1 ]; then
+    # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
+    echo "Now calculating for charged Drell-Yan process..."
+    ${maindir}/subprogs/run_dy_w $lattice $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $scale
+elif [ $type -eq 2 ]; then
+    echo "Now calculating for neutral Drell-Yan process..."
+    # Drell-Yan p p(pbar) --> gamma* + X --> l+ l- + X
+    ${maindir}/subprogs/run_dy_phot $lattice $qcd $collider $energy $q $xmuf $pdfset $pdfnum $scale
+elif [ $type -eq 3 ]; then
+    echo "Now calculating for inclusive Higgs-strahlung WH process..."
+    # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
+    ${maindir}/subprogs/run_wh $lattice 22 $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
+fi
+
+echo "\n Thanks for using our program!\n"

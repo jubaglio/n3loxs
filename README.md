@@ -67,8 +67,8 @@ contributions.
 The program accepts up to 3 arguments on the command line;
 * `lattice`: The lattice size that is used for the integration (integer)
 * `process`: An integer to chose between the various processes
-available. At the moment, 0 is for neutral Drell-Yan production
-(offshell photon), 1 if so r charged Drell-Yan production, 2 is for
+available. At the moment, 1 is for neutral Drell-Yan production
+(offshell photon), 2 is for charged Drell-Yan production, 3 is for
 inclusive WH Higgs-strahlung production
 * `--scale`: An optional flag to calculate 15 different
 predictions for the renormalization scale varied between 0.5 and 2
@@ -140,7 +140,7 @@ neutral Drell-Yan production.
 
 ---
 
-Some parameters (e.g. mases, coupling constants) are hard-coded in the
+Some parameters (e.g. masses, coupling constants) are hard-coded in the
 include file `constants.h` located in the `include` directory. The
 user can modify these parameters, however it requires a new
 compilation of the code to be taken into account.

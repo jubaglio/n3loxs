@@ -20,8 +20,8 @@ if [ "$#" -lt 2 ]; then
 	echo "## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##"
 	echo "Usage: ./n3loxs a b c with:"
 	echo "a: Lattice size (integer)"
-	echo "b: Choice of the process: 0 for neutral (gamma*) Drell-Yan, 1 for charged (W+ or W-) Drell-Yan,"
-	echo "   2 for inclusive WH Higgs-strahlung production (DY-type contributions only)"
+	echo "b: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
+	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only)"
 	echo "c: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
 	echo ""
 	exit
@@ -86,6 +86,8 @@ elif [ $type -eq 3 ]; then
     echo "Now calculating for inclusive Higgs-strahlung WH process..."
     # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
     ${maindir}/subprogs/run_wh $lattice 22 $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
+else
+    echo "You have selected a process which does not exist yet! Program will exit..."
 fi
 
 echo "\n Thanks for using our program!\n"

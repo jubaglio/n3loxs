@@ -1,0 +1,12 @@
+<!--
+For bbH:
+b-b (NNLO, N3LO)
+b-bbar (LO, NLO, NNLO, N3LO)
+b-q (NNLO, N3LO)
+b-qbar (NNLO, N3LO)
+g-b (NLO, NNLO, N3LO)
+g-g (NNLO, N3LO)
+g-q (N3LO)
+q-qb (NNLO, N3LO)
+--->
+

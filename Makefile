@@ -19,6 +19,9 @@ CC2 = -Wl,-rpath,$(shell $(GSL_CONFIG) --prefix)/lib $(shell $(GSL_CONFIG) --lib
 ## generate directory obj, if not yet existing
 $(shell mkdir -p build)
 
+## generate directory subprogs, if not yet existing
+$(shell mkdir -p subprogs)
+
 ## working dir
 WORKINGDIR = $(shell pwd)
 

@@ -13,7 +13,7 @@ order = 3
 collider = 0
 energy   = 13.0
 
-# Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW)
+# Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW); for bbH process, mu_F = xmuf*(MH+2*mb_pole)/4
 Q    = 100.0
 xmuf = 1.0
 

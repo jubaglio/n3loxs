@@ -14,6 +14,9 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
+// Header for the routines alphaS(muR) and mb_msbar(muR)
+#include "alphaS.h"
+
 struct {
   double s;
   double Q;
@@ -486,19 +489,20 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h (i) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i (j) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
-      std::cout << "b:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
-      std::cout << "c:  p-p (0) or p-pbar (1) collider" << std::endl;
-      std::cout << "d:  Hadronic energy in TeV (double)" << std::endl;
-      std::cout << "e:  Invariant lepton-mass Q in GeV (double)" << std::endl;
-      std::cout << "f:  x_muf so that mu_F = x_muf*Q (double)" << std::endl;
-      std::cout << "g:  PDF set (string)" << std::endl;
-      std::cout << "h:  PDF member (integer)" << std::endl;
-      std::cout << "i:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
+      std::cout << "b:  Seed (integer)" << std::endl;
+      std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
+      std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
+      std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
+      std::cout << "f:  Invariant lepton-mass Q in GeV (double)" << std::endl;
+      std::cout << "g:  x_muf so that mu_F = x_muf*Q (double)" << std::endl;
+      std::cout << "h:  PDF set (string)" << std::endl;
+      std::cout << "i:  PDF member (integer)" << std::endl;
+      std::cout << "j:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
       return 0;
     }
-  if(argc < 9)
+  if(argc < 10)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -506,12 +510,12 @@ int main(int argc, char **argv) {
   else
     {	
       int lattice  = atoi(argv[1]);
-      int corenbr  = 0;
-      int qcdorder = atoi(argv[2]);
+      int seed     = atoi(argv[2]);
+      int qcdorder = atoi(argv[3]);
 
-      const unsigned int MAXVAR = 7;
+      const unsigned int MAXVAR = 2;
 
-      int collider = atoi(argv[3]);
+      int collider = atoi(argv[4]);
       if(collider==0)
 	{
 	  parampdf.collidertype = 1;
@@ -521,15 +525,15 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[4]); // energy in TeV
+      double energy = atof(argv[5]); // energy in TeV
       double s;
       s = energy*energy*1.e6;
-      double Q    = atof(argv[5]);
-      double xmuf = atof(argv[6]);
+      double Q    = atof(argv[6]);
+      double xmuf = atof(argv[7]);
 
       // init PDF set
-      const std::string setname = argv[7];
-      const int setimem = atoi(argv[8]);
+      const std::string setname = argv[8];
+      const int setimem = atoi(argv[9]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
@@ -553,7 +557,6 @@ int main(int argc, char **argv) {
 
       real_integrator.devices = {-1}; // only CPUs
       real_integrator.cputhreads = 1; // only one CPU
-      const int seed = 0;
       real_integrator.randomgenerator.seed(seed);
 
       // define variables to store the results of QMC integrations
@@ -679,7 +682,6 @@ int main(int argc, char **argv) {
       double mur;
       double mur2;
 
-      LHAPDF::AlphaS_ODE as_ode;
       double asopi;
       double asopi2;
       double asopi3;
@@ -705,7 +707,9 @@ int main(int argc, char **argv) {
       int imax;
       double dxmur;
 
-      if(argc>=10 && std::strcmp(argv[9],"--scale") == 0)
+      double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
+
+      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);
@@ -776,16 +780,8 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=1)
       	{
-	  as_ode.setMZ(constants::MZ);
-	  as_ode.setAlphaSMZ(basepdf->alphasQ(constants::MZ));
-	  as_ode.setQuarkMass(1, constants::Md);
-	  as_ode.setQuarkMass(2, constants::Mu);
-	  as_ode.setQuarkMass(3, constants::Ms);
-	  as_ode.setQuarkMass(4, constants::Mc);
-	  as_ode.setQuarkMass(5, constants::Mb);
-	  as_ode.setQuarkMass(6, constants::Mt);
-	  as_ode.setOrderQCD(constants::asorder);
-      	  asopi = as_ode.alphasQ(mur)/constants::Pi;
+	  // alphaS(mur) and a mb(mur) at NLO
+	  asopi   = as_n3loxs(mur, 1, asopimz);
       	  asopi2 = asopi*asopi;
 
       	  xsnlo_result = BornDY*(qqb_lo_result + asopi*(qqb_nlo_result + result_gq_NLO.integral));
@@ -800,6 +796,9 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=2)
       	{
+	  // alphaS(mur) and a mb(mur) at NNLO
+	  asopi   = as_n3loxs(mur, 2, asopimz);
+	  asopi2 = asopi*asopi;
       	  asopi4 = asopi2*asopi2;
       	  logmu1 = log(mur2/muf2);
 
@@ -828,7 +827,11 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder==3)
       	{
+	  // alphaS(mur) and a mb(mur) at NNLO
+	  asopi   = as_n3loxs(mur, 3, asopimz);
+	  asopi2 = asopi*asopi;
       	  asopi3 = asopi*asopi2;
+	  asopi4 = asopi2*asopi2;
       	  asopi6 = asopi3*asopi3;
 
       	  logmu2 = logmu1*logmu1;

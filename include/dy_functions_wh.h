@@ -1,14 +1,14 @@
 /**
  *
- * \file    dy_functions.h
+ * \file    dy_functions_wh.h
  * \author  Julien Baglio
- * \date    October 2020
+ * \date    February 2021
  *
  */
 
 /**
  *
- * \brief   The header for all Drell-Yann coefficient functions
+ * \brief   The header for all Higgs-strahlung coefficient functions
  *
  */
 

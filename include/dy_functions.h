@@ -8,7 +8,7 @@
 
 /**
  *
- * \brief   The header for all Drell-Yann coefficient functions
+ * \brief   The header for all neutral Drell-Yan coefficient functions
  *
  */
 

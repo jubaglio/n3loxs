@@ -1,6 +1,6 @@
 /**
  *
- * \file    dy_functions.h
+ * \file    dy_functions_w.h
  * \author  Julien Baglio
  * \date    October 2020
  *
@@ -8,7 +8,7 @@
 
 /**
  *
- * \brief   The header for all Drell-Yann coefficient functions
+ * \brief   The header for all charged Drell-Yan coefficient functions
  *
  */
 

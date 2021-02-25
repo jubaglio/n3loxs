@@ -103,7 +103,6 @@ double dlumqqb(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 // g-u luminosity function including electric charges
 double dlumgu(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
-  std::vector<std::pair<int,int> > pairs;
   double qu,qu2;
   double dlu;
   double res;
@@ -230,7 +229,6 @@ double dlumuu(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 // d-d luminosity function including electric charges
 double dlumdd(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
-  std::vector<std::pair<int,int> > pairs;
   double qd,qd2;
   double dld;
   double res;

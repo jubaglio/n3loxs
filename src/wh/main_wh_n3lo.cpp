@@ -14,6 +14,9 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
+// Header for the routines alphaS(muR) and mb_msbar(muR)
+#include "alphaS.h"
+
 struct {
   double s;
   double xmuf;
@@ -840,7 +843,6 @@ int main(int argc, char **argv) {
       double mur;
       double mur2;
 
-      LHAPDF::AlphaS_ODE as_ode;
       double asopi;
       double asopi2;
       double asopi3;
@@ -865,6 +867,8 @@ int main(int argc, char **argv) {
 
       int imax;
       double dxmur;
+
+      double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
       if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
 	{
@@ -954,16 +958,8 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=1)
       	{
-	  as_ode.setMZ(constants::MZ);
-	  as_ode.setAlphaSMZ(basepdf->alphasQ(constants::MZ));
-	  as_ode.setQuarkMass(1, constants::Md);
-	  as_ode.setQuarkMass(2, constants::Mu);
-	  as_ode.setQuarkMass(3, constants::Ms);
-	  as_ode.setQuarkMass(4, constants::Mc);
-	  as_ode.setQuarkMass(5, constants::Mb);
-	  as_ode.setQuarkMass(6, constants::Mt);
-	  as_ode.setOrderQCD(constants::asorder);
-      	  asopi = as_ode.alphasQ(mur)/constants::Pi;
+	  // alphaS(mur) at NLO
+	  asopi = as_n3loxs(mur, 1, asopimz);
       	  asopi2 = asopi*asopi;
 
       	  xsnlo_result = BornDY*(dubar_lo_result + asopi*(dubar_nlo_result + result_gubar_NLO.integral));
@@ -978,6 +974,9 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=2)
       	{
+	  // alphaS(mur) at NNLO
+	  asopi = as_n3loxs(mur, 2, asopimz);
+	  asopi2 = asopi*asopi;
       	  asopi4 = asopi2*asopi2;
       	  logmu1 = log(mur2/muf2);
 
@@ -1008,7 +1007,11 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder==3)
       	{
-      	  asopi3 = asopi*asopi2;
+	  // alphaS(mur) at N3LO
+	  asopi = as_n3loxs(mur, 3, asopimz);
+	  asopi2 = asopi*asopi;
+	  asopi3 = asopi*asopi2;
+      	  asopi4 = asopi2*asopi2;
       	  asopi6 = asopi3*asopi3;
 
       	  logmu2 = logmu1*logmu1;

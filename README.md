@@ -7,7 +7,8 @@ A tool suite to calculate up to N3LO in QCD various cross sections at hadron col
 * Charged Drell-Yan p p(pbar) --> W+/W- + X (--> l+ nu_l / l- ~nu_l + X)
 * Higgsstrahlung p p(pbar) --> W+/W- H + X 
 * Higgs production via gluon fusion g g --> H + X [in progress]
-* Bottom-quark fusion Higgs production b bbar --> H + X [in progress]
+* Bottom-quark fusion Higgs production b bbar --> H + X in the
+  five-flavor scheme
 
 ## Installation
 
@@ -62,10 +63,15 @@ Higgs-strahlung processes (WH production) are inclusive calculations
 and the central scale by default is the sum of the Higgs and W boson
 masses. Only DY-type contributions are taken into acccount for the
 Higgs-strahlung  processes. They are by far the dominant
-contributions.
+contributions. The bottom-quark fusion pocess (bbH) is an inclusive
+calculation in the five-flavor scheme for which the central scale by
+default is muF = (MH+2*mbpole)/4, muR = MH.
 
-The program accepts up to 3 arguments on the command line;
-* `lattice`: The lattice size that is used for the integration (integer)
+The program accepts up to 4 arguments on the command line;
+* `lattice`: The lattice size that is used for the integration
+(integer)
+* `seed`: The seed that is used to initialize the pseudo-random-number
+generator (integer)
 * `process`: An integer to chose between the various processes
 available. At the moment, 1 is for neutral Drell-Yan production
 (offshell photon), 2 is for charged Drell-Yan production, 3 is for
@@ -120,7 +126,7 @@ The hadronic center-of-mass energy of the collider, in TeV. Default:
 
 The value, in GeV, for the virtuality of the gauge bosons in the
 Drell-Yan processes (not relevant for Higgs-strahlung
-processes). Default: `100.0`.
+processes nor for bbH production). Default: `100.0`.
 
 ---
 
@@ -155,8 +161,8 @@ calculation is the same throughout the whole evaluation of the
 program: When asking e.g. for an N3LO calculation, the LO, NLO, and
 NNLO results are not using the corresponding PDFs, but simply the one
 provided by the user in the input file `n3loxs_parameters.in`. The
-evolution of the strong coupling constant is always done at the 4-loop
-order.
+evolution of the strong coupling constant is consistently done at the
+QCD order.
 
 ## Citation policy
 
@@ -172,19 +178,35 @@ arXiv:[1811.11720](https://arxiv.org/abs/1811.11720).
 Their implementation can be found at
 [this link](https://github.com/mppmu/qmc/).
 
-In addition, the calculations underlying the Drell-Yan processes have
+The calculations underlying the Drell-Yan processes have
 been described in the following references,
 
 [2] C. Duhr, F. Dulat, and B. Mistlberger, "The Drell-Yan cross
 section to third order in the strong coupling
 constant". Phys. Rev. Lett. 125 (2020) 172001. DOI:
 [10.1103/PhysRevLett.125.172001](https://dx.doi.org/10.1103/PhysRevLett.125.172001),
-arXiv:[2001:07717](https://arxiv.org/abs/2001.07717).
+arXiv:[2001.07717](https://arxiv.org/abs/2001.07717).
 
 [3] C. Duhr, F. Dulat, and B. Mistlberger, "Charged Current Drell-Yan
 Production at N3LO". JHEP 11 (2020) 143. DOI:
 [10.1007/JHEP11(2020)143](https://dx.doi.org/10.1007/JHEP11(2020)143),
-arXiv:[2007:13313](https://arxiv.org/abs/2007.13313).
+arXiv:[2007.13313](https://arxiv.org/abs/2007.13313).
+
+The user should refer to the following papers when using the program
+for the bottom-quark fusion process,
+
+[4] C. Duhr, F. Dulat, and B. Mistlberger, "Higgs Boson Production in
+Bottom-Quark Fusion to Third Order in the Strong
+Coupling". Phys. Rev. Lett. 125 (2020) 051804. DOI:
+[10.1103/PhysRevLett.125.051804](https://dx.doi.org/10.1103/PhysRevLett.125.051804),
+arXiv:[1904.09990](https://arxiv.org/abs/1904.09990).
+
+[5] C. Duhr, F. Dulat, V. Hirschi, and B. Mistlberger, "Higgs
+production in bottom quark fusion: matching the 4- and 5-flavour
+schemes to third order in the strong coupling". JHEP 08
+(2020) 017. DOI:
+[10.1007/JHEP08(2020)017](https://dx.doi.org/10.1007/JHEP08(2020)017),
+arXiv:[2004.04752](https://arxiv.org/abs/2004.04752).
 
 ## Authors
 

@@ -6,38 +6,42 @@ maindir=$(pwd)
 
 # Parameters read from the command-line:
 #   lattice size
-#   neutral (0) or charged (1) drell-yan or (2) inclusive W+H production (DY-type contributions only)
+#   seed for the pseudo-random-number generator 
+#   neutral (1) or charged (2) drell-yan or (3) inclusive W+H production (DY-type contributions only) or (4) inclusive 5FS bbH production
 #   optional flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
 
-if [ "$#" -gt 3 ]; then
-    echo "You cannot use more than three arguments"
+if [ "$#" -gt 4 ]; then
+    echo "You cannot use more than four arguments"
     exit
 fi
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 3 ]; then
     if [ $1 == "-h" ] || [ $1 == "--help" ]
     then
 	echo ""
 	echo "## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##"
-	echo "Usage: ./n3loxs a b c with:"
+	echo "Usage: ./n3loxs a b c d with:"
 	echo "a: Lattice size (integer)"
-	echo "b: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
-	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only)"
-	echo "c: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
+	echo "b: Seed for the pseudo-random-number generator (integer)"
+	echo "c: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
+	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only),"
+	echo "   4 for inclusive five-flavor scheme Higgs production in bottom-quark fusion"
+	echo "d: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
 	echo ""
 	exit
     else
-	echo "You must use at least two arguments"
+	echo "You must use at least three arguments"
 	exit
     fi
 fi
 
 
 lattice=$1
-type=$2
+seed=$2
+type=$3
 
-if [[ "$#" -eq 3 ]]
+if [[ "$#" -eq 4 ]]
 then
-    scale=$3
+    scale=$4
 else
     scale=
 fi
@@ -77,15 +81,19 @@ done < $inputfile
 if [ $type -eq 1 ]; then
     # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
     echo "Now calculating for charged Drell-Yan process..."
-    ${maindir}/subprogs/run_dy_w $lattice $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $scale
+    ${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $scale
 elif [ $type -eq 2 ]; then
     echo "Now calculating for neutral Drell-Yan process..."
     # Drell-Yan p p(pbar) --> gamma* + X --> l+ l- + X
-    ${maindir}/subprogs/run_dy_phot $lattice $qcd $collider $energy $q $xmuf $pdfset $pdfnum $scale
+    ${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $pdfset $pdfnum $scale
 elif [ $type -eq 3 ]; then
     echo "Now calculating for inclusive Higgs-strahlung WH process..."
     # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
-    ${maindir}/subprogs/run_wh $lattice 22 $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
+    ${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
+elif [ $type -eq 4 ]; then
+    echo "Now calculating for inclusive 5FS bbH process..."
+    # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
+    ${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
 else
     echo "You have selected a process which does not exist yet! Program will exit..."
 fi

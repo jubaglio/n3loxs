@@ -1,6 +1,6 @@
 /**
  *
- * \file    pdfpar.h
+ * \file    pdfpar_w.h
  * \author  Julien Baglio
  * \date    January 2021
  *

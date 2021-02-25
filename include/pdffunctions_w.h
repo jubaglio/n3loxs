@@ -1,6 +1,6 @@
 /**
  *
- * \file    pdffunctions.h
+ * \file    pdffunctions_w.h
  * \author  Julien Baglio
  * \date    September 2020
  *
@@ -8,7 +8,7 @@
 
 /**
  *
- * \brief   The header for all pdf luminosities called by the program. Interfaced to the Luminosity class where the interface with LHAPDF is defined
+ * \brief   The header for all pdf luminosities called by the program.
  *
  */
 

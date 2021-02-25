@@ -8,7 +8,7 @@
 
 /**
  *
- * \brief   The header for all pdf luminosities called by the program. Interfaced to the Luminosity class where the interface with LHAPDF is defined
+ * \brief   The header for all pdf luminosities called by the program.
  *
  */
 

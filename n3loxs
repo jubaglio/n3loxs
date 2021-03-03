@@ -8,6 +8,7 @@ maindir=$(pwd)
 #   lattice size
 #   seed for the pseudo-random-number generator 
 #   neutral (1) or charged (2) drell-yan or (3) inclusive W+H production (DY-type contributions only) or (4) inclusive 5FS bbH production
+#               or (5) inclusive ggH production in the Born-improved heavy top limit
 #   optional flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
 
 if [ "$#" -gt 4 ]; then
@@ -24,7 +25,8 @@ if [ "$#" -lt 3 ]; then
 	echo "b: Seed for the pseudo-random-number generator (integer)"
 	echo "c: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
 	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only),"
-	echo "   4 for inclusive five-flavor scheme Higgs production in bottom-quark fusion"
+	echo "   4 for inclusive five-flavor scheme Higgs production in bottom-quark fusion,"
+	echo "   5 for inclusive Higgs production in gluon fusion, in the Born-improved heavy top limit"
 	echo "d: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
 	echo ""
 	exit
@@ -94,8 +96,12 @@ elif [ $type -eq 4 ]; then
     echo "Now calculating for inclusive 5FS bbH process..."
     # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
     ${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
+elif [ $type -eq 5 ]; then
+    echo "Now calculating for inclusive ggH process in the Born-improved HTL..."
+    # Gluon fusion p p(pbar) --> H + X via g g --> H
+    ${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
 else
-    echo "You have selected a process which does not exist yet! Program will exit..."
+    echo "You have selected a process which does not exist (yet)! Program will exit..."
 fi
 
 echo "\n Thanks for using our program!\n"

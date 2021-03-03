@@ -156,10 +156,7 @@ struct functor_RegNNLO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      qqb_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qqb_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qqb_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -180,10 +177,7 @@ struct functor_RegN3LO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      qqb_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qqb_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qqb_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -227,10 +221,7 @@ struct functor_gq_NNLO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      gq_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gq_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gq_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -251,10 +242,7 @@ struct functor_gq_N3LO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      gq_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gq_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gq_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -277,10 +265,7 @@ struct functor_gg_NNLO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      gg_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gg_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gg_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gg_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -301,10 +286,7 @@ struct functor_gg_N3LO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      gg_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gg_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      gg_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gg_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -327,10 +309,7 @@ struct functor_qq_NNLO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      qq_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qq_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qq_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -351,10 +330,7 @@ struct functor_qq_N3LO_t  {
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
-    integrand =
-      qq_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qq_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qq_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -378,12 +354,8 @@ struct functor_qQq_NNLO_t  {
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
     integrand =
-      qQq_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQq_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQq_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
+      ud_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -405,12 +377,8 @@ struct functor_qQq_N3LO_t  {
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
     integrand =
-      qQq_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQq_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQq_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
+      ud_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -434,12 +402,8 @@ struct functor_qQqb_NNLO_t  {
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
     integrand =
-      qQqb_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_nnlo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQqb_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_nnlo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQqb_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_nnlo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
+      udb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 
@@ -461,12 +425,8 @@ struct functor_qQqb_N3LO_t  {
     muf = global_param_gamma.xmuf*global_param_gamma.Q;
 
     integrand =
-      qQqb_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_n3lo_z(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQqb_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_n3lo_w(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      qQqb_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_n3lo_zb(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
+      udb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
     return integrand;
 

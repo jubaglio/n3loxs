@@ -14,7 +14,7 @@ Soft+Virtual contributions for the bbH production process up to N3LO QCD
 
 #include "constants.h"
 
-static const double eps = 1.e-10;
+static const double eps = 1.e-12;
 
 static const double MH2 = constants::MH*constants::MH;
 

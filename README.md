@@ -6,7 +6,7 @@ A tool suite to calculate up to N3LO in QCD various cross sections at hadron col
 * Neutral Drell-Yan p p(pbar) --> gamma* + X (--> l+ l- + X)
 * Charged Drell-Yan p p(pbar) --> W+/W- + X (--> l+ nu_l / l- ~nu_l + X)
 * Higgsstrahlung p p(pbar) --> W+/W- H + X 
-* Higgs production via gluon fusion g g --> H + X [in progress]
+* Higgs production via gluon fusion g g -->
 * Bottom-quark fusion Higgs production b bbar --> H + X in the
   five-flavor scheme
 
@@ -64,8 +64,14 @@ and the central scale by default is the sum of the Higgs and W boson
 masses. Only DY-type contributions are taken into acccount for the
 Higgs-strahlung  processes. They are by far the dominant
 contributions. The bottom-quark fusion pocess (bbH) is an inclusive
-calculation in the five-flavor scheme for which the central scale by
-default is muF = (MH+2*mbpole)/4, muR = MH.
+calculation in the five-flavor scheme (5FS) for which the central
+scale by default is muF = (MH+2*mbpole)/4, muR = MH. The gluon fusion
+process (ggH) is also an inclusive calculation, in the so-called
+Born-improved high top-mass limit (Born-improved HTL), where the
+calculation is performed in an effective theory in which the top-quark
+is decoupled, matched to the full Standard Model. The predictions are
+rescaled to the exact leading order (one-loop) result including the
+top-quark mass.
 
 The program accepts up to 4 arguments on the command line;
 * `lattice`: The lattice size that is used for the integration
@@ -75,7 +81,8 @@ generator (integer)
 * `process`: An integer to chose between the various processes
 available. At the moment, 1 is for neutral Drell-Yan production
 (offshell photon), 2 is for charged Drell-Yan production, 3 is for
-inclusive WH Higgs-strahlung production
+inclusive WH Higgs-strahlung production, 4 is for the inclusive 5FS
+bbH process, 5 is for the inclusive ggH process.
 * `--scale`: An optional flag to calculate 15 different
 predictions for the renormalization scale varied between 0.5 and 2
 times the default central scale of the corresponding process. If
@@ -125,8 +132,8 @@ The hadronic center-of-mass energy of the collider, in TeV. Default:
 `Q`
 
 The value, in GeV, for the virtuality of the gauge bosons in the
-Drell-Yan processes (not relevant for Higgs-strahlung
-processes nor for bbH production). Default: `100.0`.
+Drell-Yan processes (neither relevant for Higgs-strahlung
+processes nor for bbH and ggH productions). Default: `100.0`.
 
 ---
 
@@ -162,7 +169,7 @@ program: When asking e.g. for an N3LO calculation, the LO, NLO, and
 NNLO results are not using the corresponding PDFs, but simply the one
 provided by the user in the input file `n3loxs_parameters.in`. The
 evolution of the strong coupling constant is consistently done at the
-QCD order.
+given QCD order.
 
 ## Citation policy
 
@@ -208,13 +215,27 @@ schemes to third order in the strong coupling". JHEP 08
 [10.1007/JHEP08(2020)017](https://dx.doi.org/10.1007/JHEP08(2020)017),
 arXiv:[2004.04752](https://arxiv.org/abs/2004.04752).
 
+When using the program for the gluon fusion process, at least the following
+references should be cited,
+
+[6] C. Anastasiou, C. Duhr, F. Dulat, E. Furland, T. Gehrmann,
+F. Herzog, and B. Mistlberger, "Higgs boson gluon-fusion production at
+threshold in N3LO QCD". Phys. Lett. B 737 (2014) 325-328. DOI:
+[10.1016/j.physletb.2014.08.067](https://dx.doi.org/10.1016/j.physletb.2014.08.067),
+arXiv:[1403.4616](https://arxiv.org/abs/1403.4616).
+
+[7] B. Mistlberger, "Higgs boson production at hadron colliders at
+N3LO in QCD". JHEP 05 (2018) 028. DOI:
+[10.1007/JHEP05(2018)028](https://dx.doi.org/10.1007/JHEP(2018)028),
+arXiv:[1802.00833](https://arxiv.org/abs/1802.00833).
+
+but the user is reminded that many other pappers relevant for the
+desired process should also be referenced (e.g. LO, NLO, NNLO
+calculations for example).
+
 ## Authors
 
 * Julien Baglio (@jubaglio)
 * Claude Duhr
 * Bernhard Mistlberger
 * Robert Szafron
-
-<!---
-✨ Note: ✨ bbH and ggH are yet to be implemented.
---->

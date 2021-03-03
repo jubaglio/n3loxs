@@ -146,10 +146,7 @@ struct functor_RegNNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bbb_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      bbb_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      bbb_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bbb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -168,10 +165,7 @@ struct functor_RegN3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bbb_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      bbb_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      bbb_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bbb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -211,10 +205,7 @@ struct functor_bg_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bg_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      bg_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      bg_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bg_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -233,10 +224,7 @@ struct functor_bg_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bg_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      bg_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      bg_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bg_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -257,10 +245,7 @@ struct functor_gg_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      gg_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      gg_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      gg_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = gg_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -279,10 +264,7 @@ struct functor_gg_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      gg_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      gg_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      gg_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = gg_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -303,10 +285,7 @@ struct functor_qg_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      qg_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      qg_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      qg_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = qg_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -327,10 +306,7 @@ struct functor_bb_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bb_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      bb_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      bb_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -349,10 +325,7 @@ struct functor_bb_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bb_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      bb_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      bb_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -373,10 +346,7 @@ struct functor_bq_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bq_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      bq_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      bq_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bq_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -395,10 +365,7 @@ struct functor_bq_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bq_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      bq_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      bq_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bq_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -419,10 +386,7 @@ struct functor_bqbar_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bqb_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      bqb_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      bqb_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bqb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -441,10 +405,7 @@ struct functor_bqbar_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      bqb_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      bqb_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      bqb_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = bqb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -465,10 +426,7 @@ struct functor_qqbar_NNLO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      qqb_regular_nnlo_z(x, global_param.s, muf, global_param.pdf) +
-      qqb_regular_nnlo_w(x, global_param.s, muf, global_param.pdf) +
-      qqb_regular_nnlo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = qqb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -487,10 +445,7 @@ struct functor_qqbar_N3LO_t  {
     x[1] = y[1];
     muf = global_param.xmuf*scalemuF0;
 
-    integrand =
-      qqb_regular_n3lo_z(x, global_param.s, muf, global_param.pdf) +
-      qqb_regular_n3lo_w(x, global_param.s, muf, global_param.pdf) +
-      qqb_regular_n3lo_zb(x, global_param.s, muf, global_param.pdf);
+    integrand = qqb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
     return integrand;
 
@@ -520,10 +475,10 @@ int main(int argc, char **argv) {
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
-      std::cout << "f:  x_muf so that mu_F = x_muf*Q (double)" << std::endl;
+      std::cout << "f:  x_muf so that mu_F = x_muf*M_H (double)" << std::endl;
       std::cout << "g:  PDF set (string)" << std::endl;
       std::cout << "h:  PDF member (integer)" << std::endl;
-      std::cout << "i:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
+      std::cout << "i:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_H" << std::endl;
       return 0;
     }
   if(argc < 9)

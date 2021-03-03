@@ -34,17 +34,15 @@ double delta(const double X[], const double s, const double muf, const int k, LH
 
   muf2 = muf*muf;
 
-  // new
   tauwh = MHW2/s;
-  tau = exp((eps+(1-2*eps)*X[1])*log(tauwh));
-  fac = -(1-2*eps)*tau*log(tauwh);
+  tau = exp((eps+(1.0-2.0*eps)*X[1])*log(tauwh));
+  fac = -(1.0-2.0*eps)*tau*log(tauwh);
   Q2 = s*tau;
   lambda = (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)*
     (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)
     -4*constants::MH*constants::MH*constants::MW*constants::MW/(Q2*Q2);
   gammlo = (Q2*lambda+12.0*constants::MW*constants::MW)*
     sqrt(lambda)/((Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW));
-  //
 
   delterms = 0.0;
   
@@ -79,14 +77,14 @@ double delta(const double X[], const double s, const double muf, const int k, LH
       break;
     }
 
-  z   = exp((eps+(1-2*eps)*X[0])*log(tau));
-  fac = -(1-2*eps)*z*log(tau)*fac;
+  z   = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
+  fac = -(1.0-2.0*eps)*z*log(tau)*fac;
   
   res = fac*delterms;
   res = res*dlumdub(z,tau/z,muf2,pdf)/z;
-  // new
+
   res = res*gammlo;
-  //
+
   return res;
 }
 
@@ -126,19 +124,18 @@ double PlusConst(const double X[], const double s, const double muf, const int k
 
   muf2 = muf*muf;
 
-  // new
   tauwh = MHW2/s;
-  tau = exp((eps+(1-2*eps)*X[1])*log(tauwh));
-  fac = -(1-2*eps)*tau*log(tauwh);
+  tau = exp((eps+(1.0-2.0*eps)*X[1])*log(tauwh));
+  fac = -(1.0-2.0*eps)*tau*log(tauwh);
   Q2 = s*tau;
   lambda = (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)*
     (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)
     -4*constants::MH*constants::MH*constants::MW*constants::MW/(Q2*Q2);
   gammlo = (Q2*lambda+12.0*constants::MW*constants::MW)*
     sqrt(lambda)/((Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW));
-  //
-  x2   = exp((eps+(1-2*eps)*X[0])*log(tau));
-  fac = -(1-2*eps)*x2*log(tau)*fac;
+
+  x2   = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
+  fac = -(1.0-2.0*eps)*x2*log(tau)*fac;
 
   res = 0.0;
 
@@ -198,9 +195,9 @@ double PlusConst(const double X[], const double s, const double muf, const int k
     }
   res = fac*res;
   res = res*dlumdub(x2,tau/x2,muf2,pdf)/x2;
-  // new
+
   res = res*gammlo;
-  //
+
   return res;
 }
 
@@ -220,17 +217,16 @@ double PlusInt1(const double X[], const double s, const double muf, const int k,
 
   muf2 = muf*muf;
 
-  // new
   tauwh = MHW2/s;
-  tau = exp((eps+(1-2*eps)*X[2])*log(tauwh));
-  fac = -(1-2*eps)*tau*log(tauwh);
+  tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
+  fac = -(1.0-2.0*eps)*tau*log(tauwh);
   Q2 = s*tau;
   lambda = (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)*
     (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)
     -4*constants::MH*constants::MH*constants::MW*constants::MW/(Q2*Q2);
   gammlo = (Q2*lambda+12.0*constants::MW*constants::MW)*
     sqrt(lambda)/((Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW));
-  //
+
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
   fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
@@ -294,9 +290,9 @@ double PlusInt1(const double X[], const double s, const double muf, const int k,
     }
   res = fac*res;
   res = res*( dlumdub(x2,tau/x1/x2,muf2,pdf)/x1/x2 - dlumdub(x2,tau/x2,muf2,pdf)/x2 );
-  // new
+
   res = res*gammlo;
-  //
+
   return res;
 }
 
@@ -317,17 +313,16 @@ double PlusInt2(const double X[], const double s, const double muf, const int k,
 
   muf2 = muf*muf;
 
-  // new
   tauwh = MHW2/s;
-  tau = exp((eps+(1-2*eps)*X[2])*log(tauwh));
-  fac = -(1-2*eps)*tau*log(tauwh);
+  tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
+  fac = -(1.0-2.0*eps)*tau*log(tauwh);
   Q2 = s*tau;
   lambda = (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)*
     (1.0-constants::MW*constants::MW/Q2-constants::MH*constants::MH/Q2)
     -4*constants::MH*constants::MH*constants::MW*constants::MW/(Q2*Q2);
   gammlo = (Q2*lambda+12.0*constants::MW*constants::MW)*
     sqrt(lambda)/((Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW));
-  //
+
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau*exp(-(eps+(1.0-2.0*eps)*X[1])*log(x1));
   fac = pow(1.0-2.0*eps,2)*x1*log(tau)*x2*log(x1)*fac;
@@ -390,8 +385,8 @@ double PlusInt2(const double X[], const double s, const double muf, const int k,
     }
   res = -fac*res;
   res = res*dlumdub(x2,tau/x2,muf2,pdf)/x2;
-  // new
+
   res = res*gammlo;
-  //
+
   return res;
 }

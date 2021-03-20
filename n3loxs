@@ -9,41 +9,64 @@ maindir=$(pwd)
 #   seed for the pseudo-random-number generator 
 #   neutral (1) or charged (2) drell-yan or (3) inclusive W+H production (DY-type contributions only) or (4) inclusive 5FS bbH production
 #               or (5) inclusive ggH production in the Born-improved heavy top limit
-#   optional flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
+#   optional flag --scale or --7point; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
+#            --scale: This generates 16 predictions for various renormalization scales muR between 0.5*muR0 and 2.0*muR0
+#            --7point: This calculates the 7-point scale uncertainty of the cross section
 
-if [ "$#" -gt 4 ]; then
+if [ "$#" -gt 7 ]; then
     echo "You cannot use more than four arguments"
     exit
 fi
-if [ "$#" -lt 3 ]; then
-    if [ $1 == "-h" ] || [ $1 == "--help" ]
+if [ "$#" -lt 6 ]; then
+    if [ $1 == "-h" ] || [ $1 == "--help" ] || [ "$#" -eq 0 ]
     then
 	echo ""
 	echo "## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##"
-	echo "Usage: ./n3loxs a b c d with:"
+	echo "Usage: ./n3loxs -lattice a -seed b -type c (--scale/--7point) with:"
 	echo "a: Lattice size (integer)"
 	echo "b: Seed for the pseudo-random-number generator (integer)"
-	echo "c: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
+	echo "c: Choice of the process:"
+	echo "   1 for neutral (gamma*) Drell-Yan,"
+	echo "   2 for charged (W+ or W-) Drell-Yan,"
 	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only),"
 	echo "   4 for inclusive five-flavor scheme Higgs production in bottom-quark fusion,"
 	echo "   5 for inclusive Higgs production in gluon fusion, in the Born-improved heavy top limit"
-	echo "d: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
+	echo "Optional flag --scale or --7point; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
+	echo "   --scale: generate 16 predictions for mu_R varied between 0.5*mu_0 and 2*mu_0, mu_0 is the central renormalization scale"
+	echo "   --7point: calculate the 7-point scale uncertainty of the cross sexction"
 	echo ""
 	exit
     else
-	echo "You must use at least three arguments"
+	echo "You must enter at least three parameters"
 	exit
     fi
 fi
 
-
-lattice=$1
-seed=$2
-type=$3
-
-if [[ "$#" -eq 4 ]]
+if [ $1 != "-lattice" ] || [ $3 != "-seed" ] || [ $5 != "-type" ]
 then
-    scale=$4
+    echo "Mis-typed entries on the command-line, the program will exit..."
+    exit
+fi
+
+lattice=$2
+seed=$4
+type=$6
+seven=0
+
+if [[ "$#" -eq 7 ]]
+then
+    if [ $7 == "--scale" ]
+    then
+	scale=$7
+	seven=0
+    elif [ $7 == "--7point" ]
+    then
+	scale="--scale"
+	seven=1
+    else
+	echo "The --scale flag is mistyped, the program will exit..."
+	exit
+    fi
 else
     scale=
 fi
@@ -77,31 +100,475 @@ do
     then
 	wtype="$(cut -d' ' -f 3 <<< $LINE)"
     fi
+
+    if grep -q "MW =" <<< $LINE
+    then
+	mw="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "MZ =" <<< $LINE
+    then
+	mz="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "MH =" <<< $LINE
+    then
+	mh="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "Mt =" <<< $LINE
+    then
+	mt="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "Mb =" <<< $LINE
+    then
+	mb="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "mb(mb) =" <<< $LINE
+    then
+	mbmb="$(cut -d' ' -f 3 <<< $LINE)"
+    elif grep -q "vev =" <<< $LINE
+    then
+	vev="$(cut -d' ' -f 3 <<< $LINE)"
+    fi
+
 done < $inputfile
+
+parameters="$mw $mz $mh $mt $mb $mbmb $vev"
+
+echo ""
+echo ""
+echo "\t################  n3loxs v1.0 calculator ################"
+echo "\t######### Input parameters for the calculation: #########"
+if [ $collider -eq 0 ]
+then
+    echo "\t  p-p collider at a c.o.m. energy sqrt(s) = $energy TeV"
+else
+    echo "\t  p-pbar collider at a c.o.m. energy sqrt(s) = $energy TeV"
+fi
+if [ $qcd -eq 0 ]
+then
+    qcdw=LO
+elif [ $qcd -eq 1 ]
+then
+    qcdw=NLO
+elif [ $qcd -eq 2 ]
+then
+    qcdw=NNLO
+else
+    qcdw=N3LO
+fi
+echo "\t  Maximum QCD order of the calculation: $qcdw"
+echo "\t  PDF set:                              $pdfset"
+echo "\t  PDF member:                           $pdfnum"
+echo "\t  W boson mass MW:                      $mw GeV"
+echo "\t  Z boson mass MZ:                      $mz GeV"
+echo "\t  Higgs boson mass MH:                  $mh GeV"
+echo "\t  Top-quark pole mass Mt:               $mt GeV"
+echo "\t  Bottom-quark pole mass Mb:            $mb GeV"
+echo "\t  Bottom-quark MSbar mass mb(mb):       $mbmb GeV"
+echo "\t  Vacuum expectation value vev:         $vev GeV"
+
+if [ $type -lt 3 ]
+then
+    echo "\t  Off-shell Q-value Q = ${q} GeV"
+fi
 
 
 if [ $type -eq 1 ]; then
-    # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
-    echo "Now calculating for charged Drell-Yan process..."
-    ${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $scale
-elif [ $type -eq 2 ]; then
-    echo "Now calculating for neutral Drell-Yan process..."
     # Drell-Yan p p(pbar) --> gamma* + X --> l+ l- + X
-    ${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $pdfset $pdfnum $scale
+    if [ $seven -eq 0 ]
+    then
+	echo "\t  Factorization scale muF = $xmuf * Q\n"
+    else
+	echo "\t  Central scales muF0 = muR0 = Q\n"
+    fi
+    echo "\tNow calculating for neutral Drell-Yan process...\n"
+    if [ $seven -eq 0 ]
+    then
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $pdfset $pdfnum $parameters $scale
+    else
+	proctag=dy_xs_gamma
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 1.0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 0.5 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 2.0 $pdfset $pdfnum $parameters --scale
+    fi
+elif [ $type -eq 2 ]; then
+    # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
+    if [ $seven -eq 0 ]
+    then
+	echo "\t  Factorization scale muF = $xmuf * Q\n"
+    else
+	echo "\t  Central scales muF0 = muR0 = Q\n"
+    fi
+    if [ $wtype -eq 1 ]
+    then
+	echo "\tNow calculating for charged W+ Drell-Yan process...\n"
+	proctag=dy_xs_wplus
+    else
+	echo "\tNow calculating for charged W- Drell-Yan process...\n"
+	proctag=dy_xs_wminus
+    fi
+    if [ $seven -eq 0 ]
+    then
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $parameters $scale
+    else
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 1.0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 0.5 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 2.0 $pdfset $pdfnum $parameters --scale
+    fi
 elif [ $type -eq 3 ]; then
-    echo "Now calculating for inclusive Higgs-strahlung WH process..."
     # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
-    ${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
+    if [ $seven -eq 0 ]
+    then
+	echo "\t  Factorization scale muF = $xmuf * (MW + MH)\n"
+    else
+	echo "\t  Central scales muF0 = muR0 = MW + MH\n"
+    fi
+    if [ $wtype -eq 1 ]
+    then
+	echo "\tNow calculating for inclusive Higgs-strahlung W+ H process...\n"
+	proctag=WplusH_xs
+    else
+	echo "\tNow calculating for inclusive Higgs-strahlung W- H process...\n"
+	proctag=WminusH_xs
+    fi
+    if [ $seven -eq 0 ]
+    then
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $parameters $scale
+    else
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 1.0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 0.5 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 2.0 $pdfset $pdfnum $parameters --scale
+    fi
 elif [ $type -eq 4 ]; then
-    echo "Now calculating for inclusive 5FS bbH process..."
     # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
-    ${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
+    if [ $seven -eq 0 ]
+    then
+	echo "\t  Factorization scale muF = $xmuf * (MH+2*mb_pole)/4\n"
+    else
+	echo "\t  Central scales muF = (MH+2*mb_pole)/4, muR0 = MH\n"
+    fi
+    echo "\tNow calculating for inclusive 5FS bbH process...\n"
+    if [ $seven -eq 0 ]
+    then
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $parameters $scale
+    else
+	proctag=bbH_xs
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 1.0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 0.5 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 2.0 $pdfset $pdfnum $parameters --scale
+    fi
 elif [ $type -eq 5 ]; then
-    echo "Now calculating for inclusive ggH process in the Born-improved HTL..."
     # Gluon fusion p p(pbar) --> H + X via g g --> H
-    ${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
+    if [ $seven -eq 0 ]
+    then
+	echo "\t  Factorization scale muF = $xmuf * MH/2\n"
+    else
+	echo "\t  Central scales muF0 = muR0 = MH/2\n"
+    fi
+    echo "\tNow calculating for inclusive ggH process in the Born-improved HTL...\n"
+    if [ $seven -eq 0 ]
+    then
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $parameters $scale
+    else
+	proctag=ggH_xs
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 1.0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 0.5 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 2.0 $pdfset $pdfnum $parameters --scale	
+    fi
 else
-    echo "You have selected a process which does not exist (yet)! Program will exit..."
+    echo "\tYou have selected a process which does not exist (yet)! Program will exit..."
 fi
 
-echo "\n Thanks for using our program!\n"
+if [ $seven -eq 1 ]
+then
+    energy2=$(echo $energy | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+    if [ $collider -eq 0 ]
+    then
+	if [ $type -lt 3 ]
+	then
+	    q2=$(echo $q | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+	    filetest1=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf1.txt
+	    filetest0=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf0.5.txt
+	    filetest2=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf2.txt
+	else
+	    filetest1=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf1.txt
+	    filetest0=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf0.5.txt
+	    filetest2=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf2.txt
+	fi
+    else
+	if [ $type -lt 3 ]
+	then
+	    q2=$(echo $q | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+	    filetest1=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf1.txt
+	    filetest0=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf0.5.txt
+	    filetest2=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf2.txt
+	else
+	    filetest1=${proctag}_ppbar_${energy2}tev_pdf${pdfnum}_muf1.txt
+	    filetest0=${proctag}_ppbar_${energy2}tev_pdf${pdfnum}_muf0.5.txt
+	    filetest2=${proctag}_ppbar_${energy2}tev_pdf${pdfnum}_muf2.txt
+	fi
+    fi
+	
+    let lotag="4+$qcd"
+    central_lo="$(cut -d ' ' -f 3 <<< $(grep "1.000\t1.000" ${filetest1}))"
+    error_lo="$(cut -d ' ' -f $lotag <<< $(grep "1.000\t1.000" ${filetest1}))"
+    min_lo=$central_lo
+    max_lo=$central_lo
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "0.500\t1.000" ${filetest1}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "2.000\t1.000" ${filetest1}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "0.500\t0.500" ${filetest0}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "1.000\t0.500" ${filetest0}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "1.500\t2.000" ${filetest2}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+    test_lo="$(cut -d ' ' -f 3 <<< $(grep "2.000\t2.000" ${filetest2}))"
+    if [ 1 -eq "$(echo "$test_lo < $min_lo" | bc)" ]
+    then
+	min_lo=$test_lo
+    fi
+    if [ 1 -eq "$(echo "$test_lo > $max_lo" | bc)" ]
+    then
+	max_lo=$test_lo
+    fi
+
+    percent_max_lo=$(awk -v a="$central_lo" -v b="$max_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+    percent_min_lo=$(awk -v a="$central_lo" -v b="$min_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+    echo "\nxs_LO    = $central_lo +- $error_lo (num) pb +$percent_max_lo% / $percent_min_lo% (7-point scale uncertainty)"
+
+    if [ $qcd -ge 1 ]
+    then
+	let nlotag="5+$qcd"
+	central_nlo="$(cut -d ' ' -f 4 <<< $(grep "1.000\t1.000" ${filetest1}))"
+	error_nlo="$(cut -d ' ' -f $nlotag <<< $(grep "1.000\t1.000" ${filetest1}))"
+	min_nlo=$central_nlo
+	max_nlo=$central_nlo
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "0.500\t1.000" ${filetest1}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "2.000\t1.000" ${filetest1}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "0.500\t0.500" ${filetest0}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "1.000\t0.500" ${filetest0}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "1.500\t2.000" ${filetest2}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+	test_nlo="$(cut -d ' ' -f 4 <<< $(grep "2.000\t2.000" ${filetest2}))"
+	if [ 1 -eq "$(echo "$test_nlo < $min_nlo" | bc)" ]
+	then
+	    min_nlo=$test_nlo
+	fi
+	if [ 1 -eq "$(echo "$test_nlo > $max_nlo" | bc)" ]
+	then
+	    max_nlo=$test_nlo
+	fi
+
+	percent_max_nlo=$(awk -v a="$central_nlo" -v b="$max_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	percent_min_nlo=$(awk -v a="$central_nlo" -v b="$min_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	echo "xs_NLO   = $central_nlo +- $error_nlo (num) pb +$percent_max_nlo% / $percent_min_nlo% (7-point scale uncertainty)"
+	if [ $qcd -ge 2 ]
+	then
+	    let nnlotag="6+$qcd"
+	    central_nnlo="$(cut -d ' ' -f 5 <<< $(grep "1.000\t1.000" ${filetest1}))"
+	    error_nnlo="$(cut -d ' ' -f $nnlotag <<< $(grep "1.000\t1.000" ${filetest1}))"
+	    min_nnlo=$central_nnlo
+	    max_nnlo=$central_nnlo
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "0.500\t1.000" ${filetest1}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "2.000\t1.000" ${filetest1}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "0.500\t0.500" ${filetest0}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "1.000\t0.500" ${filetest0}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "1.500\t2.000" ${filetest2}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+	    test_nnlo="$(cut -d ' ' -f 5 <<< $(grep "2.000\t2.000" ${filetest2}))"
+	    if [ 1 -eq "$(echo "$test_nnlo < $min_nnlo" | bc)" ]
+	    then
+		min_nnlo=$test_nnlo
+	    fi
+	    if [ 1 -eq "$(echo "$test_nnlo > $max_nnlo" | bc)" ]
+	    then
+		max_nnlo=$test_nnlo
+	    fi
+
+	    percent_max_nnlo=$(awk -v a="$central_nnlo" -v b="$max_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	    percent_min_nnlo=$(awk -v a="$central_nnlo" -v b="$min_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	    echo "xs_NNLO  = $central_nnlo +- $error_nnlo (num) pb +$percent_max_nnlo% / $percent_min_nnlo% (7-point scale uncertainty)"
+	    if [ $qcd -eq 3 ]
+	    then
+		central_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.000\t1.000" ${filetest1}))"
+		error_n3lo="$(cut -d ' ' -f 10 <<< $(grep "1.000\t1.000" ${filetest1}))"
+		min_n3lo=$central_n3lo
+		max_n3lo=$central_n3lo
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "0.500\t1.000" ${filetest1}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "2.000\t1.000" ${filetest1}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "0.500\t0.500" ${filetest0}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.000\t0.500" ${filetest0}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.500\t2.000" ${filetest2}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "2.000\t2.000" ${filetest2}))"
+		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
+		then
+		    min_n3lo=$test_n3lo
+		fi
+		if [ 1 -eq "$(echo "$test_n3lo > $max_n3lo" | bc)" ]
+		then
+		    max_n3lo=$test_n3lo
+		fi
+
+		percent_max_n3lo=$(awk -v a="$central_n3lo" -v b="$max_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+		percent_min_n3lo=$(awk -v a="$central_n3lo" -v b="$min_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+		echo "xs_N3LO  = $central_n3lo +- $error_n3lo (num) pb +$percent_max_n3lo% / $percent_min_n3lo% (7-point scale uncertainty)"
+	    fi
+	fi
+    fi
+fi
+
+if [ $seven -eq 1 ]
+then
+    rm $filetest1 && rm $filetest0 && rm $filetest2
+fi   
+
+echo "\n\tThanks for using our program!\n"

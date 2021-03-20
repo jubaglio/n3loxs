@@ -20,13 +20,22 @@
 struct {
   double s;
   double xmuf;
+  double scale0;
   const LHAPDF::PDF* pdf;
 } global_param;
 
 #include "pdfpar_w.h"
 struct parampdf_struc parampdf;
 
-const int scale0 = constants::MH + constants::MW;
+//const int scale0 = constants::MH + constants::MW;
+
+double constants::MW;
+double constants::MZ;
+double constants::MH;
+double constants::Mt;
+double constants::Mb;
+double constants::mbpole;
+double constants::vev;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -34,7 +43,7 @@ const int scale0 = constants::MH + constants::MW;
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-// q-qbar partonic channel
+// d-ubar partonic channel
 struct functor_delta_t  {
   unsigned long long int number_of_integration_variables = 2;
   int k;
@@ -46,7 +55,7 @@ struct functor_delta_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = delta(x, global_param.s, muf, k, global_param.pdf);
 
@@ -67,7 +76,7 @@ struct functor_PlusConst_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = PlusConst(x, global_param.s, muf, k, global_param.pdf);
 
@@ -88,7 +97,7 @@ struct functor_PlusInt1_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = PlusInt1(x, global_param.s, muf, k, global_param.pdf);
 
@@ -109,7 +118,7 @@ struct functor_PlusInt2_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = PlusInt2(x, global_param.s, muf, k, global_param.pdf);
 
@@ -129,7 +138,7 @@ struct functor_RegNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = dub_regular_nlo(x, global_param.s, muf, global_param.pdf);
 
@@ -149,7 +158,7 @@ struct functor_RegNNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = dub_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -169,7 +178,7 @@ struct functor_RegN3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = dub_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -191,7 +200,7 @@ struct functor_gubar_NLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gub_regular_nlo(x, global_param.s, muf, global_param.pdf);
 
@@ -211,7 +220,7 @@ struct functor_gubar_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gub_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -231,7 +240,7 @@ struct functor_gubar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gub_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -253,7 +262,7 @@ struct functor_gg_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gg_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -273,7 +282,7 @@ struct functor_gg_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gg_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -295,7 +304,7 @@ struct functor_gdbar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = gdb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -317,7 +326,7 @@ struct functor_cubar_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = cub_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -337,7 +346,7 @@ struct functor_cubar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = cub_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -359,7 +368,7 @@ struct functor_qqbar_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qqb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -379,7 +388,7 @@ struct functor_qqbar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qqb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -401,7 +410,7 @@ struct functor_qq_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qq_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -421,7 +430,7 @@ struct functor_qq_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qq_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -443,7 +452,7 @@ struct functor_qqprime_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qqprime_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -463,7 +472,7 @@ struct functor_qqprime_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qqprime_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -485,7 +494,7 @@ struct functor_qbarqprimebar_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qbqprimeb_regular_nnlo(x, global_param.s, muf, global_param.pdf);
 
@@ -505,7 +514,7 @@ struct functor_qbarqprimebar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand = qbqprimeb_regular_n3lo(x, global_param.s, muf, global_param.pdf);
 
@@ -527,7 +536,7 @@ struct functor_ubarcbar_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand =
       ubcb_regular_nnlo(x, global_param.s, muf, global_param.pdf) +
@@ -549,7 +558,7 @@ struct functor_ubarcbar_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     x[2] = y[2];
-    muf = global_param.xmuf*scale0;
+    muf = global_param.xmuf*global_param.scale0;
 
     integrand =
       ubcb_regular_n3lo(x, global_param.s, muf, global_param.pdf) +
@@ -589,7 +598,8 @@ int main(int argc, char **argv) {
       std::cout << "j:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_F" << std::endl;
       return 0;
     }
-  if(argc < 10)
+  //  if(argc < 10)
+  if(argc < 17)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -625,6 +635,16 @@ int main(int argc, char **argv) {
       const int setimem = atoi(argv[9]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
+
+      constants::MW     = atof(argv[10]);
+      constants::MZ     = atof(argv[11]);
+      constants::MH     = atof(argv[12]);
+      constants::Mt     = atof(argv[13]);
+      constants::Mb     = atof(argv[14]);
+      constants::mbpole = atof(argv[15]);
+      constants::vev    = atof(argv[16]);
+      double scale0     = constants::MH + constants::MW;
+      global_param.scale0  = scale0;
       
       // init parameters for all functors
       
@@ -811,7 +831,8 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
+      //      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
+      if(argc>=18 && std::strcmp(argv[17],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);

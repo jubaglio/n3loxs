@@ -27,13 +27,21 @@ struct {
 #include "pdfpar_w.h"
 struct parampdf_struc parampdf;
 
+double constants::MW;
+double constants::MZ;
+double constants::MH;
+double constants::Mt;
+double constants::Mb;
+double constants::mbpole;
+double constants::vev;
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 // Functors for the integration
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-// q-qbar partonic channel
+// d-ubar partonic channel
 struct functor_delta_t  {
   unsigned long long int number_of_integration_variables = 1;
   int k;
@@ -614,7 +622,8 @@ int main(int argc, char **argv) {
       std::cout << "k:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_F" << std::endl;
       return 0;
     }
-  if(argc < 11)
+  //  if(argc < 11)
+  if(argc < 18)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -651,6 +660,14 @@ int main(int argc, char **argv) {
       const int setimem = atoi(argv[10]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
+
+      constants::MW     = atof(argv[11]);
+      constants::MZ     = atof(argv[12]);
+      constants::MH     = atof(argv[13]);
+      constants::Mt     = atof(argv[14]);
+      constants::Mb     = atof(argv[15]);
+      constants::mbpole = atof(argv[16]);
+      constants::vev    = atof(argv[17]);
 
       // init parameters for all functors
       global_param.s       = s;
@@ -839,7 +856,8 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=12 && std::strcmp(argv[11],"--scale") == 0)
+      //      if(argc>=12 && std::strcmp(argv[11],"--scale") == 0)
+      if(argc>=19 && std::strcmp(argv[18],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);

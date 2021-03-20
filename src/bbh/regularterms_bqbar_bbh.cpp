@@ -16,7 +16,7 @@ Regular hard terms for the process b qbar --> b qbar H up to N3LO QCD
 
 static const double eps = 1.e-12;
 
-static const double MH2 = constants::MH*constants::MH;
+//static const double MH2 = constants::MH*constants::MH;
 
 // NNLO b-qbar regular term
 double bqb_regular_nnlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
@@ -28,6 +28,7 @@ double bqb_regular_nnlo(const double X[], const double s, const double muf, LHAP
   double res;
   double muf2;
   double log1,log2;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -892,6 +893,7 @@ double bqb_regular_n3lo(const double X[], const double s, const double muf, LHAP
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;

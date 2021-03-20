@@ -18,7 +18,6 @@ Based on arXiv:hep-ph/0302135 and arXiv:1802.00833
 
 static const double eps = 1.e-12;
 
-static const double MH2 = constants::MH*constants::MH;
 
 // NNLO q1-q2 regular term
 double q1q2_regular_nnlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
@@ -30,6 +29,7 @@ double q1q2_regular_nnlo(const double X[], const double s, const double muf, LHA
   double res;
   double muf2;
   double log1,log2;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -484,6 +484,7 @@ double q1q2_regular_n3lo(const double X[], const double s, const double muf, LHA
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;

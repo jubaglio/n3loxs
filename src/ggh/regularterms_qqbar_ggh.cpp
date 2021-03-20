@@ -18,8 +18,6 @@ Based on arXiv:hep-ph/0302135 and arXiv:1802.00833
 
 static const double eps = 1.e-12;
 
-static const double MH2 = constants::MH*constants::MH;
-
 
 // NLO q-qbar regular term
 double qqb_regular_nlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
@@ -29,6 +27,7 @@ double qqb_regular_nlo(const double X[], const double s, const double muf, LHAPD
   double fac;
   double res;
   double muf2;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -59,6 +58,7 @@ double qqb_regular_nnlo(const double X[], const double s, const double muf, LHAP
   double res;
   double muf2;
   double log1,log2;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -613,6 +613,7 @@ double qqb_regular_n3lo(const double X[], const double s, const double muf, LHAP
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;

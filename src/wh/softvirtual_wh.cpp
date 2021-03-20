@@ -16,7 +16,7 @@ Soft+Virtual contributions for the DY process D Ubar -> W- -> l- ~nu_l up to N3L
 
 static const double eps = 1.e-8;
 
-static const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
+//static const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
 // Virtual delta(z) contribution up to N3LO
 double delta(const double X[], const double s, const double muf, const int k, LHAPDF::PDF const* const pdf)
@@ -31,6 +31,7 @@ double delta(const double X[], const double s, const double muf, const int k, LH
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = muf*muf;
 
@@ -121,6 +122,7 @@ double PlusConst(const double X[], const double s, const double muf, const int k
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = muf*muf;
 
@@ -214,6 +216,7 @@ double PlusInt1(const double X[], const double s, const double muf, const int k,
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = muf*muf;
 
@@ -310,6 +313,7 @@ double PlusInt2(const double X[], const double s, const double muf, const int k,
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = muf*muf;
 

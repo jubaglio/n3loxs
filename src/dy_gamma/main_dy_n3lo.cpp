@@ -27,6 +27,14 @@ struct {
 #include "pdfpar.h"
 struct parampdf_struc parampdf;
 
+double constants::MW;
+double constants::MZ;
+double constants::MH;
+double constants::Mt;
+double constants::Mb;
+double constants::mbpole;
+double constants::vev;
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 // Functors for the integration
@@ -462,7 +470,8 @@ int main(int argc, char **argv) {
       std::cout << "j:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
       return 0;
     }
-  if(argc < 10)
+  //  if(argc < 10)
+  if(argc < 17)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -496,6 +505,14 @@ int main(int argc, char **argv) {
       const int setimem = atoi(argv[9]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
+
+      constants::MW     = atof(argv[10]);
+      constants::MZ     = atof(argv[11]);
+      constants::MH     = atof(argv[12]);
+      constants::Mt     = atof(argv[13]);
+      constants::Mb     = atof(argv[14]);
+      constants::mbpole = atof(argv[15]);
+      constants::vev    = atof(argv[16]);
 
       // init parameters for all functors      
       global_param_gamma.s       = s;
@@ -669,7 +686,8 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
+      //      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
+      if(argc>=18 && std::strcmp(argv[17],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);

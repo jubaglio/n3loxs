@@ -16,7 +16,8 @@ Soft+Virtual contributions for the bbH production process up to N3LO QCD
 
 static const double eps = 1.e-12;
 
-static const double MH2 = constants::MH*constants::MH;
+//static const double MH2 = constants::MH*constants::MH;
+
 
 // Virtual delta(z) contribution up to N3LO
 double delta_bbh(const double X[], const double s, const double muf, const int k, LHAPDF::PDF const* const pdf)
@@ -32,6 +33,7 @@ double delta_bbh(const double X[], const double s, const double muf, const int k
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -109,6 +111,7 @@ double PlusConst_bbh(const double X[], const double s, const double muf, const i
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -190,6 +193,7 @@ double PlusInt1_bbh(const double X[], const double s, const double muf, const in
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;
@@ -274,6 +278,7 @@ double PlusInt2_bbh(const double X[], const double s, const double muf, const in
   double res;
   double muf2;
   double log1,log2,log3;
+  const double MH2 = constants::MH*constants::MH;
 
   tau = MH2/s;
   muf2 = muf*muf;

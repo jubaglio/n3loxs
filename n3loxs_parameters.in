@@ -13,9 +13,26 @@ order = 3
 collider = 0
 energy   = 13.0
 
-# Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW); for bbH process, mu_F = xmuf*(MH+2*mb_pole)/4; for ggH process, mu_F = xmuf*MH/2
+# Invariant lepton-mass Q in GeV (Drell-Yan channels)
 Q    = 100.0
+
+# Choice of factorization scale so that:
+#   mu_F = xmuf*Q for Drell-Yan channels
+#   mu_F = xmuf*(MH+MW) for the WH channels
+#   mu_F = mu_F = xmuf*(MH+2*mb_pole)/4 for the bbH channel
+#   mu_F = xmuf*MH/2 for the ggH channel
 xmuf = 1.0
+
+# Mass parameters (in GeV):
+#   W boson mass, Z boson mass, Higgs boson mass, top-quark pole mass,
+#   bottom-quark pole mass, bottom-quark MSbar mass, vacuum expectation value
+MW     = 80.398
+MZ     = 91.1876
+MH     = 125.09
+Mt     = 172.5
+Mb     = 4.58
+mb(mb) = 4.18
+vev    = 246.221
 
 
 ### Only for the charged (W) channel: ###

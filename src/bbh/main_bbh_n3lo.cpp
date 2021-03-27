@@ -21,23 +21,24 @@ struct {
   double s;
   double xmuf;
   double scalemuF0;
-  double scalemuR0;
   const LHAPDF::PDF* pdf;
 } global_param;
 
 #include "pdfpar.h"
 struct parampdf_struc parampdf;
 
-//const double scalemuF0 = (constants::MH + 2*constants::mbpole)/4.0;
+//const double scalemuF0 = (constants::MH + 2*constants::Mbpole)/4.0;
 //const double scalemuR0 = constants::MH;
 
 double constants::MW;
 double constants::MZ;
 double constants::MH;
-double constants::Mt;
 double constants::Mb;
-double constants::mbpole;
+double constants::Mt;
+double constants::Mbmb;
+
 double constants::vev;
+double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -479,20 +480,29 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h (i) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q r (s) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
-      std::cout << "f:  x_muf so that mu_F = x_muf*M_H (double)" << std::endl;
-      std::cout << "g:  PDF set (string)" << std::endl;
-      std::cout << "h:  PDF member (integer)" << std::endl;
-      std::cout << "i:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_H" << std::endl;
+      std::cout << "f:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
+      std::cout << "g:  mu_F0: custom value for the central factorization scale (double)" << std::endl;
+      std::cout << "h:  x_mur so that mu_R = x_muf*mu_R0 (double)" << std::endl;
+      std::cout << "i:  mu_R0: custom value for the central renormalization scale (double)" << std::endl;
+      std::cout << "j:  mu_F0 integer flag: (0) for the default value (MH + Mb)/4, (1) for the custom value mu_F0" << std::endl;
+      std::cout << "k:  mu_R0 integer flag: (0) for the default value MH, (1) for the custom value mu_R0" << std::endl;
+      std::cout << "l:  PDF set (string)" << std::endl;
+      std::cout << "m:  PDF member (integer)" << std::endl;
+      std::cout << "n:  Z mass in GeV (double)" << std::endl;
+      std::cout << "o:  Higgs mass in GeV (double)" << std::endl;
+      std::cout << "p:  Bottom-quark pole mass in GeV (double)" << std::endl;
+      std::cout << "q:  Bottom-quark MSbar mass mb(mb) in GeV (double)" << std::endl;
+      std::cout << "r:  Vacuum expectation value in GeV (double)" << std::endl;
+      std::cout << "s:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_H" << std::endl;
       return 0;
     }
-  //  if(argc < 9)
-  if(argc < 16)
+  if(argc < 19)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -520,23 +530,44 @@ int main(int argc, char **argv) {
       s = energy*energy*1.e6;
       double xmuf = atof(argv[6]);
 
+      // new:
+      double muf0 = atof(argv[7]);
+      double xmur = atof(argv[8]);
+      double mur0 = atof(argv[9]);
+      double muf_flag = atoi(argv[10]);
+      double mur_flag = atoi(argv[11]);
+      double scalemuF0;
+      double scalemuR0;
+      // end new
+
       // init PDF set
-      const std::string setname = argv[7];
-      const int setimem = atoi(argv[8]);
+      const std::string setname = argv[12];
+      const int setimem = atoi(argv[13]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
-      constants::MW     = atof(argv[9]);
-      constants::MZ     = atof(argv[10]);
-      constants::MH     = atof(argv[11]);
-      constants::Mt     = atof(argv[12]);
-      constants::Mb     = atof(argv[13]);
-      constants::mbpole = atof(argv[14]);
-      constants::vev    = atof(argv[15]);
-      double scalemuF0  = (constants::MH + 2*constants::mbpole)/4.0;
-      double scalemuR0  = constants::MH;
+      constants::MZ     = atof(argv[14]);
+      constants::MH     = atof(argv[15]);
+      constants::Mb     = atof(argv[16]);
+      constants::Mbmb   = atof(argv[17]);
+      constants::vev    = atof(argv[18]);
+      if(muf_flag == 0)
+	{
+	  scalemuF0     = (constants::MH + 2*constants::Mb)/4.0;
+	}
+      else
+	{
+	  scalemuF0     = muf0;
+	}
+      if(mur_flag == 0)
+	{
+	  scalemuR0     = constants::MH;
+	}
+      else
+	{
+	  scalemuR0     = mur0;
+	}
       global_param.scalemuF0  = scalemuF0;
-      global_param.scalemuR0  = scalemuR0;
 
       // init parameters for all functors
       global_param.s       = s;
@@ -683,7 +714,6 @@ int main(int argc, char **argv) {
 
       double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
-      double xmur;
       double mur;
       double mur2;
 
@@ -716,8 +746,7 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      //      if(argc>=10 && std::strcmp(argv[9],"--scale") == 0)
-      if(argc>=17 && std::strcmp(argv[16],"--scale") == 0)
+      if(argc>=20 && std::strcmp(argv[19],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);
@@ -729,12 +758,26 @@ int main(int argc, char **argv) {
 
       if(collider==0)
 	{
-	  filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	  if(imax==1)
+	    {
+	      filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	    }
+	  else
+	    {
+	      filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	    }
 	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-p collider";
 	}
       else
 	{
-	  filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	  if(imax==1)
+	    {
+	      filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	    }
+	  else
+	    {
+	      filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	    }
 	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-pbar collider";
 	}
 
@@ -745,32 +788,153 @@ int main(int argc, char **argv) {
       switch(qcdorder)
 	{
 	case 0:
-	  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-	     << " TeV, central factorization scale muF0 = (MH+2*mb)/4, renormalization scale muR0 = MH\n# mu_R/muR0\t" << "mu_F/muF0\t" << "xs_LO (pb)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
+		     << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
+		}
+	    }
 	  break;
 	case 1:
-	  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-	     << " TeV, central factorization scale muF0 = (MH+2*mb)/4, renormalization scale muR0 = MH\n# mu_R/muR0\t" << "mu_F/muF0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
+		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
+		}
+	    }
 	  break;
 	case 2:
-	  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-	     << " TeV, central factorization scale muF0 = (MH+2*mb)/4, renormalization scale muR0 = MH\n# mu_R/muR0\t" << "mu_F/muF0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
-	     << "xs_NNLO (pb)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
+		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
+		}
+	    }
 	  break;
 	case 3:
-	  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-	     << " TeV, central factorization scale muF0 = (MH+2*mb)/4, renormalization scale muR0 = MH\n# mu_R/muR0\t" << "mu_F/muF0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
-	     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
+		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t"
+		     << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "xs_N3LO (pb)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << "xs_N3LO (pb)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t"
+		     << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << "xs_N3LO (pb)" << std::endl;
+		}
+	    }
 	  break;
 	}
       
       for(int i = 0; i<imax; i++)
 	{
-	  if(imax==1)
+	  /*	  if(imax==1)
 	    {
 	      xmur = xmuf;
 	    }
-	  else
+	    else*/
+	  if(imax!=1)
 	    {
 	      xmur = 0.5 + i*dxmur;
 	    }
@@ -783,8 +947,8 @@ int main(int argc, char **argv) {
 
 	  // alphaS(mur) and a mb(mur) at LO
 	  asopi   = as_n3loxs(mur, 0, asopimz);
-	  asmbopi = as_n3loxs(constants::Mb, 0, asopimz);
-	  mbatmur = mb_n3loxs(mur, 0, constants::Mb, constants::Mb, asmbopi);
+	  asmbopi = as_n3loxs(constants::Mbmb, 0, asopimz);
+	  mbatmur = mb_n3loxs(mur, 0, constants::Mbmb, constants::Mbmb, asmbopi);
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -801,8 +965,8 @@ int main(int argc, char **argv) {
       	{
 	  // alphaS(mur) and a mb(mur) at NLO
 	  asopi   = as_n3loxs(mur, 1, asopimz);
-	  asmbopi = as_n3loxs(constants::Mb, 1, asopimz);
-	  mbatmur = mb_n3loxs(mur, 1, constants::Mb, constants::Mb, asmbopi);
+	  asmbopi = as_n3loxs(constants::Mbmb, 1, asopimz);
+	  mbatmur = mb_n3loxs(mur, 1, constants::Mbmb, constants::Mbmb, asmbopi);
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -830,8 +994,8 @@ int main(int argc, char **argv) {
       	{
 	  // alphaS(mur) and a mb(mur) at NNLO
 	  asopi   = as_n3loxs(mur, 2, asopimz);
-	  asmbopi = as_n3loxs(constants::Mb, 2, asopimz);
-	  mbatmur = mb_n3loxs(mur, 2, constants::Mb, constants::Mb, asmbopi);
+	  asmbopi = as_n3loxs(constants::Mbmb, 2, asopimz);
+	  mbatmur = mb_n3loxs(mur, 2, constants::Mbmb, constants::Mbmb, asmbopi);
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -870,8 +1034,8 @@ int main(int argc, char **argv) {
       	{
 	  // alphaS(mur) and a mb(mur) at N3LO
 	  asopi   = as_n3loxs(mur, 3, asopimz);
-	  asmbopi = as_n3loxs(constants::Mb, 3, asopimz);
-	  mbatmur = mb_n3loxs(mur, 3, constants::Mb, constants::Mb, asmbopi);
+	  asmbopi = as_n3loxs(constants::Mbmb, 3, asopimz);
+	  mbatmur = mb_n3loxs(mur, 3, constants::Mbmb, constants::Mbmb, asmbopi);
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);

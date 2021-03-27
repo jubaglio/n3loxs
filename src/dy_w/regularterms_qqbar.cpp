@@ -15,7 +15,6 @@ Regular hard terms kernels for the DY process U Ubar / D Dbar -> W- -> l- ~nu_l 
 // NNLO q-qbar regular term
 std::pair<double, double> qqb_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2;
   double res1,res2;
@@ -1179,7 +1178,6 @@ std::pair<double, double> qqb_regular_kernel_nnlo(const double x1, const double 
 // N3LO q-qbar regular term
 std::pair<double, double> qqb_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2,log3;
   double res1,res2;

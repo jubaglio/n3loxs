@@ -903,7 +903,7 @@ double ubcb_regular_nnlo(const double X[], const double s, const double muf, LHA
   double fac;
   double res;
   double muf2;
-  double log1,log2;
+  double log1;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = pow(muf,2);
@@ -940,7 +940,7 @@ double ubcb_regular_n3lo(const double X[], const double s, const double muf, LHA
   double fac;
   double res;
   double muf2;
-  double log1,log2;
+  double log1;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
   muf2 = pow(muf,2);

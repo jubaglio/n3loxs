@@ -15,7 +15,6 @@ Regular hard terms kernels for the DY process U D -> W- -> l- ~nu_l U U up to N3
 // NNLO u-d regular term
 std::pair<double, double> qqprime_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2;
   double res1,res2;
@@ -1581,7 +1580,6 @@ std::pair<double, double> qqprime_regular_kernel_nnlo(const double x1, const dou
 // N3LO u-d regular term
 std::pair<double, double> qqprime_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2,log3;
   double res1,res2;

@@ -15,7 +15,6 @@ Regular N3LO QCD hard terms kernel for the DY processes g Dbar -> W- -> l- nu_l 
 // N3LO g-dbar + dbar-g regular term
 std::pair<double, double> gdb_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2,log3;
   double res1, res2;

@@ -21,6 +21,7 @@ struct {
   double s;
   double Q;
   double xmuf;
+  double scalemuF0;
   const LHAPDF::PDF* pdf;
 } global_param_gamma;
 
@@ -30,10 +31,12 @@ struct parampdf_struc parampdf;
 double constants::MW;
 double constants::MZ;
 double constants::MH;
-double constants::Mt;
 double constants::Mb;
-double constants::mbpole;
+double constants::Mt;
+double constants::Mbmb;
+
 double constants::vev;
+double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -54,7 +57,7 @@ struct functor_delta_t  {
 
     x[0] = y[0];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = delta(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
 
@@ -76,7 +79,7 @@ struct functor_PlusConst_t  {
 
     x[0] = y[0];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = PlusConst(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
 
@@ -98,7 +101,7 @@ struct functor_PlusInt1_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = PlusInt1(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
 
@@ -120,7 +123,7 @@ struct functor_PlusInt2_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = PlusInt2(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
 
@@ -141,7 +144,7 @@ struct functor_RegNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = qqb_regular_nlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -162,7 +165,7 @@ struct functor_RegNNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = qqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -183,7 +186,7 @@ struct functor_RegN3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = qqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -206,7 +209,7 @@ struct functor_gq_NLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = gq_regular_nlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -227,7 +230,7 @@ struct functor_gq_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = gq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -248,7 +251,7 @@ struct functor_gq_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = gq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -271,7 +274,7 @@ struct functor_gg_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = gg_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -292,7 +295,7 @@ struct functor_gg_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = gg_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -315,7 +318,7 @@ struct functor_qq_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = qq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -336,7 +339,7 @@ struct functor_qq_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand = qq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
 
@@ -359,7 +362,7 @@ struct functor_qQq_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand =
       qQq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
@@ -382,7 +385,7 @@ struct functor_qQq_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand =
       qQq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
@@ -407,7 +410,7 @@ struct functor_qQqb_NNLO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand =
       qQqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
@@ -430,7 +433,7 @@ struct functor_qQqb_N3LO_t  {
     x[0] = y[0];
     x[1] = y[1];
     Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.Q;
+    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
 
     integrand =
       qQqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
@@ -457,20 +460,26 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i (j) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p (q) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  Invariant lepton-mass Q in GeV (double)" << std::endl;
-      std::cout << "g:  x_muf so that mu_F = x_muf*Q (double)" << std::endl;
-      std::cout << "h:  PDF set (string)" << std::endl;
-      std::cout << "i:  PDF member (integer)" << std::endl;
-      std::cout << "j:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
+      std::cout << "g:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
+      std::cout << "h:  mu_F0: custom value for the central factorization scale (double)" << std::endl;
+      std::cout << "i:  x_mur so that mu_R = x_muf*mu_R0 (double)" << std::endl;
+      std::cout << "j:  mu_R0: custom value for the central renormalization scale (double)" << std::endl;
+      std::cout << "k:  mu_F0 integer flag: (0) for the default value Q, (1) for the custom value mu_F0" << std::endl;
+      std::cout << "l:  mu_R0 integer flag: (0) for the default value Q, (1) for the custom value mu_R0" << std::endl;
+      std::cout << "m:  PDF set (string)" << std::endl;
+      std::cout << "n:  PDF member (integer)" << std::endl;
+      std::cout << "o:  Z mass in GeV (double)" << std::endl;
+      std::cout << "p:  1/alpha(0) fine structure constant (double)" << std::endl;
+      std::cout << "q:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
       return 0;
     }
-  //  if(argc < 10)
   if(argc < 17)
     {
       printf("\nNot enough arguments, program will stop!!\n");
@@ -500,19 +509,41 @@ int main(int argc, char **argv) {
       double Q    = atof(argv[6]);
       double xmuf = atof(argv[7]);
 
+      // new:
+      double muf0 = atof(argv[8]);
+      double xmur = atof(argv[9]);
+      double mur0 = atof(argv[10]);
+      double muf_flag = atoi(argv[11]);
+      double mur_flag = atoi(argv[12]);
+      double scalemuF0;
+      double scalemuR0;
+      // end new
+
       // init PDF set
-      const std::string setname = argv[8];
-      const int setimem = atoi(argv[9]);
+      const std::string setname = argv[13];
+      const int setimem = atoi(argv[14]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
-      constants::MW     = atof(argv[10]);
-      constants::MZ     = atof(argv[11]);
-      constants::MH     = atof(argv[12]);
-      constants::Mt     = atof(argv[13]);
-      constants::Mb     = atof(argv[14]);
-      constants::mbpole = atof(argv[15]);
-      constants::vev    = atof(argv[16]);
+      constants::MZ       = atof(argv[15]);
+      constants::alphainv = atof(argv[16]);
+      if(muf_flag == 0)
+	{
+	  scalemuF0     = Q;
+	}
+      else
+	{
+	  scalemuF0     = muf0;
+	}
+      if(mur_flag == 0)
+	{
+	  scalemuR0     = Q;
+	}
+      else
+	{
+	  scalemuR0     = mur0;
+	}
+      global_param_gamma.scalemuF0  = scalemuF0;
 
       // init parameters for all functors      
       global_param_gamma.s       = s;
@@ -651,11 +682,11 @@ int main(int argc, char **argv) {
       // To obtain the differential cross section Q^2*dxs/dQ^2 including gamma* -> l+ l-: [result of this code] * e^2/(12*Pi^2)
 
       double BornDY;
-      BornDY = constants::gevtopb*constants::Pi*constants::ee2/(constants::Nc*Q*Q);
+      double ee2 = 4.0*constants::Pi/constants::alphainv;
+      BornDY = constants::gevtopb*constants::Pi*ee2/(constants::Nc*Q*Q);
       
       double muf  = xmuf*Q;
       double muf2 = muf*muf;
-      double xmur;
       double mur;
       double mur2;
 
@@ -686,7 +717,6 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      //      if(argc>=11 && std::strcmp(argv[10],"--scale") == 0)
       if(argc>=18 && std::strcmp(argv[17],"--scale") == 0)
 	{
 	  imax = 16;
@@ -699,12 +729,26 @@ int main(int argc, char **argv) {
 
       if(collider==0)
 	{
-	  filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	  if(imax==1)
+	    {
+	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	    }
+	  else
+	    {
+	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	    }
 	  header = "# Drell-Yan cross section xs(p p -> gamma*) at a given photon virtuality Q = ";
 	}
       else
 	{
-	  filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	  if(imax==1)
+	    {
+	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	    }
+	  else
+	    {
+	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	    }
 	  header = "# Drell-Yan cross section xs(p pbar -> gamma*) at a given photon virtuality Q = ";
 	}
 
@@ -714,36 +758,158 @@ int main(int argc, char **argv) {
       switch(qcdorder)
 	{
 	case 0:
-	  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
-	     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = Q, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = Q\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale muR0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
 	  break;
 	case 1:
-	  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
-	     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = Q, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = Q\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale muR0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
 	  break;
 	case 2:
-	  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
-	     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
-	     << "dxs_NNLO/dQ (pb/GeV)\t" << "num error (respective xs)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = Q, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = Q\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale muR0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
 	  break;
 	case 3:
-	  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
-	     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
-	     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  if(muf_flag == 0)
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV\n# mu_R/Q\t" << "mu_F/Q\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = Q, renormalization scale mu_R0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
+	  else
+	    {
+	      if(mur_flag == 0)
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale mu_R0 = Q\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
+		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t"
+		     << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	      else
+		{
+		  fa << header << std::fixed << std::setprecision(2) << Q << " GeV, sqrt(S) = " << energy
+		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
+		     << " GeV, renormalization scale muR0 = " << scalemuR0
+		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
+		     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+		}
+	    }
 	  break;
 	}
       
       for(int i = 0; i<imax; i++)
 	{
-	  if(imax==1)
+	  /*	  if(imax==1)
 	    {
 	      xmur = xmuf;
 	    }
-	  else
+	    else*/
+	  if(imax!=1)
 	    {
 	      xmur = 0.5 + i*dxmur;
 	    }
-	  mur  = xmur*Q;
+	  mur  = xmur*scalemuR0;
 	  mur2 = mur*mur;
 
       if(qcdorder>=0)
@@ -752,7 +918,7 @@ int main(int argc, char **argv) {
       	  xslo_error  = BornDY*qqb_lo_error;
 	  if(qcdorder==0)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/Q) << "\t" << (muf/Q) << "\t"
+	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << std::scientific << xslo_error << std::endl;
 	    }
       	}
@@ -767,7 +933,7 @@ int main(int argc, char **argv) {
 
 	  if(qcdorder==1)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/Q) << "\t" << (muf/Q) << "\t"
+	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << xsnlo_result
 		 << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << std::endl;
 	    }
@@ -798,7 +964,7 @@ int main(int argc, char **argv) {
 
 	  if(qcdorder==2)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/Q) << "\t" << (muf/Q) << "\t"
+	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << xsnlo_result << "\t" << xsnnlo_result
 		 << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << "\t" << xsnnlo_error << std::endl;
 	    }
@@ -841,7 +1007,7 @@ int main(int argc, char **argv) {
       			  pow(result_qq_NNLO.error,2) + pow(result_qQq_NNLO.error,2) + pow(result_qQqb_NNLO.error,2)))
       	     );
 
-	  fa << std::fixed << std::setprecision(3) << (mur/Q) << "\t" << (muf/Q) << "\t"
+	  fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
 	     << std::setprecision(18) << xslo_result << "\t" << xsnlo_result << "\t" << xsnnlo_result << "\t" << xsn3lo_result
 	     << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << "\t" << xsnnlo_error << "\t" << xsn3lo_error << std::endl;
       	}

@@ -1069,7 +1069,6 @@ double gub_regular_kernel_nnlo(const double x1, const double log1)
 // N3LO g-ub + d-g regular term
 std::pair<double, double> gub_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double res;
   double w, zb;
   double log2,log3;
   double res1, res2;

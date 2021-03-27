@@ -27,7 +27,6 @@ double delta_bbh(const double X[], const double s, const double muf, const int k
 ********************************************************************* */
   double tau;
   double delterms;
-  double udeltermsn3lo,ddeltermsn3lo;
   double z;
   double fac;
   double res;

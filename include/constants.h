@@ -23,18 +23,19 @@ namespace constants
   extern double MH;     // H pole mass
   extern double MW;     // W pole mass
   extern double MZ;     // Z pole mass
-  extern double Mb;     // bottom-quark MSbar mass
-  extern double Mt;     // top-quark pole mass
-  extern double mbpole; // bottom-quark pole mass
-    
+  extern double Mb;     // bottom-quark pole mass
+  extern double Mt;     // top-quark pole mass or MSbar mass mt(mt) (depending on the scheme)
+  extern double Mbmb;   // bottom-quark MSbar mass mb(mb)
+
   // Coupling parameters:
 
-  // alpha(MZ) via vev,MW,MZ:
   extern double vev;
+  // alpha(MZ) via vev,MW,MZ:
   //const double ee2 = (1.0-MW*MW/(MZ*MZ))*4*MW*MW/(vev*vev);
 
   // alpha(0):
-  const double ee2 = 4.0*constants::Pi/137.035999139;
+  extern double alphainv; // 1/alpha(0) fine-structure constant
+  // double ee2 = 4.0*constants::Pi/137.035999139;
 
   // QCD parameters:
   const double Nc = 3;

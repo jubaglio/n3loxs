@@ -217,7 +217,7 @@ echo "\t  Bottom-quark MSbar mass mb(mb):       $mbmb GeV"
 echo "\t  Vacuum expectation value vev:         $vev GeV"
 echo "\t  1/alpha EM constant:                  $alphainv"
 
-if [ $type -lt 3 ]
+if [ $type -lt 4 ]
 then
     echo "\t  Off-shell Q-value Q = ${q} GeV"
 fi
@@ -490,7 +490,7 @@ then
     energy2=$(echo $energy | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
     if [ $collider -eq 0 ]
     then
-	if [ $type -lt 3 ]
+	if [ $type -lt 4 ]
 	then
 	    q2=$(echo $q | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
 	    filetest1=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf1.txt
@@ -502,7 +502,7 @@ then
 	    filetest2=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf2.txt
 	fi
     else
-	if [ $type -lt 3 ]
+	if [ $type -lt 4 ]
 	then
 	    q2=$(echo $q | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
 	    filetest1=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf1.txt
@@ -777,23 +777,24 @@ then
 	fi
     fi
 else
+    q2=$(echo $q | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
     energy2=$(echo $energy | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
     xmuf2=$(echo $xmuf | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
-    xmuf3=$(echo "$xmuf" | cut -c1-5)
+    xmuf3=$(LC_ALL=en_US.utf-8 awk -v r=$xmuf 'BEGIN{printf "%.3f",r}')
     if [ -z ${scale} ]
     then
 	xmur2=$(echo $xmur | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
-	xmur3=$(echo "$xmur" | cut -c1-5)
+	xmur3=$(LC_ALL=en_US.utf-8 awk -v r=$xmur 'BEGIN{printf "%.3f",r}')
 	if [ $collider -eq 0 ]
 	then
-	    if [ $type -lt 3 ]
+	    if [ $type -lt 4 ]
 	    then
 		fileoutput=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf${xmuf2}_mur${xmur2}.txt
 	    else
 		fileoutput=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf${xmuf2}_mur${xmur2}.txt
 	    fi
 	else
-	    if [ $type -lt 3 ]
+	    if [ $type -lt 4 ]
 	    then
 		fileoutput=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf${xmuf2}_mur${xmur2}.txt
 	    else
@@ -803,14 +804,14 @@ else
     else
 	if [ $collider -eq 0 ]
 	then
-	    if [ $type -lt 3 ]
+	    if [ $type -lt 4 ]
 	    then
 		fileoutput=${proctag}_pp_${energy2}tev_q${q2}_pdf${pdfnum}_muf${xmuf2}.txt
 	    else
 		fileoutput=${proctag}_pp_${energy2}tev_pdf${pdfnum}_muf${xmuf2}.txt
 	    fi
 	else
-	    if [ $type -lt 3 ]
+	    if [ $type -lt 4 ]
 	    then
 		fileoutput=${proctag}_ppbar_${energy2}tev_q${q2}_pdf${pdfnum}_muf${xmuf2}.txt
 	    else
@@ -821,8 +822,8 @@ else
     let lotag="4+$qcd"
     if [ -z ${scale} ]
     then
-	central_lo="$(cut -d ' ' -f 3 <<< $(grep "${xmur3}" ${fileoutput}))"
-	error_lo="$(cut -d ' ' -f $lotag <<< $(grep "${xmur3}" ${fileoutput}))"
+	central_lo="$(cut -d ' ' -f 3 <<< $(grep "${xmur3}\t" ${fileoutput}))"
+	error_lo="$(cut -d ' ' -f $lotag <<< $(grep "${xmur3}\t" ${fileoutput}))"
 	echo "\nxs_LO(xmur=$xmur,xmuf=$xmuf)    = $central_lo +- $error_lo (num) pb"
     else
 	central_lo="$(cut -d ' ' -f 3 <<< $(grep "1.000\t${xmuf3}" ${fileoutput}))"
@@ -834,8 +835,8 @@ else
 	let nlotag="5+$qcd"
 	if [ -z ${scale} ]
 	then
-	    central_nlo="$(cut -d ' ' -f 4 <<< $(grep "${xmur3}" ${fileoutput}))"
-	    error_nlo="$(cut -d ' ' -f $nlotag <<< $(grep "${xmur3}" ${fileoutput}))"
+	    central_nlo="$(cut -d ' ' -f 4 <<< $(grep "${xmur3}\t" ${fileoutput}))"
+	    error_nlo="$(cut -d ' ' -f $nlotag <<< $(grep "${xmur3}\t" ${fileoutput}))"
 	    echo "xs_NLO(xmur=$xmur,xmuf=$xmuf)   = $central_nlo +- $error_nlo (num) pb"
 	else
 	    central_nlo="$(cut -d ' ' -f 4 <<< $(grep "1.000\t${xmuf3}" ${fileoutput}))"
@@ -847,8 +848,8 @@ else
 	    let nnlotag="6+$qcd"
 	    if [ -z ${scale} ]
 	    then
-		central_nnlo="$(cut -d ' ' -f 5 <<< $(grep "${xmur3}" ${fileoutput}))"
-		error_nnlo="$(cut -d ' ' -f $nnlotag <<< $(grep "${xmur3}" ${fileoutput}))"
+		central_nnlo="$(cut -d ' ' -f 5 <<< $(grep "${xmur3}\t" ${fileoutput}))"
+		error_nnlo="$(cut -d ' ' -f $nnlotag <<< $(grep "${xmur3}\t" ${fileoutput}))"
 		echo "xs_NNLO(xmur=$xmur,xmuf=$xmuf)  = $central_nnlo +- $error_nnlo (num) pb"
 	    else
 		central_nnlo="$(cut -d ' ' -f 5 <<< $(grep "1.000\t${xmuf3}" ${fileoutput}))"
@@ -859,8 +860,8 @@ else
 	    then
 		if [ -z ${scale} ]
 		then
-		    central_n3lo="$(cut -d ' ' -f 6 <<< $(grep "${xmur3}" ${fileoutput}))"
-		    error_n3lo="$(cut -d ' ' -f 10 <<< $(grep "${xmur3}" ${fileoutput}))"
+		    central_n3lo="$(cut -d ' ' -f 6 <<< $(grep "${xmur3}\t" ${fileoutput}))"
+		    error_n3lo="$(cut -d ' ' -f 10 <<< $(grep "${xmur3}\t" ${fileoutput}))"
 		    echo "xs_N3LO(xmur=$xmur,xmuf=$xmuf)  = $central_n3lo +- $error_n3lo (num) pb"
 		else
 		    central_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.000\t${xmuf3}" ${fileoutput}))"

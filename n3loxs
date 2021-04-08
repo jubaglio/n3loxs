@@ -7,9 +7,9 @@ maindir=$(pwd)
 # Parameters read from the command-line:
 #   lattice size
 #   seed for the pseudo-random-number generator 
-#   optional flag --scale or --7point; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
+#   optional flag --scale or --7point:
 #            --scale: This generates 16 predictions for various renormalization scales muR between 0.5*muR0 and 2.0*muR0
-#            --7point: This calculates the 7-point scale uncertainty of the cross section
+#            --7point: This calculates the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0
 
 default=0
 
@@ -28,9 +28,10 @@ if [ "$#" -lt 4 ]; then
 	echo "Usage: ./n3loxs -lattice a -seed b (--scale/--7point) with:"
 	echo "a: Lattice size (integer)"
 	echo "b: Seed for the pseudo-random-number generator (integer)"
-	echo "Optional flag --scale or --7point; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
-	echo "   --scale: generate 16 predictions for mu_R varied between 0.5*mu_0 and 2*mu_0, mu_0 is the central renormalization scale"
-	echo "   --7point: calculate the 7-point scale uncertainty of the cross sexction"
+	echo "Optional flag --scale or --7point:"
+	echo "   --scale: generate 16 predictions for mu_R varied between 0.5*mu_R0 and 2*mu_R0, mu_R0 is the central renormalization scale"
+	echo "   --7point: calculate the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0"
+	echo "See the input file n3loxs_parameters.in for the definition of mu_R0 and mu_F0"
 	echo ""
 	exit
     else
@@ -79,7 +80,7 @@ fi
 inputfile="./n3loxs_parameters.in";
 while read p1 p2 p3
 do
-    if [[ $p1 == "channel" && $p2 == "=" ]]
+    if [[ $p1 == "process" && $p2 == "=" ]]
     then
 	type=$p3
     elif [[ $p1 == "PDFset" && $p2 == "=" ]]
@@ -100,18 +101,12 @@ do
     elif [[ $p1 == "Q" && $p2 == "=" ]]
     then
 	q=$p3
-    elif [[ $p1 == "muf_flag" && $p2 == "=" ]]
-    then
-	muf_flag=$p3
     elif [[ $p1 == "muf0" && $p2 == "=" ]]
     then
 	muf0=$p3
     elif [[ $p1 == "xmuf" && $p2 == "=" ]]
     then
 	xmuf=$p3
-    elif [[ $p1 == "mur_flag" && $p2 == "=" ]]
-    then
-	mur_flag=$p3
     elif [[ $p1 == "mur0" && $p2 == "=" ]]
     then
 	mur0=$p3
@@ -153,9 +148,13 @@ do
     elif [[ $p1 == "mt_scheme" && $p2 == "=" ]]
     then
 	mtscheme=$p3
+    elif [[ $p1 == "htl_flag" && $p2 == "=" ]]
+    then
+	htlflag=$p3
     fi
 
 done < $inputfile
+
 
 if [ $type -eq 1 ]
 then
@@ -173,14 +172,17 @@ elif [ $type -eq 7 ]
 then
     if [ $mtscheme -eq 0 ]
     then
-	parameters="$mz $mh $mt $vev $mtscheme"
+	parameters="$mz $mh $mt $vev $mtscheme $htlflag"
     else
-	parameters="$mz $mh $mtmt $vev $mtscheme"
+	parameters="$mz $mh $mtmt $vev $mtscheme $htlflag"
     fi
 fi
 
-if [ -z ${muf0} ]; then muf0=100.0; fi
-if [ -z ${mur0} ]; then mur0=100.0; fi
+if [ -z ${muf0} ]; then muf0=-1; fi
+if [ -z ${mur0} ]; then mur0=-1; fi
+
+if [ $muf0 == "-1" ]; then muf_flag=0; else muf_flag=1; fi
+if [ $mur0 == "-1" ]; then mur_flag=0; else mur_flag=1; fi
 
 echo ""
 echo ""
@@ -219,7 +221,7 @@ echo "\t  1/alpha EM constant:                  $alphainv"
 
 if [ $type -lt 4 ]
 then
-    echo "\t  Off-shell Q-value Q = ${q} GeV"
+    echo "\n\t  Off-shell Q-value Q = ${q} GeV"
 fi
 
 
@@ -230,17 +232,24 @@ if [ $type -eq 1 ]; then
     then
 	if [ $muf_flag == 0 ]
 	then
-	    echo "\t  Factorization scale muF = $xmuf * Q\n"
+	    echo "\n\t  Factorization scale   muF = $xmuf * Q, xmuf = $xmuf"
 	else
-	    echo "\t  Factorization scale muF = $xmuf * $muf0 GeV\n"
+	    echo "\n\t  Factorization scale   muF = $xmuf * $muf0 GeV, xmuf = $xmuf"
 	fi
 	if [ -z ${scale} ]
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Renormalization scale muR = $xmur * Q\n"
+		echo "\t  Renormalization scale muR = $xmur * Q, xmur = $xmur"
 	    else
-		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV\n"
+		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV, xmur = $xmur"
+	    fi
+	else
+	    if [ $mur_flag == 0 ]
+	    then
+		echo "\t  Central renormalization scale muR0 = Q"
+	    else
+		echo "\t  Central renormalization scale muR0 = $mur0 GeV"
 	    fi
 	fi
     else
@@ -248,27 +257,27 @@ if [ $type -eq 1 ]; then
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = muR0 = Q\n"
+		echo "\n\t  Central scales muF0 = muR0 = Q"
 	    else
-		echo "\t  Central scales muF0 = Q, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = Q, muR0 = $mur0 GeV"
 	    fi
 	else
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = Q\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = Q"
 	    else
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV"
 	    fi
 	fi
     fi
-    echo "\tNow calculating for neutral Drell-Yan process...\n"
+    echo "\n\t  Now calculating for neutral Drell-Yan process...\n"
     if [ $seven -eq 0 ]
     then
-	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters $scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $muf0 $xmur $mur0 $pdfset $pdfnum $parameters $scale
     else
-	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 1.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 0.5 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 2.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 1.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 0.5 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q 2.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
     fi
 elif [[ $type -eq 2 || $type -eq 3 ]]; then
     # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
@@ -276,17 +285,24 @@ elif [[ $type -eq 2 || $type -eq 3 ]]; then
     then
 	if [ $muf_flag == 0 ]
 	then
-	    echo "\t  Factorization scale muF = $xmuf * Q\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * Q, xmuf = $xmuf"
 	else
-	    echo "\t  Factorization scale muF = $xmuf * $muf0 GeV\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * $muf0 GeV, xmuf = $xmuf"
 	fi
 	if [ -z ${scale} ]
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Renormalization scale muR = $xmur * Q\n"
+		echo "\t  Renormalization scale muR = xmur * Q, xmur = $xmur"
 	    else
-		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV\n"
+		echo "\t  Renormalization scale muR = xmur * $mur0 GeV, xmur = $xmur"
+	    fi
+	else
+	    if [ $mur_flag == 0 ]
+	    then
+		echo "\t  Central renormalization scale muR0 = Q"
+	    else
+		echo "\t  Central renormalization scale muR0 = $mur0 GeV"
 	    fi
 	fi
     else
@@ -294,36 +310,36 @@ elif [[ $type -eq 2 || $type -eq 3 ]]; then
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = muR0 = Q\n"
+		echo "\n\t  Central scales muF0 = muR0 = Q"
 	    else
-		echo "\t  Central scales muF0 = Q, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = Q, muR0 = $mur0 GeV"
 	    fi
 	else
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = Q\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = Q"
 	    else
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV"
 	    fi
 	fi
     fi
     if [ $type -eq 2 ]
     then
-	echo "\tNow calculating for charged W+ Drell-Yan process...\n"
+	echo "\n\t  Now calculating for charged W+ Drell-Yan process...\n"
 	wtype=1
 	proctag=dy_xs_wplus
     else
-	echo "\tNow calculating for charged W- Drell-Yan process...\n"
+	echo "\n\t  Now calculating for charged W- Drell-Yan process...\n"
 	wtype=-1
 	proctag=dy_xs_wminus
     fi
     if [ $seven -eq 0 ]
     then
-	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters $scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $muf0 $xmur $mur0 $pdfset $pdfnum $parameters $scale
     else
-	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 1.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 0.5 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 2.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 1.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 0.5 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype 2.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
     fi
 elif [[ $type -eq 4 || $type -eq 5 ]]; then
     # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
@@ -331,17 +347,24 @@ elif [[ $type -eq 4 || $type -eq 5 ]]; then
     then
 	if [ $muf_flag == 0 ]
 	then
-	    echo "\t  Factorization scale muF = $xmuf * (MW + MH)\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * (MW + MH), xmuf = $xmuf"
 	else
-	    echo "\t  Factorization scale muF = $xmuf * $muf0 GeV\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * $muf0 GeV, xmuf = $xmuf"
 	fi
 	if [ -z ${scale} ]
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Renormalization scale muR = $xmur * (MW + MH)\n"
+		echo "\t  Renormalization scale muR = xmur * (MW + MH), xmur = $xmur"
 	    else
-		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV\n"
+		echo "\t  Renormalization scale muR = xmur * $mur0 GeV, xmur = $xmur"
+	    fi
+	else
+	    if [ $mur_flag == 0 ]
+	    then
+		echo "\t  Central renormalization scale muR0 = MW + MH"
+	    else
+		echo "\t  Central renormalization scale muR0 = $mur0 GeV"
 	    fi
 	fi
     else
@@ -349,36 +372,36 @@ elif [[ $type -eq 4 || $type -eq 5 ]]; then
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = muR0 = MW + MH\n"
+		echo "\n\t  Central scales muF0 = muR0 = MW + MH"
 	    else
-		echo "\t  Central scales muF0 = MW + MH, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = MW + MH, muR0 = $mur0 GeV"
 	    fi
 	else
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = MW + MH\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = MW + MH"
 	    else
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV"
 	    fi
 	fi
     fi
     if [ $type -eq 4 ]
     then
-	echo "\tNow calculating for inclusive Higgs-strahlung W+ H process...\n"
+	echo "\n\t  Now calculating for inclusive Higgs-strahlung W+ H process...\n"
 	wtype=1
 	proctag=WplusH_xs
     else
-	echo "\tNow calculating for inclusive Higgs-strahlung W- H process...\n"
+	echo "\n\t  Now calculating for inclusive Higgs-strahlung W- H process...\n"
 	wtype=-1
 	proctag=WminusH_xs
     fi
     if [ $seven -eq 0 ]
     then
-	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters $scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $muf0 $xmur $mur0 $pdfset $pdfnum $parameters $scale
     else
-	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 1.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 0.5 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 2.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 1.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 0.5 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype 2.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
     fi
 elif [ $type -eq 6 ]; then
     # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
@@ -387,17 +410,24 @@ elif [ $type -eq 6 ]; then
     then
 	if [ $muf_flag == 0 ]
 	then
-	    echo "\t  Factorization scale muF = $xmuf * (MH+2*mb_pole)/4\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * (MH+2*Mb)/4, xmuf = $xmuf"
 	else
-	    echo "\t  Factorization scale muF = $xmuf * $muf0 GeV\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * $muf0 GeV, xmuf = $xmuf"
 	fi
 	if [ -z ${scale} ]
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Renormalization scale muR = $xmur * MH\n"
+		echo "\t  Renormalization scale muR = xmur * MH, xmur = $xmur"
 	    else
-		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV\n"
+		echo "\t  Renormalization scale muR = xmur * $mur0 GeV, xmur = $xmur"
+	    fi
+	else
+	    if [ $mur_flag == 0 ]
+	    then
+		echo "\t  Central renormalization scale muR0 = MH"
+	    else
+		echo "\t  Central renormalization scale muR0 = $mur0 GeV"
 	    fi
 	fi
     else
@@ -405,27 +435,27 @@ elif [ $type -eq 6 ]; then
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = (MH+2*mb_pole)/4, muR0 = MH\n"
+		echo "\n\t  Central scales muF0 = (MH+2*Mb)/4, muR0 = MH"
 	    else
-		echo "\t  Central scales muF0 = (MH+2*mb_pole)/4, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = (MH+2*Mb)/4, muR0 = $mur0 GeV"
 	    fi
 	else
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = MH\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = MH"
 	    else
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV"
 	    fi
 	fi
     fi
-    echo "\tNow calculating for inclusive 5FS bbH process...\n"
+    echo "\n\t  Now calculating for inclusive 5FS bbH process...\n"
     if [ $seven -eq 0 ]
     then
-	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters $scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $muf0 $xmur $mur0 $pdfset $pdfnum $parameters $scale
     else
-	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 1.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 0.5 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 2.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 1.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 0.5 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy 2.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
     fi
 elif [ $type -eq 7 ]; then
     # Gluon fusion p p(pbar) --> H + X via g g --> H
@@ -434,17 +464,24 @@ elif [ $type -eq 7 ]; then
     then
 	if [ $muf_flag == 0 ]
 	then
-	    echo "\t  Factorization scale muF = $xmuf * MH/2\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * MH/2, xmuf = $xmuf"
 	else
-	    echo "\t  Factorization scale muF = $xmuf * $muf0 GeV\n"
+	    echo "\n\t  Factorization scale   muF = xmuf * $muf0 GeV, xmuf = $xmuf"
 	fi
 	if [ -z ${scale} ]
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Renormalization scale muR = $xmur * MH/2\n"
+		echo "\t  Renormalization scale muR = xmur * MH/2, xmur = $xmur"
 	    else
-		echo "\t  Renormalization scale muR = $xmur * $mur0 GeV\n"
+		echo "\t  Renormalization scale muR = xmur * $mur0 GeV, xmur = $xmur"
+	    fi
+	else
+	    if [ $mur_flag == 0 ]
+	    then
+		echo "\t  Central renormalization scale muR0 = MH/2"
+	    else
+		echo "\t  Central renormalization scale muR0 = $mur0 GeV"
 	    fi
 	fi
     else
@@ -452,33 +489,38 @@ elif [ $type -eq 7 ]; then
 	then
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = muR0 = MH/2\n"
+		echo "\n\t  Central scales muF0 = muR0 = MH/2"
 	    else
-		echo "\t  Central scales muF0 = MH/2, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = MH/2, muR0 = $mur0 GeV"
 	    fi
 	else
 	    if [ $mur_flag == 0 ]
 	    then
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = MH/2\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = MH/2"
 	    else
-		echo "\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV\n"
+		echo "\n\t  Central scales muF0 = $muf0 GeV, muR0 = $mur0 GeV"
 	    fi
 	fi
     fi
     if [ $mtscheme -eq 0 ]
     then
-	echo "\t  The calculation uses the OS scheme for the top-quark"
+	echo "\n\t  The calculation uses the OS scheme for the top-quark"
     else
-	echo "\t  The calculation uses the MSbar scheme for the top-quark"
+	echo "\n\t  The calculation uses the MSbar scheme for the top-quark"
     fi
-    echo "\tNow calculating for inclusive ggH process in the Born-improved HTL...\n"
+    if [ $htlflag -eq 0 ]
+    then
+	echo "\t  Now calculating for inclusive ggH process in the heavy-top limit...\n"
+    else
+	echo "\t  Now calculating for inclusive ggH process in the Born-improved heavy-top limit...\n"
+    fi
     if [ $seven -eq 0 ]
     then
-	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy $xmuf $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters $scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy $xmuf $muf0 $xmur $mur0 $pdfset $pdfnum $parameters $scale
     else
-	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 1.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 0.5 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
-	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 2.0 $muf0 $xmur $mur0 $muf_flag $mur_flag $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 1.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 0.5 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
+	${maindir}/subprogs/run_ggh $lattice $seed $qcd $collider $energy 2.0 $muf0 $xmur $mur0 $pdfset $pdfnum $parameters --scale
     fi
 else
     echo "\tYou have selected a process which does not exist (yet)! Program will exit..."
@@ -575,8 +617,8 @@ then
 	max_lo=$test_lo
     fi
 
-    percent_max_lo=$(awk -v a="$central_lo" -v b="$max_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
-    percent_min_lo=$(awk -v a="$central_lo" -v b="$min_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+    percent_max_lo=$(LC_ALL=en_US.utf-8 awk -v a="$central_lo" -v b="$max_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+    percent_min_lo=$(LC_ALL=en_US.utf-8 awk -v a="$central_lo" -v b="$min_lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
     echo "\nxs_LO    = $central_lo +- $error_lo (num) pb +$percent_max_lo% / $percent_min_lo% (7-point scale uncertainty)"
 
     if [ $qcd -ge 1 ]
@@ -641,8 +683,8 @@ then
 	    max_nlo=$test_nlo
 	fi
 
-	percent_max_nlo=$(awk -v a="$central_nlo" -v b="$max_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
-	percent_min_nlo=$(awk -v a="$central_nlo" -v b="$min_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	percent_max_nlo=$(LC_ALL=en_US.utf-8 awk -v a="$central_nlo" -v b="$max_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	percent_min_nlo=$(LC_ALL=en_US.utf-8 awk -v a="$central_nlo" -v b="$min_nlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
 	echo "xs_NLO   = $central_nlo +- $error_nlo (num) pb +$percent_max_nlo% / $percent_min_nlo% (7-point scale uncertainty)"
 	if [ $qcd -ge 2 ]
 	then
@@ -706,8 +748,8 @@ then
 		max_nnlo=$test_nnlo
 	    fi
 
-	    percent_max_nnlo=$(awk -v a="$central_nnlo" -v b="$max_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
-	    percent_min_nnlo=$(awk -v a="$central_nnlo" -v b="$min_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	    percent_max_nnlo=$(LC_ALL=en_US.utf-8 awk -v a="$central_nnlo" -v b="$max_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+	    percent_min_nnlo=$(LC_ALL=en_US.utf-8 awk -v a="$central_nnlo" -v b="$min_nnlo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
 	    echo "xs_NNLO  = $central_nnlo +- $error_nnlo (num) pb +$percent_max_nnlo% / $percent_min_nnlo% (7-point scale uncertainty)"
 	    if [ $qcd -eq 3 ]
 	    then
@@ -751,7 +793,7 @@ then
 		then
 		    max_n3lo=$test_n3lo
 		fi
-		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.500\t2.000" ${filetest2}))"
+		test_n3lo="$(cut -d ' ' -f 6 <<< $(grep "1.000\t2.000" ${filetest2}))"
 		if [ 1 -eq "$(echo "$test_n3lo < $min_n3lo" | bc)" ]
 		then
 		    min_n3lo=$test_n3lo
@@ -769,9 +811,8 @@ then
 		then
 		    max_n3lo=$test_n3lo
 		fi
-
-		percent_max_n3lo=$(awk -v a="$central_n3lo" -v b="$max_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
-		percent_min_n3lo=$(awk -v a="$central_n3lo" -v b="$min_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+		percent_max_n3lo=$(LC_ALL=en_US.utf-8 awk -v a="$central_n3lo" -v b="$max_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
+		percent_min_n3lo=$(LC_ALL=en_US.utf-8 awk -v a="$central_n3lo" -v b="$min_n3lo" 'BEGIN {PREC = "double"; print 100*(b-a)/a}')
 		echo "xs_N3LO  = $central_n3lo +- $error_n3lo (num) pb +$percent_max_n3lo% / $percent_min_n3lo% (7-point scale uncertainty)"
 	    fi
 	fi
@@ -879,3 +920,4 @@ then
 fi   
 
 echo "\n\tThanks for using our program!\n"
+if [ $seven -eq 0 ]; then echo "\tThe complet set of results can be found in the output file ./$fileoutput\n"; fi

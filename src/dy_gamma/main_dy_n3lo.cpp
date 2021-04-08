@@ -460,7 +460,7 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p (q) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n (o) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
@@ -468,19 +468,17 @@ int main(int argc, char **argv) {
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  Invariant lepton-mass Q in GeV (double)" << std::endl;
       std::cout << "g:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
-      std::cout << "h:  mu_F0: custom value for the central factorization scale (double)" << std::endl;
+      std::cout << "h:  mu_F0: central factorization scale (double); if set to -1, default value is Q" << std::endl;
       std::cout << "i:  x_mur so that mu_R = x_muf*mu_R0 (double)" << std::endl;
-      std::cout << "j:  mu_R0: custom value for the central renormalization scale (double)" << std::endl;
-      std::cout << "k:  mu_F0 integer flag: (0) for the default value Q, (1) for the custom value mu_F0" << std::endl;
-      std::cout << "l:  mu_R0 integer flag: (0) for the default value Q, (1) for the custom value mu_R0" << std::endl;
-      std::cout << "m:  PDF set (string)" << std::endl;
-      std::cout << "n:  PDF member (integer)" << std::endl;
-      std::cout << "o:  Z mass in GeV (double)" << std::endl;
-      std::cout << "p:  1/alpha(0) fine structure constant (double)" << std::endl;
-      std::cout << "q:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
+      std::cout << "j:  mu_R0: central renormalization scale (double); if set to -1, default value is Q" << std::endl;
+      std::cout << "k:  PDF set (string)" << std::endl;
+      std::cout << "l:  PDF member (integer)" << std::endl;
+      std::cout << "m:  Z mass in GeV (double)" << std::endl;
+      std::cout << "n:  1/alpha(0) fine structure constant (double)" << std::endl;
+      std::cout << "o:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = Q" << std::endl;
       return 0;
     }
-  if(argc < 17)
+  if(argc < 15)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -513,35 +511,39 @@ int main(int argc, char **argv) {
       double muf0 = atof(argv[8]);
       double xmur = atof(argv[9]);
       double mur0 = atof(argv[10]);
-      double muf_flag = atoi(argv[11]);
-      double mur_flag = atoi(argv[12]);
+      int muf_flag;
+      int mur_flag;
       double scalemuF0;
       double scalemuR0;
       // end new
 
       // init PDF set
-      const std::string setname = argv[13];
-      const int setimem = atoi(argv[14]);
+      const std::string setname = argv[11];
+      const int setimem = atoi(argv[12]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
-      constants::MZ       = atof(argv[15]);
-      constants::alphainv = atof(argv[16]);
-      if(muf_flag == 0)
+      constants::MZ       = atof(argv[13]);
+      constants::alphainv = atof(argv[14]);
+      if(muf0 == -1)
 	{
 	  scalemuF0     = Q;
+	  muf_flag      = 0;
 	}
       else
 	{
 	  scalemuF0     = muf0;
+	  muf_flag      = 1;
 	}
-      if(mur_flag == 0)
+      if(mur0 == -1)
 	{
 	  scalemuR0     = Q;
+	  mur_flag      = 0;
 	}
       else
 	{
 	  scalemuR0     = mur0;
+	  mur_flag      = 1;
 	}
       global_param_gamma.scalemuF0  = scalemuF0;
 
@@ -685,7 +687,7 @@ int main(int argc, char **argv) {
       double ee2 = 4.0*constants::Pi/constants::alphainv;
       BornDY = constants::gevtopb*constants::Pi*ee2/(constants::Nc*Q*Q);
       
-      double muf  = xmuf*Q;
+      double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
       double mur;
       double mur2;
@@ -717,7 +719,7 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=18 && std::strcmp(argv[17],"--scale") == 0)
+      if(argc>=16 && std::strcmp(argv[15],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);

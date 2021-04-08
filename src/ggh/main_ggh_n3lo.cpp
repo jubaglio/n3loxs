@@ -429,29 +429,28 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q r (s) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q (r) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
-      std::cout << "g:  mu_F0: custom value for the central factorization scale (double)" << std::endl;
+      std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is MH/2" << std::endl;
       std::cout << "h:  x_mur so that mu_R = x_muf*mu_R0 (double)" << std::endl;
-      std::cout << "i:  mu_R0: custom value for the central renormalization scale (double)" << std::endl;
-      std::cout << "j:  mu_F0 integer flag: (0) for the default value MH/2, (1) for the custom value mu_F0" << std::endl;
-      std::cout << "k:  mu_R0 integer flag: (0) for the default value MH/2, (1) for the custom value mu_R0" << std::endl;
-      std::cout << "l:  PDF set (string)" << std::endl;
-      std::cout << "m:  PDF member (integer)" << std::endl;
-      std::cout << "n:  Z mass in GeV (double)" << std::endl;
-      std::cout << "o:  Higgs mass in GeV (double)" << std::endl;
-      std::cout << "p:  Top-quark mass in GeV (double), either pole or MSbar mt(mt)" << std::endl;
-      std::cout << "q:  Vacuum expectation value in GeV (double)" << std::endl;
-      std::cout << "r:  Top-quark scheme flag, (0) for OS scheme, (1) for MSbar scheme" << std::endl;
-      std::cout << "s:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
+      std::cout << "i:  mu_R0: central renormalization scale (double); if set to -1, default value is MH/2" << std::endl;
+      std::cout << "j:  PDF set (string)" << std::endl;
+      std::cout << "k:  PDF member (integer)" << std::endl;
+      std::cout << "l:  Z mass in GeV (double)" << std::endl;
+      std::cout << "m:  Higgs mass in GeV (double)" << std::endl;
+      std::cout << "n:  Top-quark mass in GeV (double), either pole or MSbar mt(mt)" << std::endl;
+      std::cout << "o:  Vacuum expectation value in GeV (double)" << std::endl;
+      std::cout << "p:  Top-quark scheme flag, (0) for OS scheme, (1) for MSbar scheme" << std::endl;
+      std::cout << "q:  HTL flag: (0) for heavy-top-limit (HTL) calculation, (1) for Born-improved HTL calculation" << std::endl;
+      std::cout << "r:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
       return 0;
     }
-  if(argc < 19)
+  if(argc < 18)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -483,38 +482,52 @@ int main(int argc, char **argv) {
       double muf0 = atof(argv[7]);
       double xmur = atof(argv[8]);
       double mur0 = atof(argv[9]);
-      double muf_flag = atoi(argv[10]);
-      double mur_flag = atoi(argv[11]);
+      int muf_flag;
+      int mur_flag;
       double scalemuF0;
       double scalemuR0;
       // end new
 
       // init PDF set
-      const std::string setname = argv[12];
-      const int setimem = atoi(argv[13]);
+      const std::string setname = argv[10];
+      const int setimem = atoi(argv[11]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
-      constants::MZ     = atof(argv[14]);
-      constants::MH     = atof(argv[15]);
-      constants::Mt     = atof(argv[16]);
-      constants::vev    = atof(argv[17]);
-      int mtscheme      = atoi(argv[18]);
-      if(muf_flag == 0)
+      constants::MZ     = atof(argv[12]);
+      constants::MH     = atof(argv[13]);
+      constants::Mt     = atof(argv[14]);
+      constants::vev    = atof(argv[15]);
+      int mtscheme      = atoi(argv[16]);
+      int htlflag       = atoi(argv[17]);
+      std::string htlstring;
+      if(htlflag == 0)
+	{
+	  htlstring = "";
+	}
+      else
+	{
+	  htlstring = "Born-improved ";
+	}
+      if(muf0 == -1)
 	{
 	  scalemuF0     = constants::MH/2.0;
+	  muf_flag      = 0;
 	}
       else
 	{
 	  scalemuF0     = muf0;
+	  muf_flag      = 1;
 	}
-      if(mur_flag == 0)
+      if(mur0 == -1)
 	{
 	  scalemuR0     = constants::MH/2.0;
+	  mur_flag      = 0;
 	}
       else
 	{
 	  scalemuR0     = mur0;
+	  mur_flag      = 1;
 	}
       global_param.scalemuF0  = scalemuF0;
 
@@ -654,7 +667,7 @@ int main(int argc, char **argv) {
       BornggH0 = constants::gevtopb*constants::Pi/
 	(72.0*(constants::Nc*constants::Nc-1)*constants::vev*constants::vev);
 
-      double muf  = xmuf*global_param.scalemuF0;
+      double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
       //double xmur;
       double mur;
@@ -696,7 +709,7 @@ int main(int argc, char **argv) {
       double mtatmuf;
       double logt;
 
-      if(argc>=20 && std::strcmp(argv[19],"--scale") == 0)
+      if(argc>=19 && std::strcmp(argv[18],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);
@@ -716,7 +729,7 @@ int main(int argc, char **argv) {
 	    {
 	      filename << "ggH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
-	  header = "# Inclusive cross section for SM Higgs production in gluon fusion xs(g g -> H) in the heavy-top limit, p-p collider";
+	  header = "# Inclusive cross section for SM Higgs production in gluon fusion xs(g g -> H) in the " + htlstring + "heavy-top limit, p-p collider";
 	}
       else
 	{
@@ -728,7 +741,7 @@ int main(int argc, char **argv) {
 	    {
 	      filename << "ggH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
-	  header = "# Inclusive cross section for SM Higgs production in gluon fusion xs(g g -> H) in the heavy-top limit, p-pbar collider";
+	  header = "# Inclusive cross section for SM Higgs production in gluon fusion xs(g g -> H) in the " + htlstring + "heavy-top limit, p-pbar collider";
 	}
 
       
@@ -892,13 +905,27 @@ int main(int argc, char **argv) {
 
 	  if(mtscheme==0)
 	    {
-	      BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+		}
 	    }
 	  else
 	    {
 	      asmtopi = as_n3loxs(constants::Mt, 0, asopimz);
 	      mtatmur = mb_n3loxs(mur, 0, constants::Mt, constants::Mt, asmtopi);
-	      BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+		}
 	    }
 
       	  xslo_result = BornggH*gg_lo_result;
@@ -917,13 +944,27 @@ int main(int argc, char **argv) {
 
 	  if(mtscheme==0)
 	    {
-	      BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+		}
 	    }
 	  else
 	    {
 	      asmtopi = as_n3loxs(constants::Mt, 1, asopimz);
 	      mtatmur = mb_n3loxs(mur, 1, constants::Mt, constants::Mt, asmtopi);
-	      BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+		}
 	    }
 
       	  logmu1 = log(mur2/muf2);
@@ -955,7 +996,14 @@ int main(int argc, char **argv) {
 	  if(mtscheme==0)
 	    {
 	      logt  = log(constants::Mt*constants::Mt/muf2);
-	      BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+		}
 	    }
 	  else
 	    {
@@ -963,7 +1011,14 @@ int main(int argc, char **argv) {
 	      mtatmur = mb_n3loxs(mur, 2, constants::Mt, constants::Mt, asmtopi);
 	      mtatmuf = mb_n3loxs(muf, 2, constants::Mt, constants::Mt, asmtopi);
 	      logt  = log(mtatmuf*mtatmuf/muf2);
-	      BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+		}
 	    }
 
       	  asopi4 = asopi2*asopi2;
@@ -1008,7 +1063,14 @@ int main(int argc, char **argv) {
 	  if(mtscheme==0)
 	    {
 	      logt  = log(constants::Mt*constants::Mt/muf2);
-	      BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(constants::Mt);
+		}
 	    }
 	  else
 	    {
@@ -1016,7 +1078,14 @@ int main(int argc, char **argv) {
 	      mtatmur = mb_n3loxs(mur, 3, constants::Mt, constants::Mt, asmtopi);
 	      mtatmuf = mb_n3loxs(muf, 3, constants::Mt, constants::Mt, asmtopi);
 	      logt  = log(mtatmuf*mtatmuf/muf2);
-	      BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+	      if(htlflag==0)
+		{
+		  BornggH = BornggH0*asopi2;
+		}
+	      else
+		{
+		  BornggH = BornggH0*asopi2*oneloopfac(mtatmur);
+		}
 	    }
 
       	  asopi3 = asopi*asopi2;

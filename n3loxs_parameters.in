@@ -56,7 +56,7 @@ Mb      = 4.58
 mt(mt)  = 162.7
 mb(mb)  = 4.18
 vev     = 246.221
-1/alpha = 137.035999139
+1/alpha = 137.035999084
 
 # Top-quark scheme for ggH process: (0) for OS scheme, (1) for MSbar scheme
 mt_scheme = 1

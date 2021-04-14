@@ -278,19 +278,19 @@ if __name__ == "__main__":
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mb'], variable['mmbmb'], variable['vev'], '--scale'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mb'], variable['mmbmb'], variable['vev'], '--scale'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mb'], variable['mmbmb'], variable['vev'], '--scale'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
         else:
             if scale:
@@ -298,7 +298,7 @@ if __name__ == "__main__":
                                             str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                             str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                             variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                            variable['mh'], variable['mb'], variable['mmbmb'], variable['vev'], '--scale'],
+                                            variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
                                            stdout=subprocess.PIPE,universal_newlines=True)
                 print(running.stdout)
             else:
@@ -306,7 +306,7 @@ if __name__ == "__main__":
                                             str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                             str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                             variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                            variable['mh'], variable['mb'], variable['mmbmb'], variable['vev']],
+                                            variable['mh'], variable['mb'], variable['mbmb'], variable['vev']],
                                            stdout=subprocess.PIPE,universal_newlines=True)
                 print(running.stdout)
 
@@ -567,12 +567,12 @@ if __name__ == "__main__":
                 if scale:
                     fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
                 else:
-                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
             else:
                 if scale:
                     fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
                 else:
-                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
 
         opfiletest = open(fileoutput)
         i = 0

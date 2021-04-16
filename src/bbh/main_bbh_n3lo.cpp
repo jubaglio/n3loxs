@@ -951,6 +951,11 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 0, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 0, asopimz);
 	  mbatmur = mb_n3loxs(mur, 0, constants::Mbmb, constants::Mbmb, asmbopi);
+	  std::cout << "DEBUG:\t" << constants::byuk0 << std::endl;
+	  std::cout << "DEBUG:\t" << constants::byuk1 << std::endl;
+	  std::cout << "DEBUG:\t" << constants::byuk2 << std::endl;
+	  std::cout << "DEBUG:\t" << constants::byuk3 << std::endl;
+	  std::cout << "\n\t The program uses mb_LO(muR)   = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -969,6 +974,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 1, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 1, asopimz);
 	  mbatmur = mb_n3loxs(mur, 1, constants::Mbmb, constants::Mbmb, asmbopi);
+	  std::cout << "\t The program uses mb_NLO(muR)  = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -998,6 +1004,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 2, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 2, asopimz);
 	  mbatmur = mb_n3loxs(mur, 2, constants::Mbmb, constants::Mbmb, asmbopi);
+	  std::cout << "\t The program uses mb_NNLO(muR) = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -1038,6 +1045,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 3, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 3, asopimz);
 	  mbatmur = mb_n3loxs(mur, 3, constants::Mbmb, constants::Mbmb, asmbopi);
+	  std::cout << "\t The program uses mb_N3LO(muR) = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -1057,16 +1065,17 @@ int main(int argc, char **argv) {
 		     (constants::b0-2*constants::byuk0)*logmu1*(bbbar_nlo_result + result_bg_NLO.integral)
 		     ) +
       	     asopi3*(bbbar_n3lo_result + result_bg_N3LO.integral + result_gg_N3LO.integral +
-      		     result_bb_N3LO.integral + result_bq_N3LO.integral + result_bqbar_N3LO.integral +
-		     result_qqbar_N3LO.integral + result_qg_N3LO.integral -
-		     (2*constants::byuk2*logmu1 + constants::byuk0*(constants::b1-2*constants::byuk1)*logmu2 +
-		      2*(constants::b0-constants::byuk0)*(3*constants::byuk1*logmu2 + (constants::b0 - 2*constants::byuk0)*logmu3)/3.0)*bbbar_lo_result +
-		     ((constants::b1-2*constants::byuk2)*logmu1 + (constants::b0-constants::byuk0)*(constants::b0-2*constants::byuk0)*logmu2)*
-		     (bbbar_nlo_result + result_bg_NLO.integral) +
-		     2*(constants::b0-constants::byuk0)*logmu1*
-		     (bbbar_nnlo_result + result_bg_NNLO.integral + result_gg_NNLO.integral + result_bb_NNLO.integral +
-		      result_bq_NNLO.integral + result_bqbar_NNLO.integral + result_qqbar_NNLO.integral)
-		     )
+      	     	     result_bb_N3LO.integral + result_bq_N3LO.integral + result_bqbar_N3LO.integral +
+	     	     result_qqbar_N3LO.integral + result_qg_N3LO.integral -
+	     	     (2*constants::byuk2*logmu1 + constants::byuk0*(constants::b1-2*constants::byuk1)*logmu2 +
+	     	      2*(constants::b0-constants::byuk0)*(constants::byuk1*logmu2+constants::byuk0*logmu3*(constants::b0-2*constants::byuk0)/3.0))
+		     *bbbar_lo_result +
+	     	     ((constants::b1-2*constants::byuk1)*logmu1 + (constants::b0-constants::byuk0)*(constants::b0-2*constants::byuk0)*logmu2)*
+	     	     (bbbar_nlo_result + result_bg_NLO.integral) +
+	     	     2*(constants::b0-constants::byuk0)*logmu1*
+	     	     (bbbar_nnlo_result + result_bg_NNLO.integral + result_gg_NNLO.integral + result_bb_NNLO.integral +
+	     	      result_bq_NNLO.integral + result_bqbar_NNLO.integral + result_qqbar_NNLO.integral)
+	     	     )
       	     );
       	  xsn3lo_error = BornbbH*
       	    sqrt(pow(bbbar_lo_error,2) +
@@ -1081,8 +1090,9 @@ int main(int argc, char **argv) {
       		 	 pow(result_bb_N3LO.error,2) + pow(result_bq_N3LO.error,2) + pow(result_bqbar_N3LO.error,2) +
 		 	 pow(result_qqbar_N3LO.error,2) + pow(result_qg_N3LO.error,2) +
 			 pow((2*constants::byuk2*logmu1 + constants::byuk0*(constants::b1-2*constants::byuk1)*logmu2 +
-			      2*(constants::b0-constants::byuk0)*(3*constants::byuk1*logmu2 + (constants::b0 - 2*constants::byuk0)*logmu3)/3.0)*bbbar_lo_error,2) +
-			 pow(((constants::b1-2*constants::byuk2)*logmu1 + (constants::b0-constants::byuk0)*(constants::b0-2*constants::byuk0)*logmu2),2)*
+			      2*(constants::b0-constants::byuk0)*(constants::byuk1*logmu2+constants::byuk0*logmu3*(constants::b0-2*constants::byuk0)/3.0))
+			     *bbbar_lo_error,2) +
+			 pow(((constants::b1-2*constants::byuk1)*logmu1 + (constants::b0-constants::byuk0)*(constants::b0-2*constants::byuk0)*logmu2),2)*
 			 (pow(bbbar_nlo_error,2) + pow(result_bg_NLO.error,2)) + 4*pow((constants::b0-constants::byuk0)*logmu1,2)*
 			 (pow(bbbar_nnlo_error,2) + pow(result_bg_NNLO.error,2) + pow(result_gg_NNLO.error,2) + pow(result_bb_NNLO.error,2) +
 			  pow(result_bq_NNLO.error,2) + pow(result_bqbar_NNLO.error,2) + pow(result_qqbar_NNLO.error,2))

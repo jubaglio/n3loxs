@@ -315,8 +315,10 @@ if __name__ == "__main__":
         proctag='ggH_xs'
         if variable['mtscheme'] == 0:
             print('\n\t  The calculation uses the OS scheme for the top-quark')
+            mtinput=variable['mt']
         else:
             print('\n\t  The calculation uses the MSbar scheme for the top-quark')
+            mtinput=variable['mtmt']
 
         if variable['htlflag'] == 0:
             print('\t  Now calculating for inclusive ggH process in the heavy-top limit...\n')
@@ -327,21 +329,21 @@ if __name__ == "__main__":
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mt'], variable['vev'],
+                                        variable['mh'], mtinput, variable['vev'],
                                         str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mt'], variable['vev'],
+                                        variable['mh'], mtinput, variable['vev'],
                                         str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                         '2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                         variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                        variable['mh'], variable['mt'], variable['vev'],
+                                        variable['mh'], mtinput, variable['vev'],
                                         str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
                                        stdout=subprocess.PIPE,universal_newlines=True)
         else:
@@ -350,7 +352,7 @@ if __name__ == "__main__":
                                             str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                             str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                             variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                            variable['mh'], variable['mt'], variable['vev'],
+                                            variable['mh'], mtinput, variable['vev'],
                                             str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
                                            stdout=subprocess.PIPE,universal_newlines=True)
                 print(running.stdout)
@@ -359,7 +361,7 @@ if __name__ == "__main__":
                                             str(variable['qcd']), str(variable['collider']), str(variable['energy']),
                                             str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
                                             variable['pdfset'], variable['pdfnum'], variable['mz'],
-                                            variable['mh'], variable['mt'], variable['vev'],
+                                            variable['mh'], mtinput, variable['vev'],
                                             str(variable['mtscheme']), str(variable['htlflag'])],
                                            stdout=subprocess.PIPE,universal_newlines=True)
                 print(running.stdout)

@@ -8,7 +8,7 @@
 #   5: inclusive W- H Higgs-strahlung production (DY-type contributions only),
 #   6: inclusive five-flavor scheme Higgs production in bottom-quark fusion,
 #   7: inclusive Higgs production in gluon fusion, either in the heavy top limit (HTL) or in the Born-improved HTL
-process = 7
+process = 6
 
 # Parton distribution functions:
 PDFset = PDF4LHC15_nnlo_mc
@@ -18,7 +18,7 @@ PDFnum = 0
 order = 3
 
 # Collider parameters: pp (0) or ppbar (1). Hadronic energy in TeV
-collider = 0
+collider = 1
 energy   = 13.0
 
 # Invariant lepton-mass Q in GeV (only for Drell-Yan processes)

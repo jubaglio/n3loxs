@@ -951,10 +951,6 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 0, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 0, asopimz);
 	  mbatmur = mb_n3loxs(mur, 0, constants::Mbmb, constants::Mbmb, asmbopi);
-	  std::cout << "DEBUG:\t" << constants::byuk0 << std::endl;
-	  std::cout << "DEBUG:\t" << constants::byuk1 << std::endl;
-	  std::cout << "DEBUG:\t" << constants::byuk2 << std::endl;
-	  std::cout << "DEBUG:\t" << constants::byuk3 << std::endl;
 	  std::cout << "\n\t The program uses mb_LO(muR)   = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur

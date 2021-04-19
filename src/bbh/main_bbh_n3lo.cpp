@@ -951,7 +951,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 0, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 0, asopimz);
 	  mbatmur = mb_n3loxs(mur, 0, constants::Mbmb, constants::Mbmb, asmbopi);
-	  std::cout << "\n\t The program uses mb_LO(muR)   = " << mbatmur << " GeV" << std::endl;
+	  //std::cout << "\n\t The program uses mb_LO(muR)   = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -970,7 +970,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 1, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 1, asopimz);
 	  mbatmur = mb_n3loxs(mur, 1, constants::Mbmb, constants::Mbmb, asmbopi);
-	  std::cout << "\t The program uses mb_NLO(muR)  = " << mbatmur << " GeV" << std::endl;
+	  //std::cout << "\t The program uses mb_NLO(muR)  = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -1000,7 +1000,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 2, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 2, asopimz);
 	  mbatmur = mb_n3loxs(mur, 2, constants::Mbmb, constants::Mbmb, asmbopi);
-	  std::cout << "\t The program uses mb_NNLO(muR) = " << mbatmur << " GeV" << std::endl;
+	  //std::cout << "\t The program uses mb_NNLO(muR) = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);
@@ -1041,7 +1041,7 @@ int main(int argc, char **argv) {
 	  asopi   = as_n3loxs(mur, 3, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 3, asopimz);
 	  mbatmur = mb_n3loxs(mur, 3, constants::Mbmb, constants::Mbmb, asmbopi);
-	  std::cout << "\t The program uses mb_N3LO(muR) = " << mbatmur << " GeV" << std::endl;
+	  //std::cout << "\t The program uses mb_N3LO(muR) = " << mbatmur << " GeV" << std::endl;
 
 	  BornbbH = constants::gevtopb*constants::Pi*mbatmur*mbatmur
 	    /(2*constants::Nc*constants::vev*constants::vev*constants::MH*constants::MH);

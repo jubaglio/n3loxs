@@ -463,7 +463,9 @@ struct functor_qqbar_N3LO_t  {
   }
 } functor_qqbar_N3LO;
 
-
+static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -488,7 +490,7 @@ int main(int argc, char **argv) {
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
       std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is (MH + Mb)/4" << std::endl;
-      std::cout << "h:  x_mur so that mu_R = x_muf*mu_R0 (double)" << std::endl;
+      std::cout << "h:  x_mur so that mu_R = x_mur*mu_R0 (double)" << std::endl;
       std::cout << "i:  mu_R0: central renormalization scale (double); if set to -1, default value is MH" << std::endl;
       std::cout << "j:  PDF set (string)" << std::endl;
       std::cout << "k:  PDF member (integer)" << std::endl;
@@ -497,7 +499,7 @@ int main(int argc, char **argv) {
       std::cout << "n:  Bottom-quark pole mass in GeV (double)" << std::endl;
       std::cout << "o:  Bottom-quark MSbar mass mb(mb) in GeV (double)" << std::endl;
       std::cout << "p:  Vacuum expectation value in GeV (double)" << std::endl;
-      std::cout << "q:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = mu_H" << std::endl;
+      std::cout << "q:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
       return 0;
     }
   if(argc < 17)
@@ -708,7 +710,7 @@ int main(int argc, char **argv) {
 	    }
 	}
 
-      // Building the cross section: adding back alphaS, evolve to muR, add DY normalization
+      // Building the cross section: adding back alphaS, evolve to muR, add Born normalization
       // Result of this code: xs(b bbar -> H + X) in pb
 
       double BornbbH;
@@ -742,6 +744,10 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
+      std::string energyheader;
+      std::string muf0header;
+      std::string mur0header;
+      
 
       int imax;
       double dxmur;
@@ -768,7 +774,7 @@ int main(int argc, char **argv) {
 	    {
 	      filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
-	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-p collider";
+	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-p collider, sqrt(S) = ";
 	}
       else
 	{
@@ -780,162 +786,79 @@ int main(int argc, char **argv) {
 	    {
 	      filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
-	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-pbar collider";
+	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-pbar collider, sqrt(S) = ";
 	}
 
       
       filename >> finalfile;
       std::ofstream fa(finalfile);
 
+      energyheader = std::to_string(energy);
+      removeTrailingCharacters(energyheader, '0');
+
+      if(muf_flag == 0)
+	{
+	  if(mur_flag == 0)
+	    {
+	      header += energyheader +
+		" TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" +
+		"mu_F/mu_F0\t";
+	    }
+	  else
+	    {
+	      mur0header = std::to_string(scalemuR0);
+	      removeTrailingCharacters(mur0header, '0');
+	      header += energyheader +
+		" TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " +
+		mur0header +
+		" GeV\n# mu_R/mu_R0\t" +
+		"mu_F/mu_F0\t";
+	    }
+	}
+      else
+	{
+	  muf0header = std::to_string(scalemuF0);
+	  removeTrailingCharacters(muf0header, '0');
+	  if(mur_flag == 0)
+	    {
+	      header += energyheader +
+		" TeV, central factorization scale mu_F0 = " +
+		muf0header +
+		" GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" +
+		"mu_F/mu_F0\t";
+	    }
+	  else
+	    {
+	      mur0header = std::to_string(scalemuR0);
+	      removeTrailingCharacters(mur0header, '0');
+	      header += energyheader +
+		" TeV, central factorization scale mu_F0 = " +
+		muf0header +
+		" GeV, renormalization scale mu_R0 = " +
+		mur0header +
+		" GeV\n# mu_R/mu_R0\t" + "mu_F/mu_F0\t";
+	    }
+	}
+
+
       switch(qcdorder)
 	{
 	case 0:
-	  if(muf_flag == 0)
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
-		     << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
-		}
-	    }
-	  else
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)" << std::endl;
-		}
-	    }
+	  fa << header << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 1:
-	  if(muf_flag == 0)
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
-		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
-		}
-	    }
-	  else
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
-		     << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)" << std::endl;
-		}
-	    }
+	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 2:
-	  if(muf_flag == 0)
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
-		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
-		}
-	    }
-	  else
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
-		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << std::endl;
-		}
-	    }
+	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 3:
-	  if(muf_flag == 0)
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t"
-		     << "mu_F/mu_F0\t" << "xs_LO (pb)\t" << "xs_NLO (pb)\t"
-		     << "xs_NNLO (pb)\t" << "xs_N3LO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = (MH+2*Mb)/4, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t"
-		     << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "xs_N3LO (pb)" << std::endl;
-		}
-	    }
-	  else
-	    {
-	      if(mur_flag == 0)
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = MH\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t"
-		     << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << "xs_N3LO (pb)" << std::endl;
-		}
-	      else
-		{
-		  fa << header << std::fixed << std::setprecision(2) << ", sqrt(S) = " << energy
-		     << " TeV, central factorization scale mu_F0 = " << scalemuF0
-		     << " GeV, renormalization scale mu_R0 = " << scalemuR0
-		     << " GeV\n# mu_R/mu_R0\t" << "mu_F/mu_F0\t" << "xs_LO (pb)\t"
-		     << "xs_NLO (pb)\t" << "xs_NNLO (pb)" << "xs_N3LO (pb)" << std::endl;
-		}
-	    }
+	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	}
-      
+
       for(int i = 0; i<imax; i++)
 	{
-	  /*	  if(imax==1)
-	    {
-	      xmur = xmuf;
-	    }
-	    else*/
 	  if(imax!=1)
 	    {
 	      xmur = 0.5 + i*dxmur;
@@ -943,11 +866,11 @@ int main(int argc, char **argv) {
 	  mur  = xmur*scalemuR0;
 	  mur2 = mur*mur;
 
-	  
+
       if(qcdorder>=0)
       	{
 
-	  // alphaS(mur) and a mb(mur) at LO
+	  // alphaS(mur) and mb(mur) at LO
 	  asopi   = as_n3loxs(mur, 0, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 0, asopimz);
 	  mbatmur = mb_n3loxs(mur, 0, constants::Mbmb, constants::Mbmb, asmbopi);
@@ -960,13 +883,13 @@ int main(int argc, char **argv) {
       	  xslo_error  = BornbbH*bbbar_lo_error;
 	  if(qcdorder==0)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
+	      fa << std::fixed << std::setprecision(3) << xmur << "\t" << xmuf << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << std::scientific << xslo_error << std::endl;
 	    }
       	}
       if(qcdorder>=1)
       	{
-	  // alphaS(mur) and a mb(mur) at NLO
+	  // alphaS(mur) and mb(mur) at NLO
 	  asopi   = as_n3loxs(mur, 1, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 1, asopimz);
 	  mbatmur = mb_n3loxs(mur, 1, constants::Mbmb, constants::Mbmb, asmbopi);
@@ -989,14 +912,14 @@ int main(int argc, char **argv) {
 
 	  if(qcdorder==1)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
+	      fa << std::fixed << std::setprecision(3) << xmur << "\t" << xmuf << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << xsnlo_result
 		 << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << std::endl;
 	    }
       	}
       if(qcdorder>=2)
       	{
-	  // alphaS(mur) and a mb(mur) at NNLO
+	  // alphaS(mur) and mb(mur) at NNLO
 	  asopi   = as_n3loxs(mur, 2, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 2, asopimz);
 	  mbatmur = mb_n3loxs(mur, 2, constants::Mbmb, constants::Mbmb, asmbopi);
@@ -1030,14 +953,14 @@ int main(int argc, char **argv) {
 
 	  if(qcdorder==2)
 	    {
-	      fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
+	      fa << std::fixed << std::setprecision(3) << xmur<< "\t" << xmuf << "\t"
 		 << std::setprecision(18) << xslo_result << "\t" << xsnlo_result << "\t" << xsnnlo_result
 		 << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << "\t" << xsnnlo_error << std::endl;
 	    }
       	}
       if(qcdorder==3)
       	{
-	  // alphaS(mur) and a mb(mur) at N3LO
+	  // alphaS(mur) and mb(mur) at N3LO
 	  asopi   = as_n3loxs(mur, 3, asopimz);
 	  asmbopi = as_n3loxs(constants::Mbmb, 3, asopimz);
 	  mbatmur = mb_n3loxs(mur, 3, constants::Mbmb, constants::Mbmb, asmbopi);
@@ -1095,7 +1018,7 @@ int main(int argc, char **argv) {
 			 )
 		 );
 
-	  fa << std::fixed << std::setprecision(3) << (mur/scalemuR0) << "\t" << (muf/scalemuF0) << "\t"
+	  fa << std::fixed << std::setprecision(3) << xmur << "\t" << xmuf << "\t"
 	     << std::setprecision(18) << xslo_result << "\t" << xsnlo_result << "\t" << xsnnlo_result << "\t" << xsn3lo_result
 	     << "\t" << std::scientific << xslo_error << "\t" << xsnlo_error << "\t" << xsnnlo_error << "\t" << xsn3lo_error << std::endl;
       	}

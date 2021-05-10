@@ -45,7 +45,8 @@ if __name__ == "__main__":
 
     # Parameters read from the command-line:
     #   lattice size
-    #   seed for the pseudo-random-number generator 
+    #   seed for the pseudo-random-number generator
+    #   input file name
     #   optional flag --scale or --7point:
     #            --scale: This generates 16 predictions for various renormalization scales muR between 0.5*muR0 and 2.0*muR0
     #            --7point: This calculates the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0
@@ -53,15 +54,15 @@ if __name__ == "__main__":
     scaleoption = parser.add_mutually_exclusive_group()
     parser.add_argument("-lattice", default=1000, type=int, help='Lattice size (integer). Default is 1000')
     parser.add_argument("-seed", default=1, type=int, help='Seed for the pseudo-random-number generator (integer). Default is 1')
+    parser.add_argument("-filename", default='n3loxs_parameters.in', type=str, help="Name of the input parameter file. Default input is \'n3loxs_parameters.in\'")
     scaleoption.add_argument("--scale", action='store_true', help='(default: omitted) Generate 16 predictions for mu_R varied between 0.5*mu_R0 and 2*mu_R0, mu_R0 is the central renormalization scale.')
     scaleoption.add_argument("--7point", action='store_true', help='(default: omitted) Calculate the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0. See the input file n3loxs_parameters.in for the definition of mu_R0 and mu_F0.')
-    parser.add_argument("--filename", default='n3loxs_parameters.in', type=str, help="Name of the input parameter file. Default input is \'n3loxs_parameters.in\'")
     args = vars(parser.parse_args())
     lattice = args.get('lattice')
     seed = args.get('seed')
+    filename=args.get('filename')
     scale = args.get('scale')
     sevenpoint = args.get('7point')
-    filename=args.get('filename')
 
     # Now read the input parameters from the input file dy_parameters.in
     variable=read_config(filename)

@@ -6,7 +6,7 @@ A tool suite to calculate up to N3LO in QCD various cross sections at hadron col
 * Neutral Drell-Yan p p(pbar) --> gamma* + X (--> l+ l- + X)
 * Charged Drell-Yan p p(pbar) --> W+/W- + X (--> l+ nu_l / l- ~nu_l + X)
 * Higgsstrahlung p p(pbar) --> W+/W- H + X 
-* Higgs production via gluon fusion g g -->
+* Higgs production via gluon fusion g g --> H in the Born-improved approximation
 * Bottom-quark fusion Higgs production b bbar --> H + X in the
   five-flavor scheme
 
@@ -14,6 +14,7 @@ A tool suite to calculate up to N3LO in QCD various cross sections at hadron col
 
 Prerequisites:
 * A C++11 compatible C++ compiler.
+* Python 3.5 or higher.
 * The LHAPDF library installed on your computer.
 
 The code requires GNU Scientific Library (gsl) version 2.6 or
@@ -45,53 +46,73 @@ subprograms:
 $ ./make all
 ```
 
-The main executable is the shell script `n3loxs`. It accesses the
+The main executable is the Python script `n3loxs`. It accesses the
 subprograms located in the directory `subprograms`. If you change the
-location of the main executable, you have to update the fifth line of
+location of the main executable, you have to update the 44th line of
 the script so that it accesses correctly the subprograms:
 ```shell
-maindir=[put here the absolute path of the directory n3loxs on your computer]
+maindir=[put here the absolute path of the directory n3loxs on your computer in single quotes]
 ```
 
 ## Usage
 
 The program calculates hadronic cross sections for various
-processes up to N3LO in QCD. Drell-Yan (DY) processes are calculated
-for an off-shell gauge boson (photon and W bosons) at a given
-virtuality Q, that is chosen as the central scale by default. The
-Higgs-strahlung processes (WH production) are inclusive calculations
-and the central scale by default is the sum of the Higgs and W boson
-masses. Only DY-type contributions are taken into acccount for the
-Higgs-strahlung  processes. They are by far the dominant
-contributions. The bottom-quark fusion pocess (bbH) is an inclusive
-calculation in the five-flavor scheme (5FS) for which the central
-scale by default is muF = (MH+2*mbpole)/4, muR = MH. The gluon fusion
-process (ggH) is also an inclusive calculation, in the so-called
-Born-improved high top-mass limit (Born-improved HTL), where the
-calculation is performed in an effective theory in which the top-quark
-is decoupled, matched to the full Standard Model. The predictions are
-rescaled to the exact leading order (one-loop) result including the
-top-quark mass.
+processes up to N3LO in QCD:
 
-The program accepts up to 4 arguments on the command line;
-* `lattice`: The lattice size that is used for the integration
-(integer)
-* `seed`: The seed that is used to initialize the pseudo-random-number
-generator (integer)
-* `process`: An integer to chose between the various processes
-available. At the moment, 1 is for neutral Drell-Yan production
-(offshell photon), 2 is for charged Drell-Yan production, 3 is for
-inclusive WH Higgs-strahlung production, 4 is for the inclusive 5FS
-bbH process, 5 is for the inclusive ggH process.
-* `--scale`: An optional flag to calculate 15 different
+* Drell-Yan (DY) processes are calculated for an off-shell gauge boson
+(photon and W bosons) at a given virtuality Q, that is chosen as the
+central scale by default.
+* The Higgs-strahlung processes (WH production) are inclusive
+calculations and the central scale by default is the sum of the Higgs
+and W boson masses. Only DY-type contributions are taken into acccount
+for the Higgs-strahlung  processes. They are by far the dominant
+contributions.
+* The gluon fusion process (ggH) is an inclusive calculation, in
+the so-called Born-improved high top-mass limit (Born-improved HTL),
+where the calculation is performed in an effective theory in which the
+top-quark is decoupled, matched to the full Standard Model. The
+predictions are rescaled to the exact leading order (one-loop) result
+including the top-quark mass. The code allows the user to get results
+either in the pure HTL (no rescaling) or in the Born-improved HTL, and
+also to chose between the on-shell (OS) scheme or the MSbar scheme for
+the top-quark mass. The central scale is by default muF = muR = MH/2.
+* The bottom-quark fusion pocess (bbH) is an inclusive
+calculation in the five-flavor scheme (5FS) for which the central
+scale by default is muF = (MH+2*mbpole)/4, muR = MH. The bottom-quark
+mass used in the Yukawa coupling is taken in the MSbar scheme.
+
+The program accepts up to 3 arguments on the command line, as
+well as an optional flag:
+* `-lattice lattice`: The lattice size that is used for the
+integration (integer), by default taken to be lattice=1000.
+* `-seed seed`: The seed that is used to initialize the
+pseudo-random-number generator (integer). By default taken to be
+seed=1.
+* `--filename filename`: The name of the input file (see below). By
+  default this is `n3loxs_parameters.in`.
+* `--scale` or `--7point`: An optional flag to calculate 15 different
 predictions for the renormalization scale varied between 0.5 and 2
-times the default central scale of the corresponding process. If
-ommited the renormalization scale is set equal to the factorization
-scale. The user can type `./n3loxs --help` or `./n3loxs -h` to display
+times the central scales of the process (`--scale`
+flag); or an optional flag to calculate the seven-point scale
+variation around the central scales of the process.
+
+The user can type `./n3loxs --help` or `./n3loxs -h` to display
 the informations about these command-line arguments.
 
-The program uses an input file for the physical parameters,
-`n3loxs_parameters.in`. The following parameters can be modified:
+The program uses an input file for the physical parameters, by default
+this is `n3loxs_parameters.in`. Please note that it is possible to use
+a custom input file, but this file needs to have the same structure as
+the default input file. The following parameters can be modified:
+
+---
+`process`
+
+An integer to select the process to be studied. At the
+moment, 1 is for neutral Drell-Yan production (offshell photon), 2 is
+for charged W+ Drell-Yan production, 3 is for charged W- Drell-Yan
+production, 4 is for inclusive W+ H Higgs-strahlung production, 5 is
+for inclusive W- H Higgs-strahlung production, 6 is for the inclusive
+5FS bbH process, 7 is for the inclusive ggH process.
 
 ---
 `PDFset`
@@ -132,31 +153,125 @@ The hadronic center-of-mass energy of the collider, in TeV. Default:
 `Q`
 
 The value, in GeV, for the virtuality of the gauge bosons in the
-Drell-Yan processes (neither relevant for Higgs-strahlung
-processes nor for bbH and ggH productions). Default: `100.0`.
+Drell-Yan processes (only relevan for these DY processes). Default: `100.0`.
+
+---
+
+`muf0`
+
+The value, in GeV, of the user-defined central factorization scale
+`muF0`. If `muf0=-1`, then `muF0` is internally fixed to the default
+central scale of the chosen process. Default: `-1`.
 
 ---
 
 `xmuf`
 
-Floating-point coefficient rescaling the factorization scale, so that
-`muf = xmuf*mu0` where `mu0` stands for the default central scale of
-the chosen process. Default: `1.0`.
+Floating-point coefficient rescaling the factorization scale `muF`, so
+that `muF = xmuf*muF0` where `muF0` stands for the central
+factorization scale of the chosen process. Default: `1.0`.
 
 ---
 
-`channel`
+`mur0`
 
-An integer to chose between W+ (`1`) or W- (`-1`) channels for the
-charged Drell-Yan and Higgs-strahlung processes. Not relevant for
-neutral Drell-Yan production.
+The value, in GeV, of the user-defined central renormalization scale
+`muR0`. If `mur0=-1`, then `muR0` is internally fixed to the default
+central scale of the chosen process. Default: `-1`.
 
 ---
 
-Some parameters (e.g. masses, coupling constants) are hard-coded in the
-include file `constants.h` located in the `include` directory. The
-user can modify these parameters, however it requires a new
-compilation of the code to be taken into account.
+`xmur`
+
+Floating-point coefficient rescaling the factorization scale `muR`, so
+that `muR = xmur*muR0` where `muR0` stands for the central
+renormalization scale of the chosen process. This parameter is
+discarded if the flags `--scale` or `--7point` are used. Default:
+`1.0`.
+
+---
+
+`MW`
+
+The value, in GeV, of the W-boson mass. Default: `80.398`.
+
+---
+
+`GammaW`
+
+The value, in GeV, of the W-boson total decay width. Default: `2.085`.
+
+---
+
+`MZ`
+
+The value, in GeV, of the Z-boson mass. Default: `91.1876`.
+
+---
+
+`MH`
+
+The value, in GeV, of the Higgs mass. Default: `125.09`.
+
+---
+
+`Mt`
+
+The value, in GeV, of the OS top-quark mass. Default: `172.5`.
+
+---
+
+`Mb`
+
+The value, in GeV, of the OS bottom-quark mass. Default: `4.58`.
+
+---
+
+`mt(mt)`
+
+The value, in GeV, of the MSbar top-quark mass at the scale of the
+MSbar top-quark mass. Default: `162.7`.
+
+---
+
+`mb(mb)`
+
+The value, in GeV, of the MSbar bottom-quark mass at the scale of the
+MSbar bottom-quark mass. Default: `4.18`.
+
+---
+
+`vev`
+
+The value, in GeV, of vacuum expectation value. Default: `246.221`.
+
+---
+
+`1/alpha`
+
+The value of the inverse of the fine-structure constant. Default: `137.035999084`.
+
+---
+
+`mt_scheme`
+
+The calculation of the ggH process can be performed in the OS
+scheme (`0`) or in the MSbar scheme (`1`), as far as the top quark is
+concerned. Default: `1`.
+
+---
+
+`htl_flag`
+
+The results for the ggH process can be given in the pure HTL  (`0`) or
+for Born-improved predictions (`1`). Default: `1`.
+
+---
+
+The CKM parameters are hard-coded in the
+include file `constants.h` located in the `include` directory at the
+moment. The user can modify these parameters, however it requires a
+new compilation of the code to be taken into account.
 
 The program produces an output file containing the cross sections up
 to the desired order in QCD, including the numerical error of the
@@ -168,8 +283,8 @@ calculation is the same throughout the whole evaluation of the
 program: When asking e.g. for an N3LO calculation, the LO, NLO, and
 NNLO results are not using the corresponding PDFs, but simply the one
 provided by the user in the input file `n3loxs_parameters.in`. The
-evolution of the strong coupling constant is consistently done at the
-given QCD order.
+evolution of the strong coupling constant and of the MSbar masses are
+consistently done at the given QCD order.
 
 ## Citation policy
 

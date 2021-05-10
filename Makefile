@@ -26,8 +26,7 @@ $(shell mkdir -p subprogs)
 WORKINGDIR = $(shell pwd)
 
 # gsl library
-#GSL_CONFIG = $(shell pwd)/gsl-2.6/gsldir/bin/gsl-config
-GSL_CONFIG = gsl-config # test purposes, erase this line before commit
+GSL_CONFIG = $(shell pwd)/gsl-2.6/gsldir/bin/gsl-config
 
 vpath %.cpp $(WORKINGDIR)/src/ $(WORKINGDIR)/src/dy_gamma $(WORKINGDIR)/src/dy_w
 vpath %.cpp $(WORKINGDIR)/src/wh $(WORKINGDIR)/src/bbh $(WORKINGDIR)/src/ggh

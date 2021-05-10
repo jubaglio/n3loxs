@@ -14,7 +14,7 @@ Soft+Virtual contributions for the DY process D Ubar -> W- -> l- ~nu_l up to N3L
 
 #include "constants.h"
 
-static const double eps = 1.e-10;
+static const double eps = 1.e-12;
 
 // Virtual delta(z) contribution up to N3LO
 double delta(const double X[], const double s, const double Q2, const double muf, const int k, LHAPDF::PDF const* const pdf)

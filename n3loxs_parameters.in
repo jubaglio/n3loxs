@@ -1,6 +1,14 @@
 #################### Parameters for the dyn3lo program ####################
 
-### Common parameters for the all channels: ###
+# Choice of the process:
+#   1: neutral (gamma*) Drell-Yan,
+#   2: charged W+ Drell-Yan,
+#   3: charged W- Drell-Yan,
+#   4: inclusive W+ H Higgs-strahlung production (DY-type contributions only),
+#   5: inclusive W- H Higgs-strahlung production (DY-type contributions only),
+#   6: inclusive five-flavor scheme Higgs production in bottom-quark fusion,
+#   7: inclusive Higgs production in gluon fusion, either in the heavy top limit (HTL) or in the Born-improved HTL
+process = 6
 
 # Parton distribution functions:
 PDFset = PDF4LHC15_nnlo_mc
@@ -10,15 +18,48 @@ PDFnum = 0
 order = 3
 
 # Collider parameters: pp (0) or ppbar (1). Hadronic energy in TeV
-collider = 0
+collider = 1
 energy   = 13.0
 
-# Invariant lepton-mass Q in GeV, choice of factorization scale so that mu_F = xmuf*Q; for WH process, mu_F = xmuf*(MH+MW); for bbH process, mu_F = xmuf*(MH+2*mb_pole)/4
+# Invariant lepton-mass Q in GeV (only for Drell-Yan processes)
 Q    = 100.0
-xmuf = 1.0
 
+# Choice of the factorization scale mu_F = xmuf*mu_F0:
+#   If muf0 = -1 (or absent), the default central scale choice is used:
+#     mu_F0 = Q for Drell-Yan processes
+#     mu_F0 = MH+MW for the WH processes
+#     mu_F0 = (MH+2*mb_pole)/4 for the bbH process
+#     mu_F0 = MH/2 for the ggH process
+#   Otherwise, mu_F0 = muf0 as input by the user
+muf0     = -1
+xmuf     = 1.0
 
-### Only for the charged (W) channel: ###
+# Choice of the renormalization scale mu_R = xmur*mu_R0:
+#   If mur0 = -1 (or absent), the default central scale choice is used:
+#     mu_R0 = MH for the bbH process for Drell-Yan processes
+#     mu_R0 = muF0 for all the other processes
+#   Otherwise, mu_R0 = mur0 as input by the user
+#   If --scale or --7point flags are used, xmur value is discarded
+mur0     = -1
+xmur     = 1.0
 
-# Choice of the W+ (1) or W- (-1) channel
-channel = 1
+# Mass parameters (in GeV):
+#   W boson mass, W boson decay width,
+#   Z boson mass, Higgs boson mass, top-quark pole mass, bottom-quark pole mass,
+#   top-quark MSbar mass, bottom-quark MSbar mass, vacuum expectation value, EM constant
+MW      = 80.398
+GammaW  = 2.085
+MZ      = 91.1876
+MH      = 125.09
+Mt      = 172.5
+Mb      = 4.58
+mt(mt)  = 162.7
+mb(mb)  = 4.18
+vev     = 246.221
+1/alpha = 137.035999084
+
+# Top-quark scheme for ggH process: (0) for OS scheme, (1) for MSbar scheme
+mt_scheme = 1
+
+# Flag for ggH process: (0) for heavy-top-limit-only prediction, (1) for Born-improved prediction
+htl_flag = 1

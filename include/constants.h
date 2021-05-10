@@ -20,21 +20,22 @@ namespace constants
   const double Zeta5 = 1.0369277551433699263313654864570341680570809195019;
 
   // Mass parameters:
-  const double MH = 125.09;   // H pole mass
-  const double MW = 80.398;  // W pole mass
-  const double MZ = 91.1876; // Z pole mass
-  const double Mb = 4.18;     // bottom-quark MSbar mass
-  const double Mt = 172.5;   // top-quark pole mass
-  const double mbpole = 4.58; // bottom-quark pole mass
-    
+  extern double MH;     // H pole mass
+  extern double MW;     // W pole mass
+  extern double MZ;     // Z pole mass
+  extern double Mb;     // bottom-quark pole mass
+  extern double Mt;     // top-quark pole mass or MSbar mass mt(mt) (depending on the scheme)
+  extern double Mbmb;   // bottom-quark MSbar mass mb(mb)
+
   // Coupling parameters:
 
+  extern double vev;
   // alpha(MZ) via vev,MW,MZ:
-  const double vev = 246.221;
   //const double ee2 = (1.0-MW*MW/(MZ*MZ))*4*MW*MW/(vev*vev);
 
   // alpha(0):
-  const double ee2 = 4.0*constants::Pi/137.035999139;
+  extern double alphainv; // 1/alpha(0) fine-structure constant
+  // double ee2 = 4.0*constants::Pi/137.035999139;
 
   // QCD parameters:
   const double Nc = 3;

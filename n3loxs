@@ -1,101 +1,623 @@
-#!/bin/sh
+#!/usr/local/bin/python3
+
+
+# https://note.nkmk.me/en/python-split-rsplit-splitlines-re/
+# https://stackoverflow.com/questions/924700/best-way-to-retrieve-variable-values-from-a-text-file
 
 ######## Main script for the main program: cross section calculations at N3LO in QCD ########
 
-maindir=$(pwd)
+import re
+import argparse
+import sys
+import subprocess
 
-# Parameters read from the command-line:
-#   lattice size
-#   seed for the pseudo-random-number generator 
-#   neutral (1) or charged (2) drell-yan or (3) inclusive W+H production (DY-type contributions only) or (4) inclusive 5FS bbH production
-#   optional flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)
+if (sys.version_info[0] < 3 or sys.version_info[1] < 4):
+    raise Exception("Must be using Python 3.5 at least")
 
-if [ "$#" -gt 4 ]; then
-    echo "You cannot use more than four arguments"
-    exit
-fi
-if [ "$#" -lt 3 ]; then
-    if [ $1 == "-h" ] || [ $1 == "--help" ]
-    then
-	echo ""
-	echo "## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##"
-	echo "Usage: ./n3loxs a b c d with:"
-	echo "a: Lattice size (integer)"
-	echo "b: Seed for the pseudo-random-number generator (integer)"
-	echo "c: Choice of the process: 1 for neutral (gamma*) Drell-Yan, 2 for charged (W+ or W-) Drell-Yan,"
-	echo "   3 for inclusive WH Higgs-strahlung production (DY-type contributions only),"
-	echo "   4 for inclusive five-flavor scheme Higgs production in bottom-quark fusion"
-	echo "d: Option flag --scale; if absent, the renormalization scale is set equal to mu_F (see dy_parameters.in)"
-	echo ""
-	exit
-    else
-	echo "You must use at least three arguments"
-	exit
-    fi
-fi
-
-
-lattice=$1
-seed=$2
-type=$3
-
-if [[ "$#" -eq 4 ]]
-then
-    scale=$4
-else
-    scale=
-fi
-
-# Now read the input parameters from the input file dy_parameters.in
-inputfile="./n3loxs_parameters.in";
-while read LINE
-do
-    if grep -q "PDFset =" <<< $LINE
-    then
-	pdfset="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "PDFnum =" <<< $LINE
-    then
-	pdfnum="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "order =" <<< $LINE
-    then
-	qcd="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "collider =" <<< $LINE
-    then
-	collider="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "energy =" <<< $LINE
-    then
-	energy="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "Q =" <<< $LINE
-    then
-	q="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "xmuf =" <<< $LINE
-    then
-	xmuf="$(cut -d' ' -f 3 <<< $LINE)"
-    elif grep -q "channel =" <<< $LINE
-    then
-	wtype="$(cut -d' ' -f 3 <<< $LINE)"
-    fi
-done < $inputfile
+def read_config(filename):
+    labels = ['type', 'pdfset', 'pdfnum', 'qcd', 'collider', 'energy', 'q', 'muf0',
+                  'xmuf', 'mur0', 'xmur', 'mw', 'widthw', 'mz', 'mh', 'mt', 'mb',
+                  'mtmt', 'mbmb', 'vev', 'alphainv', 'mtscheme', 'htlflag']
+    f = open(filename)
+    config_dict = {}
+    i = 0
+    for lines in f:
+        items = re.split('\ +|\n', lines)
+        if (len(items)>2 and items[1] == '='):
+            if i==0 or i==3 or i==4 or i==21 or i==22:
+                config_dict[labels[i]] = int(eval(items[2]))
+            elif (i>=5 and i<=10):
+                if (items[2] =='' and (i==7 or i==9)):
+                    config_dict[labels[i]] = -1.0
+                else:
+                    config_dict[labels[i]] = float(eval(items[2]))
+            else:
+                config_dict[labels[i]] = items[2]
+            i += 1
+    f.close()
+    return config_dict
 
 
-if [ $type -eq 1 ]; then
-    # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
-    echo "Now calculating for charged Drell-Yan process..."
-    ${maindir}/subprogs/run_dy_w $lattice $seed $qcd $collider $energy $q $wtype $xmuf $pdfset $pdfnum $scale
-elif [ $type -eq 2 ]; then
-    echo "Now calculating for neutral Drell-Yan process..."
-    # Drell-Yan p p(pbar) --> gamma* + X --> l+ l- + X
-    ${maindir}/subprogs/run_dy_phot $lattice $seed $qcd $collider $energy $q $xmuf $pdfset $pdfnum $scale
-elif [ $type -eq 3 ]; then
-    echo "Now calculating for inclusive Higgs-strahlung WH process..."
-    # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
-    ${maindir}/subprogs/run_wh $lattice $seed $qcd $collider $energy $wtype $xmuf $pdfset $pdfnum $scale
-elif [ $type -eq 4 ]; then
-    echo "Now calculating for inclusive 5FS bbH process..."
-    # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
-    ${maindir}/subprogs/run_bbh $lattice $seed $qcd $collider $energy $xmuf $pdfset $pdfnum $scale
-else
-    echo "You have selected a process which does not exist yet! Program will exit..."
-fi
+if __name__ == "__main__":
 
-echo "\n Thanks for using our program!\n"
+    maindirpid = subprocess.run(["pwd"],stdout=subprocess.PIPE,universal_newlines=True)
+    maindir=maindirpid.stdout.strip('\n')
+
+    # Parameters read from the command-line:
+    #   lattice size
+    #   seed for the pseudo-random-number generator
+    #   input file name
+    #   optional flag --scale or --7point:
+    #            --scale: This generates 16 predictions for various renormalization scales muR between 0.5*muR0 and 2.0*muR0
+    #            --7point: This calculates the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0
+    parser = argparse.ArgumentParser(description='## User help for n3loxs program that calculates various hadronic cross sections up to N3LO in QCD ##')
+    scaleoption = parser.add_mutually_exclusive_group()
+    parser.add_argument("-lattice", default=1000, type=int, help='Lattice size (integer). Default is 1000')
+    parser.add_argument("-seed", default=1, type=int, help='Seed for the pseudo-random-number generator (integer). Default is 1')
+    parser.add_argument("-filename", default='n3loxs_parameters.in', type=str, help="Name of the input parameter file. Default input is \'n3loxs_parameters.in\'")
+    scaleoption.add_argument("--scale", action='store_true', help='(default: omitted) Generate 16 predictions for mu_R varied between 0.5*mu_R0 and 2*mu_R0, mu_R0 is the central renormalization scale.')
+    scaleoption.add_argument("--7point", action='store_true', help='(default: omitted) Calculate the 7-point scale uncertainty of the cross section around the central scales mu_R0 and mu_F0. See the input file n3loxs_parameters.in for the definition of mu_R0 and mu_F0.')
+    args = vars(parser.parse_args())
+    lattice = args.get('lattice')
+    seed = args.get('seed')
+    filename=args.get('filename')
+    scale = args.get('scale')
+    sevenpoint = args.get('7point')
+
+    # Now read the input parameters from the input file dy_parameters.in
+    variable=read_config(filename)
+
+    if variable['type']==1:
+        muf0std='Q'
+        mur0std='Q'
+    elif variable['type']==2 or variable['type']==3:
+        muf0std='Q'
+        mur0std='Q'
+    elif variable['type']==4 or variable['type']==5:
+        muf0std='(MW + MH)'
+        mur0std='(MW + MH)'
+    elif variable['type']==6:
+        muf0std='(MH+2*Mb)/4'
+        mur0std='MH'
+    elif variable['type']==7:
+        muf0std='MH/2'
+        mur0std='MH/2'
+    else:
+        raise Exception("You have selected a process which does not exist (yet)! Program will exit...")
+    
+    print('')
+    print('')
+    print('\t################  n3loxs v1.0 calculator ################')
+    print('\t######### Input parameters for the calculation: #########')
+    
+
+    if variable['collider'] == 0:
+        print('\t  p-p collider at a c.o.m. energy sqrt(s) = '+str(variable['energy'])+' TeV')
+    else:
+        print('\t  p-pbar collider at a c.o.m. energy sqrt(s) = '+str(variable['energy'])+' TeV')
+        
+    if variable['qcd'] == 0:
+        qcdw='LO'
+    elif variable['qcd'] == 1:
+        qcdw='NLO'
+    elif variable['qcd'] == 2:
+        qcdw='NNLO'
+    else:
+        qcdw='N3LO'
+
+    print('\t  Maximum QCD order of the calculation: '+qcdw)
+    print('\t  PDF set:                              '+variable['pdfset'])
+    print('\t  PDF member:                           '+variable['pdfnum'])
+    print('\t  W boson mass MW:                      '+variable['mw']+' GeV')
+    print('\t  Z boson mass MZ:                      '+variable['mz']+' GeV')
+    print('\t  Higgs boson mass MH:                  '+variable['mh']+' GeV')
+    print('\t  Top-quark pole mass Mt:               '+variable['mt']+' GeV')
+    print('\t  Bottom-quark pole mass Mb:            '+variable['mb']+' GeV')
+    print('\t  Top-quark MSbar mass mt(mt):          '+variable['mtmt']+' GeV')
+    print('\t  Bottom-quark MSbar mass mb(mb):       '+variable['mbmb']+' GeV')
+    print('\t  Vacuum expectation value vev:         '+variable['vev']+' GeV')
+    print('\t  1/alpha EM constant:                  '+variable['alphainv'])
+
+    if variable['type'] < 4:
+        print('\n\t  Off-shell Q-value Q = '+str(variable['q'])+'GeV')
+
+    if sevenpoint==False:
+        if variable['muf0'] == -1:
+            print('\n\t  Factorization scale   muF = xmuf * '+muf0std+', xmuf = '+str(variable['xmuf']))
+        else:
+            print('\n\t  Factorization scale   muF = xmuf * '+str(variable['muf0'])+' GeV, xmuf = '+str(variable['xmuf']))
+
+        if scale:
+            if variable['mur0'] == -1:
+                print('\t  Central renormalization scale muR0 = '+mur0std)
+            else:
+                print('\t  Central renormalization scale muR0 = '+str(variable['mur0'])+' GeV')
+        else:
+            if variable['mur0'] == -1:
+                print('\t  Renormalization scale muR = xmur * '+mur0std+', xmur = '+str(variable['xmur']))
+            else:
+                print('\t  Renormalization scale muR = xmur * '+str(variable['mur0'])+' GeV, xmur = '+str(variable['xmur']))
+    else:
+        if variable['muf0'] == -1:
+            if variable['mur0'] == -1:
+                print('\n\t  Central scales muF0 = '+muf0std+', muR0 = '+mur0std)
+            else:
+                print('\n\t  Central scales muF0 = '+muf0std+', muR0 = '+str(variable['mur0'])+' GeV')
+        else:
+            if variable['mur0'] == -1:
+                print('\n\t  Central scales muF0 = '+str(variable['muf0'])+' GeV, muR0 = '+mur0std)
+            else:
+                print('\n\t  Central scales muF0 = '+str(variable['muf0'])+' GeV, muR0 = '+str(variable['mur0'])+' GeV')
+
+        
+    if variable['type'] == 1:
+        # Drell-Yan p p(pbar) --> gamma* + X --> l+ l- + X
+        proctag='dy_xs_gamma'
+        print('\n\t  Now calculating for neutral Drell-Yan process...\n')
+        if sevenpoint:
+            running=subprocess.run([maindir+'/subprogs/run_dy_phot', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        '1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'], variable['alphainv'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_dy_phot', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        '0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'], variable['alphainv'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_dy_phot', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        '2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'], variable['alphainv'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+        else:
+            if scale:
+                running=subprocess.run([maindir+'/subprogs/run_dy_phot', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'], variable['alphainv'], '--scale'],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+            else:
+                running=subprocess.run([maindir+'/subprogs/run_dy_phot', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'], variable['alphainv']],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+
+    elif variable['type'] == 2 or variable['type'] == 3:
+        # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X
+        if variable['type'] == 2:
+            print('\n\t  Now calculating for charged W+ Drell-Yan process...\n')
+            wtype='1'
+            proctag='dy_xs_wplus'
+        else:
+            print('\n\t  Now calculating for charged W- Drell-Yan process...\n')
+            wtype='-1'
+            proctag='dy_xs_wminus'
+        if sevenpoint:
+            running=subprocess.run([maindir+'/subprogs/run_dy_w', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        wtype,'1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_dy_w', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        wtype,'0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_dy_w', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                        wtype,'2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+        else:
+            if scale:
+                running=subprocess.run([maindir+'/subprogs/run_dy_w', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                            wtype,str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev'], '--scale'],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+            else:
+                running=subprocess.run([maindir+'/subprogs/run_dy_w', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']), str(variable['q']),
+                                            wtype,str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+
+    elif variable['type'] == 4 or variable['type'] == 5:
+        # Higgs-strahlung p p(pbar) --> W+ H / W- H + X
+        if variable['type'] == 4:
+            print('\n\t  Now calculating for inclusive Higgs-strahlung W+ H process...\n')
+            wtype='1'
+            proctag='WplusH_xs'
+        else:
+            print('\n\t  Now calculating for inclusive Higgs-strahlung W- H process...\n')
+            wtype='-1'
+            proctag='WminusH_xs'
+        if sevenpoint:
+            running=subprocess.run([maindir+'/subprogs/run_wh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        wtype,'1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['mh'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_wh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        wtype,'0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['mh'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_wh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        wtype,'2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['mh'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+        else:
+            if scale:
+                running=subprocess.run([maindir+'/subprogs/run_wh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            wtype,str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['mh'], variable['vev'], '--scale'],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+            else:
+                running=subprocess.run([maindir+'/subprogs/run_wh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            wtype,str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['mh'], variable['vev']],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+
+    elif variable['type'] == 6:
+        # Bottom-quark fusion p p(pbar) --> H + X via b bbar --> H
+        proctag='bbH_xs'
+        print('\n\t  Now calculating for inclusive 5FS bbH process...\n')
+        if sevenpoint:
+            running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+        else:
+            if scale:
+                running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                            variable['mh'], variable['mb'], variable['mbmb'], variable['vev'], '--scale'],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+            else:
+                running=subprocess.run([maindir+'/subprogs/run_bbh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                            variable['mh'], variable['mb'], variable['mbmb'], variable['vev']],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+
+    elif variable['type'] == 7:
+        # Gluon fusion p p(pbar) --> H + X via g g --> H
+        proctag='ggH_xs'
+        if variable['mtscheme'] == 0:
+            print('\n\t  The calculation uses the OS scheme for the top-quark')
+            mtinput=variable['mt']
+        else:
+            print('\n\t  The calculation uses the MSbar scheme for the top-quark')
+            mtinput=variable['mtmt']
+
+        if variable['htlflag'] == 0:
+            print('\t  Now calculating for inclusive ggH process in the heavy-top limit...\n')
+        else:
+            print('\t  Now calculating for inclusive ggH process in the Born-improved heavy-top limit...\n')
+        if sevenpoint:
+            running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '1.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], mtinput, variable['vev'],
+                                        str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '0.5', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], mtinput, variable['vev'],
+                                        str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+            running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
+                                        str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                        '2.0', str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                        variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                        variable['mh'], mtinput, variable['vev'],
+                                        str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
+                                       stdout=subprocess.PIPE,universal_newlines=True)
+        else:
+            if scale:
+                running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                            variable['mh'], mtinput, variable['vev'],
+                                            str(variable['mtscheme']), str(variable['htlflag']), '--scale'],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+            else:
+                running=subprocess.run([maindir+'/subprogs/run_ggh', str(lattice), str(seed),
+                                            str(variable['qcd']), str(variable['collider']), str(variable['energy']),
+                                            str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
+                                            variable['pdfset'], variable['pdfnum'], variable['mz'],
+                                            variable['mh'], mtinput, variable['vev'],
+                                            str(variable['mtscheme']), str(variable['htlflag'])],
+                                           stdout=subprocess.PIPE,universal_newlines=True)
+                print(running.stdout)
+
+    # now calculate 7-point scale variation, if required
+    lotagerr   = 3+variable['qcd']
+    nlotagerr  = 4+variable['qcd']
+    nnlotagerr = 5+variable['qcd']
+
+    # https://stackoverflow.com/questions/5807952/removing-trailing-zeros-in-python
+    if (int(variable['energy'])/variable['energy']==1):
+        energy2=int(variable['energy'])
+    else:
+        if(variable['energy']<1):
+            energy2='%.4g' % variable['energy']
+        else:
+            energy2='%.5g' % variable['energy']
+
+    if variable['type']<4:
+        if (int(variable['q'])/variable['q']==1):
+            q2=int(variable['q'])
+        else:
+            if(variable['q']<1):
+                q2='%.4g' % variable['q']
+            else:
+                q2='%.5g' % variable['q']
+            
+    if sevenpoint:
+            if variable['collider'] == 0:
+                if variable['type']<4:
+                    filetest1=proctag+'_pp_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf1.txt'
+                    filetest0=proctag+'_pp_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf0.5.txt'
+                    filetest2=proctag+'_pp_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf2.txt'
+                else:
+                    filetest1=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf1.txt'
+                    filetest0=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf0.5.txt'
+                    filetest2=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf2.txt'
+
+            else:
+                if variable['type']<4:
+                    filetest1=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf1.txt'
+                    filetest0=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf0.5.txt'
+                    filetest2=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf2.txt'
+                else:
+                    filetest1=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf1.txt'
+                    filetest0=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf0.5.txt'
+                    filetest2=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf2.txt'
+
+            test_lo = []
+            if variable['qcd']>0:
+                    test_nlo = []
+                    if variable['qcd']>1:
+                            test_nnlo = []
+                            if variable['qcd']>2:
+                                    test_n3lo = []
+
+            opfiletest = open(filetest1)
+            i = 0
+            for lines in opfiletest:
+                    items = re.split('\t',lines)
+                    if i==2:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    if i==7:
+                        central_lo = float(eval(items[2]))
+                        test_lo.append(central_lo)
+                        error_lo   = float(eval(items[lotagerr]))
+                        if variable['qcd']>0:
+                            central_nlo = float(eval(items[3]))
+                            test_nlo.append(central_nlo)
+                            error_nlo   = float(eval(items[nlotagerr]))
+                            if variable['qcd']>1:
+                                central_nnlo = float(eval(items[4]))
+                                test_nnlo.append(central_nnlo)
+                                error_nnlo   = float(eval(items[nnlotagerr]))
+                                if variable['qcd']>2:
+                                    central_n3lo = float(eval(items[5]))
+                                    test_n3lo.append(central_n3lo)
+                                    error_n3lo   = float(eval(items[9]))
+                    if i==17:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    i += 1
+
+            opfiletest.close()
+
+            opfiletest = open(filetest0)
+            i = 0
+            for lines in opfiletest:
+                    items = re.split('\t',lines)
+                    if i==2:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    if i==7:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    i += 1
+
+            opfiletest.close()
+
+            opfiletest = open(filetest2)
+            i = 0
+            for lines in opfiletest:
+                    items = re.split('\t',lines)
+                    if i==7:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    if i==17:
+                        test_lo.append(float(eval(items[2])))
+                        if variable['qcd']>0:
+                            test_nlo.append(float(eval(items[3])))
+                            if variable['qcd']>1:
+                                test_nnlo.append(float(eval(items[4])))
+                                if variable['qcd']>2:
+                                    test_n3lo.append(float(eval(items[5])))
+                    i += 1
+
+            opfiletest.close()
+
+            min_lo = min(test_lo)
+            max_lo = max(test_lo)
+            percent_max_lo = 100*(max_lo-central_lo)/central_lo
+            percent_min_lo = 100*(min_lo-central_lo)/central_lo
+            print('\nxs_LO    = '+str(central_lo)+' +- '+str(error_lo)+' (num) pb +'+str(percent_max_lo)+'% / '+str(percent_min_lo)+'% (7-point scale uncertainty)')
+            if variable['qcd']>0:
+                min_nlo = min(test_nlo)
+                max_nlo = max(test_nlo)
+                percent_max_nlo = 100*(max_nlo-central_nlo)/central_nlo
+                percent_min_nlo = 100*(min_nlo-central_nlo)/central_nlo
+                print('xs_NLO   = '+str(central_nlo)+' +- '+str(error_nlo)+' (num) pb +'+str(percent_max_nlo)+'% / '+str(percent_min_nlo)+'% (7-point scale uncertainty)')
+                if variable['qcd']>1:
+                    min_nnlo = min(test_nnlo)
+                    max_nnlo = max(test_nnlo)
+                    percent_max_nnlo = 100*(max_nnlo-central_nnlo)/central_nnlo
+                    percent_min_nnlo = 100*(min_nnlo-central_nnlo)/central_nnlo
+                    print('xs_NNLO  = '+str(central_nnlo)+' +- '+str(error_nnlo)+' (num) pb +'+str(percent_max_nnlo)+'% / '+str(percent_min_nnlo)+'% (7-point scale uncertainty)')
+                    if variable['qcd']>2:
+                        min_n3lo = min(test_n3lo)
+                        max_n3lo = max(test_n3lo)
+                        percent_max_n3lo = 100*(max_n3lo-central_n3lo)/central_n3lo
+                        percent_min_n3lo = 100*(min_n3lo-central_n3lo)/central_n3lo
+                        print('xs_N3LO  = '+str(central_n3lo)+' +- '+str(error_n3lo)+' (num) pb +'+str(percent_max_n3lo)+'% / '+str(percent_min_n3lo)+'% (7-point scale uncertainty)')
+
+            subprocess.run(["rm",filetest1])
+            subprocess.run(["rm",filetest0])
+            subprocess.run(["rm",filetest2])
+
+    else:
+        if (int(variable['xmuf'])/variable['xmuf']==1):
+            xmuf2=int(variable['xmuf'])
+        else:
+            if(variable['xmuf']<1):
+                xmuf2='%.4g' % variable['xmuf']
+            else:
+                xmuf2='%.5g' % variable['xmuf']
+
+        if scale==False:
+            if (int(variable['xmur'])/variable['xmur']==1):
+                xmur2=int(variable['xmur'])
+            else:
+                if(variable['xmur']<1):
+                    xmur2='%.4g' % variable['xmur']
+                else:
+                    xmur2='%.5g' % variable['xmur']
+
+        if variable['collider'] == 0:
+            if variable['type']<4:
+                if scale:
+                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
+                else:
+                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+            else:
+                if scale:
+                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
+                else:
+                    fileoutput=proctag+'_pp_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+
+        else:
+            if variable['type']<4:
+                if scale:
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
+                else:
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_q'+str(q2)+'_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+            else:
+                if scale:
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'.txt'
+                else:
+                    fileoutput=proctag+'_ppbar_'+str(energy2)+'tev_pdf'+variable['pdfnum']+'_muf'+str(xmuf2)+'_mur'+str(xmur2)+'.txt'
+
+        opfiletest = open(fileoutput)
+        i = 0
+        for lines in opfiletest:
+            items = re.split('\t',lines)
+            if i==2 and scale==False:
+                central_lo = float(eval(items[2]))
+                error_lo   = float(eval(items[lotagerr]))
+                print('\nxs_LO(xmur='+str(variable['xmur'])+', xmuf='+str(variable['xmuf'])+')    = '+str(central_lo)+' +- '+str(error_lo)+' (num) pb')
+                if variable['qcd']>0:
+                    central_nlo = float(eval(items[3]))
+                    error_nlo   = float(eval(items[nlotagerr]))
+                    print('xs_NLO(xmur='+str(variable['xmur'])+', xmuf='+str(variable['xmuf'])+')   = '+str(central_nlo)+' +- '+str(error_nlo)+' (num) pb')
+                    if variable['qcd']>1:
+                        central_nnlo = float(eval(items[4]))
+                        error_nnlo   = float(eval(items[nnlotagerr]))
+                        print('xs_NNLO(xmur='+str(variable['xmur'])+', xmuf='+str(variable['xmuf'])+')  = '+str(central_nnlo)+' +- '+str(error_nnlo)+' (num) pb')
+                        if variable['qcd']>2:
+                            central_n3lo = float(eval(items[5]))
+                            error_n3lo   = float(eval(items[9]))
+                            print('xs_N3LO(xmur='+str(variable['xmur'])+', xmuf='+str(variable['xmuf'])+')  = '+str(central_n3lo)+' +- '+str(error_n3lo)+' (num) pb')
+            if i==7 and scale:
+                central_lo = float(eval(items[2]))
+                error_lo   = float(eval(items[lotagerr]))
+                print('\nxs_LO(xmur=1.0, xmuf='+str(variable['xmuf'])+')    = '+str(central_lo)+' +- '+str(error_lo)+' (num) pb')
+                if variable['qcd']>0:
+                    central_nlo = float(eval(items[3]))
+                    error_nlo   = float(eval(items[nlotagerr]))
+                    print('xs_NLO(xmur=1.0, xmuf='+str(variable['xmuf'])+')   = '+str(central_nlo)+' +- '+str(error_nlo)+' (num) pb')
+                    if variable['qcd']>1:
+                        central_nnlo = float(eval(items[4]))
+                        error_nnlo   = float(eval(items[nnlotagerr]))
+                        print('xs_NNLO(xmur=1.0, xmuf='+str(variable['xmuf'])+')  = '+str(central_nnlo)+' +- '+str(error_nnlo)+' (num) pb')
+                        if variable['qcd']>2:
+                            central_n3lo = float(eval(items[5]))
+                            error_n3lo   = float(eval(items[9]))
+                            print('xs_N3LO(xmur=1.0, xmuf='+str(variable['xmuf'])+')  = '+str(central_n3lo)+' +- '+str(error_n3lo)+' (num) pb')
+            i += 1
+
+        opfiletest.close()
+
+    print('\n\tThanks for using our program!\n')
+
+    if sevenpoint==False:
+        print('\tThe complet set of results can be found in the output file ./'+fileoutput+'\n')

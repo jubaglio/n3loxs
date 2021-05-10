@@ -14,7 +14,7 @@ Soft+Virtual contributions for the DY process q qb -> gamma* -> l l up to N3LO Q
 
 #include "constants.h"
 
-static const double eps = 1.e-10;
+static const double eps = 1.e-12;
 
 // Virtual delta(z) contribution up to N3LO
 double delta(const double X[], const double s, const double Q2, const double muf, const int k, LHAPDF::PDF const* const pdf)
@@ -103,7 +103,7 @@ double delta(const double X[], const double s, const double Q2, const double muf
 */
 
 
-// PlusConst term, electric charge stripped out wrt Claude's mathematica notebook
+// PlusConst term, electric charge stripped out and included in dlumqqb
 double PlusConst(const double X[], const double s, const double Q2, const double muf, const int k, LHAPDF::PDF const* const pdf)
 {
 /* *******************************************************************
@@ -184,7 +184,7 @@ double PlusConst(const double X[], const double s, const double Q2, const double
   return res;
 }
 
-// PlusInt1 term, electric charge stripped out wrt Claude's mathematica notebook
+// PlusInt1 term, electric charge stripped out and included in dlumqqb
 double PlusInt1(const double X[], const double s, const double Q2, const double muf, const int k, LHAPDF::PDF const* const pdf)
 {
 /* *******************************************************************
@@ -268,7 +268,7 @@ double PlusInt1(const double X[], const double s, const double Q2, const double 
 }
 
 
-// PlusInt2 term, electric charge stripped out wrt Claude's mathematica notebook
+// PlusInt2 term, electric charge stripped out and included in dlumqqb
 double PlusInt2(const double X[], const double s, const double Q2, const double muf, const int k, LHAPDF::PDF const* const pdf)
 {
 /* *******************************************************************

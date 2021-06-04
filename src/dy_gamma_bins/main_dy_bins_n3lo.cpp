@@ -14,7 +14,7 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
-// Header for the routines alphaS(muR) and mb_msbar(muR)
+// Header for the routines alphaS(muR)
 #include "alphaS.h"
 
 struct {
@@ -446,7 +446,12 @@ struct functor_qQqb_N3LO_t  {
 
 
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -505,11 +510,17 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
-      double qmin = atof(argv[6]);
-      double qmax = atof(argv[7]);
+      std::string qminheader = argv[6];
+      removeTrailingCharacters(qminheader, '0');
+      std::string qmaxheader = argv[7];
+      removeTrailingCharacters(qmaxheader, '0');
+      double qmin = std::stod(qminheader);
+      double qmax = std::stod(qmaxheader);
       global_param_gamma.q2min = qmin*qmin;
       global_param_gamma.q2max = qmax*qmax;
 
@@ -709,34 +720,24 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
-      std::string qminheader;
-      std::string qmaxheader;
       std::string muf0header;
       std::string mur0header;
 
       if(collider==0)
 	{
-	  filename << "dy_xs_gamma_pp_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	  filename << "dy_xs_gamma_pp_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		   << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	  header = "# Drell-Yan cross section xs(p p -> gamma* -> l+ l-) binned for a photon virtuality Qmin <= Q <= Qmax, Qmin=";
 	}
       else
 	{
-	  filename << "dy_xs_gamma_ppbar_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	  filename << "dy_xs_gamma_ppbar_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		   << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	  header = "# Drell-Yan cross section xs(p pbar -> gamma*) at a given photon virtuality Q = ";
 	}
 
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
-      qminheader = std::to_string(qmin);
-      removeTrailingCharacters(qminheader, '0');
-      qmaxheader = std::to_string(qmax);
-      removeTrailingCharacters(qmaxheader, '0');
 
       if(muf_flag == 0)
 	{

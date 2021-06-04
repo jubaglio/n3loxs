@@ -11,14 +11,6 @@ Regular hard terms kernels for the DY process D Ubar -> W- -> l- ~nu_l up to N3L
 
 #include "constants.h"
 
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
-
 
 // NLO d-ubar regular term kernels
 double dub_regular_kernel_nlo(const double x1, const double log1)

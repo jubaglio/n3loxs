@@ -8,7 +8,12 @@
 #   5: inclusive W- H Higgs-strahlung production (DY-type contributions only),
 #   6: inclusive five-flavor scheme Higgs production in bottom-quark fusion,
 #   7: inclusive Higgs production in gluon fusion, either in the heavy top limit (HTL) or in the Born-improved HTL
-process = 6
+#   8: neutral (gamma*) Drell-Yan p p (pbar) --> gamma* --> l+ l-, in an invariant mass window between Qmin and Qmax,
+#   9: charged W+ Drell-Yan p p (pbar) --> W+ --> l+ vl, in an invariant mass window between Qmin and Qmax,
+#  10: charged W- Drell-Yan p p (pbar) --> W- --> l- vl~, in an invariant mass window between Qmin and Qmax,
+#  11: inclusive W+ H Higgs-strahlung production using dynamical factorization/renormalization scales,
+#  12: inclusive W- H Higgs-strahlung production using dynamical factorization/renormalization scales
+process = 8
 
 # Parton distribution functions:
 PDFset = PDF4LHC15_nnlo_mc
@@ -22,12 +27,15 @@ collider = 1
 energy   = 13.0
 
 # Invariant lepton-mass Q in GeV (only for Drell-Yan processes)
+# For processes 9 and 10: the cross section is calculated in the bin Qmin <= Q <= Qmax (Q value is discarded)
 Q    = 100.0
+Qmin = 80.0
+Qmax = 90.0
 
 # Choice of the factorization scale mu_F = xmuf*mu_F0:
 #   If muf0 = -1 (or absent), the default central scale choice is used:
 #     mu_F0 = Q for Drell-Yan processes
-#     mu_F0 = MH+MW for the WH processes
+#     mu_F0 = MH+MW for the WH processes (M_HW for processes 11 and 12)
 #     mu_F0 = (MH+2*mb_pole)/4 for the bbH process
 #     mu_F0 = MH/2 for the ggH process
 #   Otherwise, mu_F0 = muf0 as input by the user

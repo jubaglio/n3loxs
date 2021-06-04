@@ -14,7 +14,7 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
-// Header for the routines alphaS(muR) and mb_msbar(muR)
+// Header for the routine alphaS(muR)
 #include "alphaS.h"
 
 struct {
@@ -446,7 +446,12 @@ struct functor_qQqb_N3LO_t  {
 
 
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -504,14 +509,16 @@ int main(int argc, char **argv) {
 	{
 	  parampdf.collidertype = -1;
 	}
-
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
-      double Q    = atof(argv[6]);
+      std::string qheader = argv[6];
+      removeTrailingCharacters(qheader, '0');
+      double Q    = std::stod(qheader);
       double xmuf = atof(argv[7]);
 
-      // new:
       double muf0 = atof(argv[8]);
       double xmur = atof(argv[9]);
       double mur0 = atof(argv[10]);
@@ -519,7 +526,6 @@ int main(int argc, char **argv) {
       int mur_flag;
       double scalemuF0;
       double scalemuR0;
-      // end new
 
       // init PDF set
       const std::string setname = argv[11];
@@ -717,8 +723,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
-      std::string qheader;
       std::string muf0header;
       std::string mur0header;
 
@@ -741,11 +745,11 @@ int main(int argc, char **argv) {
 	{
 	  if(imax==1)
 	    {
-	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      filename << "dy_xs_gamma_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	    }
 	  else
 	    {
-	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      filename << "dy_xs_gamma_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
 	  header = "# Drell-Yan cross section xs(p p -> gamma*) at a given photon virtuality Q = ";
 	}
@@ -753,22 +757,17 @@ int main(int argc, char **argv) {
 	{
 	  if(imax==1)
 	    {
-	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      filename << "dy_xs_gamma_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	    }
 	  else
 	    {
-	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      filename << "dy_xs_gamma_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
 	  header = "# Drell-Yan cross section xs(p pbar -> gamma*) at a given photon virtuality Q = ";
 	}
 
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
-      qheader = std::to_string(Q);
-      removeTrailingCharacters(qheader, '0');
 
       if(muf_flag == 0)
 	{
@@ -859,7 +858,7 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=1)
       	{
-	  // alphaS(mur) and a mb(mur) at NLO
+	  // alphaS(mur) at NLO
 	  asopi   = as_n3loxs(mur, 1, asopimz);
       	  asopi2 = asopi*asopi;
 
@@ -875,7 +874,7 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=2)
       	{
-	  // alphaS(mur) and a mb(mur) at NNLO
+	  // alphaS(mur) at NNLO
 	  asopi   = as_n3loxs(mur, 2, asopimz);
 	  asopi2 = asopi*asopi;
       	  asopi4 = asopi2*asopi2;
@@ -906,7 +905,7 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder==3)
       	{
-	  // alphaS(mur) and a mb(mur) at NNLO
+	  // alphaS(mur) at NNLO
 	  asopi   = as_n3loxs(mur, 3, asopimz);
 	  asopi2 = asopi*asopi;
       	  asopi3 = asopi*asopi2;

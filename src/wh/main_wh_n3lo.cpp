@@ -14,7 +14,7 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
-// Header for the routines alphaS(muR) and mb_msbar(muR)
+// Header for the routines alphaS(muR)
 #include "alphaS.h"
 
 struct {
@@ -27,7 +27,6 @@ struct {
 #include "pdfpar_w.h"
 struct parampdf_struc parampdf;
 
-//const int scalemuF0 = constants::MH + constants::MW;
 
 double constants::MW;
 double constants::MZ;
@@ -573,7 +572,12 @@ struct functor_ubarcbar_N3LO_t  {
 
 
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -634,7 +638,9 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
       int wchoice = atoi(argv[6]);
@@ -642,7 +648,6 @@ int main(int argc, char **argv) {
       parampdf.wchoice = wchoice;
       double xmuf = atof(argv[7]);
 
-      // new:
       double muf0 = atof(argv[8]);
       double xmur = atof(argv[9]);
       double mur0 = atof(argv[10]);
@@ -650,7 +655,6 @@ int main(int argc, char **argv) {
       int mur_flag;
       double scalemuF0;
       double scalemuR0;
-      // end new
 
       // init PDF set
       const std::string setname = argv[11];
@@ -861,7 +865,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
       std::string muf0header;
       std::string mur0header;
 
@@ -886,11 +889,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WminusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WminusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WminusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WminusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}      
 	      header = "# Standard Model Higgs-strahlung cross section xs(p p -> W- H), sqrt(S) = ";
 	    }
@@ -898,11 +901,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WplusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WplusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WplusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WplusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p p -> W+ H), sqrt(S) = ";
 	    }
@@ -913,11 +916,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WminusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WminusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WminusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WminusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p pbar -> W- H), sqrt(S) = ";
 	    }
@@ -925,11 +928,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WplusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WplusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WplusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WplusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p pbar -> W+ H), sqrt(S) = ";
 	    }
@@ -938,9 +941,6 @@ int main(int argc, char **argv) {
       
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
 
       if(muf_flag == 0)
 	{

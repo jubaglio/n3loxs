@@ -3,15 +3,14 @@
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
 Date of Programming Function: 20/05/2021
-Regular hard terms for all W H subprocesses (DY-type) up to N3LO QCD (dynamical scale)
+Regular hard terms for all W- H subprocesses (DY-type) up to N3LO QCD (dynamical scale)
 *********************************************************************
 ********************************************************************* */
-
-#include "dy_w_kernels.h"
 
 // pdf functions
 #include "pdffunctions_w.h"
 
+#include "dy_w_kernels.h"
 #include "dy_functions_wh_dyn.h"
 
 #include "constants.h"
@@ -38,8 +37,6 @@ double dub_regular_nlo(const double X[], const double s, const double xmuf, cons
   double asopi;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -57,7 +54,7 @@ double dub_regular_nlo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -85,8 +82,6 @@ double dub_regular_nnlo(const double X[], const double s, const double xmuf, con
   double res_nlo, res1, res2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -107,7 +102,7 @@ double dub_regular_nnlo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -140,8 +135,6 @@ double dub_regular_n3lo(const double X[], const double s, const double xmuf, con
   double res_nlo, res1, res2, res1_n3lo, res2_n3lo;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -164,7 +157,7 @@ double dub_regular_n3lo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -208,8 +201,6 @@ double gub_regular_nlo(const double X[], const double s, const double xmuf, cons
   double asopi;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -227,7 +218,7 @@ double gub_regular_nlo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -254,8 +245,6 @@ double gub_regular_nnlo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -276,7 +265,7 @@ double gub_regular_nnlo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -303,8 +292,6 @@ double gub_regular_n3lo(const double X[], const double s, const double xmuf, con
   double res_nlo, res_nnlo, res1, res2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -327,7 +314,7 @@ double gub_regular_n3lo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -366,8 +353,6 @@ double gg_regular_nnlo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -386,7 +371,7 @@ double gg_regular_nnlo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -412,8 +397,6 @@ double gg_regular_n3lo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -435,7 +418,7 @@ double gg_regular_n3lo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -466,8 +449,6 @@ double gdb_regular_n3lo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -487,7 +468,7 @@ double gdb_regular_n3lo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -521,8 +502,6 @@ double cub_regular_nnlo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -541,7 +520,7 @@ double cub_regular_nnlo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -567,8 +546,6 @@ double cub_regular_n3lo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -590,7 +567,7 @@ double cub_regular_n3lo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -621,8 +598,6 @@ double qqb_regular_nnlo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -641,7 +616,7 @@ double qqb_regular_nnlo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -672,8 +647,6 @@ double qqb_regular_n3lo(const double X[], const double s, const double xmuf, con
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -695,7 +668,7 @@ double qqb_regular_n3lo(const double X[], const double s, const double xmuf, con
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -735,8 +708,6 @@ double qq_regular_nnlo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -755,7 +726,7 @@ double qq_regular_nnlo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -781,8 +752,6 @@ double qq_regular_n3lo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -804,7 +773,7 @@ double qq_regular_n3lo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -835,8 +804,6 @@ double qqprime_regular_nnlo(const double X[], const double s, const double xmuf,
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -855,7 +822,7 @@ double qqprime_regular_nnlo(const double X[], const double s, const double xmuf,
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -887,8 +854,6 @@ double qqprime_regular_n3lo(const double X[], const double s, const double xmuf,
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -910,7 +875,7 @@ double qqprime_regular_n3lo(const double X[], const double s, const double xmuf,
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -951,8 +916,6 @@ double qbqprimeb_regular_nnlo(const double X[], const double s, const double xmu
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -971,7 +934,7 @@ double qbqprimeb_regular_nnlo(const double X[], const double s, const double xmu
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -1003,8 +966,6 @@ double qbqprimeb_regular_n3lo(const double X[], const double s, const double xmu
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -1026,7 +987,7 @@ double qbqprimeb_regular_n3lo(const double X[], const double s, const double xmu
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -1066,8 +1027,6 @@ double ds_regular_nnlo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -1086,7 +1045,7 @@ double ds_regular_nnlo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -1112,8 +1071,6 @@ double ds_regular_n3lo(const double X[], const double s, const double xmuf, cons
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -1135,7 +1092,7 @@ double ds_regular_n3lo(const double X[], const double s, const double xmuf, cons
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -1165,8 +1122,6 @@ double ubcb_regular_nnlo(const double X[], const double s, const double xmuf, co
   double asopi, asopi2;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -1185,7 +1140,7 @@ double ubcb_regular_nnlo(const double X[], const double s, const double xmuf, co
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 
@@ -1211,8 +1166,6 @@ double ubcb_regular_n3lo(const double X[], const double s, const double xmuf, co
   double asopi, asopi2, asopi3;
   const double MHW2 = (constants::MW+constants::MH)*(constants::MW+constants::MH);
 
-  //  muf2 = pow(muf,2);
-
   tauwh = MHW2/s;
   tau = exp((eps+(1.0-2.0*eps)*X[2])*log(tauwh));
   fac = -(1.0-2.0*eps)*tau*log(tauwh);
@@ -1234,7 +1187,7 @@ double ubcb_regular_n3lo(const double X[], const double s, const double xmuf, co
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   log1 = log(Q2/muf2);
 

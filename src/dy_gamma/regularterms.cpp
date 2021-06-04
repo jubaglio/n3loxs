@@ -16,14 +16,6 @@ Regular hard terms for the DY process q qb -> gamma* -> l l up to N3LO QCD
 
 static const double eps = 1.e-12;
 
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
-
 // NLO q-qbar regular term, electric charge stripped out and included in dlumqqb
 double qqb_regular_nlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
 {
@@ -40,12 +32,12 @@ double qqb_regular_nlo(const double X[], const double s, const double Q2, const 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
   res = 4.0/3.0*
     (-(1.0 + x1)*(log1 + 2.0*log(1.0-x1)) +
-     ((1.0 + pow(x1,2))*log(x1))/(-1.0 + x1));
+     ((1.0 + intpow(x1,2))*log(x1))/(-1.0 + x1));
 
   res = fac*res;
   res = res*tau*dlumqqb(x2,tau/x1/x2,muf2,pdf)/x1/x2;

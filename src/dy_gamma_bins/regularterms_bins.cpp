@@ -11,13 +11,6 @@ Regular hard terms kernels for the DY process q qb -> gamma* -> l l up to N3LO Q
 
 #include "constants.h"
 
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
 
 // NLO q-qbar regular term kernel
 double qqb_regular_kernel_nlo(const double x1, const double log1)

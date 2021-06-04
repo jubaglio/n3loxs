@@ -607,7 +607,12 @@ struct functor_ubarcbar_N3LO_t  {
 
 
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -668,15 +673,21 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
       int wchoice = atoi(argv[6]);
       wchoice = -wchoice; // internal conversion: all the contributions are written for W- by default.
       parampdf.wchoice = wchoice;
 
-      double qmin = atof(argv[7]);
-      double qmax = atof(argv[8]);
+      std::string qminheader = argv[7];
+      removeTrailingCharacters(qminheader, '0');
+      std::string qmaxheader = argv[8];
+      removeTrailingCharacters(qmaxheader, '0');
+      double qmin = std::stod(qminheader);
+      double qmax = std::stod(qmaxheader);
       global_param.q2min = qmin*qmin;
       global_param.q2max = qmax*qmax;
       
@@ -887,9 +898,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
-      std::string qminheader;
-      std::string qmaxheader;
       std::string muf0header;
       std::string mur0header;
 
@@ -897,13 +905,13 @@ int main(int argc, char **argv) {
 	{
 	  if(wchoice==1)
 	    {
-	      filename << "dy_xs_wminus_pp_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	      filename << "dy_xs_wminus_pp_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		       << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	      header = "# Drell-Yan cross section xs(p p -> W-* -> l- nu_l~), binned for an off-shell W- virtuality Qmin <= Q <= Qmax, Qmin=";
 	    }
 	  else
 	    {
-	      filename << "dy_xs_wplus_pp_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	      filename << "dy_xs_wplus_pp_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		       << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	      header = "# Drell-Yan cross section xs(p p -> W+* -> l+ nu_l), binned for an off-shell W+ virtuality Qmin <= Q <= Qmax, Qmin=";
 	    }
@@ -912,13 +920,13 @@ int main(int argc, char **argv) {
 	{
 	  if(wchoice==1)
 	    {
-	      filename << "dy_xs_wminus_ppbar_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	      filename << "dy_xs_wminus_ppbar_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		       << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	      header = "# Drell-Yan cross section xs(p pbar -> W-* -> l- nu_l~), binned for an off-shell W- virtuality Qmin <= Q <= Qmax, Qmin=";
 	    }
 	  else
 	    {
-	      filename << "dy_xs_wplus_ppbar_" << energy << "tev_qmin" << int(qmin) << "-qmax" << int(qmax)
+	      filename << "dy_xs_wplus_ppbar_" << energyheader << "tev_qmin" << qminheader << "-qmax" << qmaxheader
 		       << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	      header = "# Drell-Yan cross section xs(p pbar -> W+* -> l+ nu_l), binned for an off-shell W+ virtuality Qmin <= Q <= Qmax, Qmin=";
 	    }
@@ -927,13 +935,6 @@ int main(int argc, char **argv) {
       
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
-      qminheader = std::to_string(qmin);
-      removeTrailingCharacters(qminheader, '0');
-      qmaxheader = std::to_string(qmax);
-      removeTrailingCharacters(qmaxheader, '0');
 
       if(muf_flag == 0)
 	{

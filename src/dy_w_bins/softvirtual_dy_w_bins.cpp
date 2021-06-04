@@ -10,12 +10,22 @@ Soft+Virtual contributions for the DY process D Ubar -> W- -> l- ~nu_l up to N3L
 // pdf functions
 #include "pdffunctions_w.h"
 
+#include "dy_w_kernels.h"
 #include "dy_functions_w_bins.h"
 
 #include "constants.h"
 
 // Header for the routines alphaS(muR)
 #include "alphaS.h"
+
+
+double intpow(const double& x,int m){
+        double res=1.0;
+        for (int i=0;i<m;i++){
+            res *= x;
+        }
+        return res;
+    }
 
 static const double eps = 1.e-10;
 
@@ -218,7 +228,7 @@ double PlusConst(const double X[], const double s,
       plusterms[0] = 8*asopi/3.0*log1;
       plusterms[1] = 16*asopi/3.0;
 
-      res = plusterms[0]*log(1.0-tau) + plusterms[1]*pow(log(1.0-tau),2)/2.0;
+      res = plusterms[0]*log(1.0-tau) + plusterms[1]*intpow(log(1.0-tau),2)/2.0;
       break;
     case 2: // NNLO
       asopi = as_n3loxs(mur, 2, asopimz);
@@ -235,9 +245,9 @@ double PlusConst(const double X[], const double s,
       plusterms[3] = 128*asopi2/9.0;
 
       res = plusterms[0]*log(1.0-tau) +
-	plusterms[1]*pow(log(1.0-tau),2)/2.0 +
-	plusterms[2]*pow(log(1.0-tau),3)/3.0 +
-	plusterms[3]*pow(log(1.0-tau),4)/4.0;
+	plusterms[1]*intpow(log(1.0-tau),2)/2.0 +
+	plusterms[2]*intpow(log(1.0-tau),3)/3.0 +
+	plusterms[3]*intpow(log(1.0-tau),4)/4.0;
       break;
     case 3: // N3LO
       asopi = as_n3loxs(mur, 3, asopimz);
@@ -278,11 +288,11 @@ double PlusConst(const double X[], const double s,
       plusterms[5] = 512*asopi3/27.0;
 
       res = plusterms[0]*log(1.0-tau) +
-	plusterms[1]*pow(log(1.0-tau),2)/2.0 +
-	plusterms[2]*pow(log(1.0-tau),3)/3.0 +
-	plusterms[3]*pow(log(1.0-tau),4)/4.0 +
-	plusterms[4]*pow(log(1.0-tau),5)/5.0 +
-	plusterms[5]*pow(log(1.0-tau),6)/6.0;
+	plusterms[1]*intpow(log(1.0-tau),2)/2.0 +
+	plusterms[2]*intpow(log(1.0-tau),3)/3.0 +
+	plusterms[3]*intpow(log(1.0-tau),4)/4.0 +
+	plusterms[4]*intpow(log(1.0-tau),5)/5.0 +
+	plusterms[5]*intpow(log(1.0-tau),6)/6.0;
       break;
     }
   res = fac*res;
@@ -342,7 +352,7 @@ double PlusInt1(const double X[], const double s,
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau)*fac;
 
   res = 0.0;
 
@@ -376,8 +386,8 @@ double PlusInt1(const double X[], const double s,
 
       res = plusterms[0]/(1.0-x1) +
 	plusterms[1]*log(1.0-x1)/(1.0-x1) +
-	plusterms[2]*pow(log(1.0-x1),2)/(1.0-x1) +
-	plusterms[3]*pow(log(1.0-x1),3)/(1.0-x1);
+	plusterms[2]*intpow(log(1.0-x1),2)/(1.0-x1) +
+	plusterms[3]*intpow(log(1.0-x1),3)/(1.0-x1);
       break;
     case 3: // N3LO
       asopi = as_n3loxs(mur, 3, asopimz);
@@ -419,10 +429,10 @@ double PlusInt1(const double X[], const double s,
 
       res = plusterms[0]/(1.0-x1) +
 	plusterms[1]*log(1.0-x1)/(1.0-x1) +
-	plusterms[2]*pow(log(1.0-x1),2)/(1.0-x1) +
-	plusterms[3]*pow(log(1.0-x1),3)/(1.0-x1) +
-	plusterms[4]*pow(log(1.0-x1),4)/(1.0-x1) +
-	plusterms[5]*pow(log(1.0-x1),5)/(1.0-x1);
+	plusterms[2]*intpow(log(1.0-x1),2)/(1.0-x1) +
+	plusterms[3]*intpow(log(1.0-x1),3)/(1.0-x1) +
+	plusterms[4]*intpow(log(1.0-x1),4)/(1.0-x1) +
+	plusterms[5]*intpow(log(1.0-x1),5)/(1.0-x1);
       break;
     }
   res = fac*res;
@@ -483,7 +493,7 @@ double PlusInt2(const double X[], const double s,
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau*exp(-(eps+(1.0-2.0*eps)*X[1])*log(x1));
-  fac = pow(1.0-2.0*eps,2)*x1*log(tau)*x2*log(x1)*fac;
+  fac = intpow(1.0-2.0*eps,2)*x1*log(tau)*x2*log(x1)*fac;
 
   res = 0.0;
 
@@ -517,8 +527,8 @@ double PlusInt2(const double X[], const double s,
 
       res = plusterms[0]/(1.0-x1) +
 	plusterms[1]*log(1.0-x1)/(1.0-x1) +
-	plusterms[2]*pow(log(1.0-x1),2)/(1.0-x1) +
-	plusterms[3]*pow(log(1.0-x1),3)/(1.0-x1);
+	plusterms[2]*intpow(log(1.0-x1),2)/(1.0-x1) +
+	plusterms[3]*intpow(log(1.0-x1),3)/(1.0-x1);
       break;
     case 3: // N3LO
       asopi = as_n3loxs(mur, 3, asopimz);
@@ -560,10 +570,10 @@ double PlusInt2(const double X[], const double s,
 
       res = plusterms[0]/(1.0-x1) +
 	plusterms[1]*log(1.0-x1)/(1.0-x1) +
-	plusterms[2]*pow(log(1.0-x1),2)/(1.0-x1) +
-	plusterms[3]*pow(log(1.0-x1),3)/(1.0-x1) +
-	plusterms[4]*pow(log(1.0-x1),4)/(1.0-x1) +
-	plusterms[5]*pow(log(1.0-x1),5)/(1.0-x1);
+	plusterms[2]*intpow(log(1.0-x1),2)/(1.0-x1) +
+	plusterms[3]*intpow(log(1.0-x1),3)/(1.0-x1) +
+	plusterms[4]*intpow(log(1.0-x1),4)/(1.0-x1) +
+	plusterms[5]*intpow(log(1.0-x1),5)/(1.0-x1);
       break;
     }
   res = -fac*res;

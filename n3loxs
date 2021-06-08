@@ -492,7 +492,7 @@ if __name__ == "__main__":
 
     elif variable['type'] == 11 or variable['type'] == 12:
         # Higgs-strahlung p p(pbar) --> W+ H / W- H + X with dynamical scales
-        if variable['type'] == 4:
+        if variable['type'] == 11:
             print('\n\t  Now calculating for inclusive Higgs-strahlung W+ H process...\n')
             wtype='1'
             proctag='WplusH_xs'

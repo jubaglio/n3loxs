@@ -21,8 +21,7 @@ Regular hard terms for all DY W subprocesses up to N3LO QCD including binning
 
 static const double eps = 1.e-10;
 
-static const double GammaW = 2.085;
-
+//static const double GammaW = 2.085;
 
 //////////////////////////////////////////////////
 ///////////////// d-ubar channel /////////////////
@@ -46,7 +45,7 @@ double dub_regular_nlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -105,7 +104,7 @@ double dub_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -173,7 +172,7 @@ double dub_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -254,7 +253,7 @@ double gub_regular_nlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -312,7 +311,7 @@ double gub_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -374,7 +373,7 @@ double gub_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -450,7 +449,7 @@ double gg_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -507,7 +506,7 @@ double gg_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -574,7 +573,7 @@ double gdb_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -641,7 +640,7 @@ double cub_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -698,7 +697,7 @@ double cub_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -765,7 +764,7 @@ double qqb_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -828,7 +827,7 @@ double qqb_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -904,7 +903,7 @@ double qq_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -961,7 +960,7 @@ double qq_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1028,7 +1027,7 @@ double qqprime_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1091,7 +1090,7 @@ double qqprime_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1168,7 +1167,7 @@ double qbqprimeb_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1231,7 +1230,7 @@ double qbqprimeb_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1307,7 +1306,7 @@ double ds_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1364,7 +1363,7 @@ double ds_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1430,7 +1429,7 @@ double ubcb_regular_nnlo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -1487,7 +1486,7 @@ double ubcb_regular_n3lo(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)

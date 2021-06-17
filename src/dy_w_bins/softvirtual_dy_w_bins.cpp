@@ -29,7 +29,7 @@ double intpow(const double& x,int m){
 
 static const double eps = 1.e-10;
 
-static const double GammaW = 2.085;
+//static const double GammaW = 2.085;
 
 
 // Virtual delta(z) contribution up to N3LO
@@ -55,7 +55,7 @@ double delta(const double X[], const double s,
   tau = Q2/s;
   
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -187,7 +187,7 @@ double PlusConst(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -326,7 +326,7 @@ double PlusInt1(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)
@@ -467,7 +467,7 @@ double PlusInt2(const double X[], const double s,
   tau = Q2/s;
 
   BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*GammaW*GammaW;
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
   BW = tau/BW;
 
   if(muf0==-1)

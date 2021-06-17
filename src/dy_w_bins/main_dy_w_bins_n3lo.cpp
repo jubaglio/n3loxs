@@ -33,14 +33,10 @@ struct {
 struct parampdf_struc parampdf;
 
 double constants::MW;
+double constants::GammaW;
 double constants::MZ;
-double constants::MH;
-double constants::Mb;
-double constants::Mt;
-double constants::Mbmb;
 
 double constants::vev;
-double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -606,12 +602,23 @@ struct functor_ubarcbar_N3LO_t  {
 } functor_ubarcbar_N3LO;
 
 
+// static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+//   str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+//   double numb = std::stod(str);
+//   if(int(numb)/numb==1)
+//     {
+//       str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+//     }
+// }
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
   double numb = std::stod(str);
   if(int(numb)/numb==1)
     {
-      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+      str = std::to_string(int(numb));
+    }
+  else
+    {
+      str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
     }
 }
 
@@ -630,7 +637,7 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q r with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
@@ -646,11 +653,12 @@ int main(int argc, char **argv) {
       std::cout << "m:  PDF set (string)" << std::endl;
       std::cout << "n:  PDF member (integer)" << std::endl;
       std::cout << "o:  W mass in GeV (double)" << std::endl;
-      std::cout << "p:  Z mass in GeV (double)" << std::endl;
-      std::cout << "q:  Vacuum expectation value in GeV (double)" << std::endl;
+      std::cout << "p:  W total decay width in GeV (double)" << std::endl;
+      std::cout << "q:  Z mass in GeV (double)" << std::endl;
+      std::cout << "r:  Vacuum expectation value in GeV (double)" << std::endl;
       return 0;
     }
-  if(argc < 18)
+  if(argc < 19)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -707,8 +715,9 @@ int main(int argc, char **argv) {
       LHAPDF::setVerbosity(0); // default is 1;
 
       constants::MW     = atof(argv[15]);
-      constants::MZ     = atof(argv[16]);
-      constants::vev    = atof(argv[17]);
+      constants::GammaW = atof(argv[16]);
+      constants::MZ     = atof(argv[17]);
+      constants::vev    = atof(argv[18]);
       if(muf0 == -1)
 	{
 	  scalemuF0     = -1.0;

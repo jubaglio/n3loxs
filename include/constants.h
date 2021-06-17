@@ -22,6 +22,7 @@ namespace constants
   // Mass parameters:
   extern double MH;     // H pole mass
   extern double MW;     // W pole mass
+  extern double GammaW; // W total decay width
   extern double MZ;     // Z pole mass
   extern double Mb;     // bottom-quark pole mass
   extern double Mt;     // top-quark pole mass or MSbar mass mt(mt) (depending on the scheme)

@@ -30,15 +30,12 @@ struct parampdf_struc parampdf;
 //const double scalemuF0 = (constants::MH + 2*constants::Mbpole)/4.0;
 //const double scalemuR0 = constants::MH;
 
-double constants::MW;
 double constants::MZ;
 double constants::MH;
 double constants::Mb;
-double constants::Mt;
 double constants::Mbmb;
 
 double constants::vev;
-double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -464,12 +461,23 @@ struct functor_qqbar_N3LO_t  {
 } functor_qqbar_N3LO;
 
 
+// static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+//   str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+//   double numb = std::stod(str);
+//   if(int(numb)/numb==1)
+//     {
+//       str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+//     }
+// }
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
   double numb = std::stod(str);
   if(int(numb)/numb==1)
     {
-      str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+      str = std::to_string(int(numb));
+    }
+  else
+    {
+      str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
     }
 }
 

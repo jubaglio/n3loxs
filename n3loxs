@@ -450,43 +450,43 @@ if __name__ == "__main__":
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '1.0', str(variable['muf0']), '1.0', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '1.0', str(variable['muf0']), '0.5', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '1.0', str(variable['muf0']), '2.0', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '0.5', str(variable['muf0']), '1.0', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '0.5', str(variable['muf0']), '0.5', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '2.0', str(variable['muf0']), '1.0', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], '2.0', str(variable['muf0']), '2.0', str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
         else:
             running=subprocess.run([maindir+'/subprogs/run_dy_w_bins', str(lattice), str(seed),
                                         str(variable['qcd']), str(variable['collider']), variable['energy'], wtype, variable['qmin'],
                                         variable['qmax'], str(variable['xmuf']), str(variable['muf0']), str(variable['xmur']), str(variable['mur0']),
-                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['mz'], variable['vev']],
+                                        variable['pdfset'], variable['pdfnum'], variable['mw'], variable['widthw'], variable['mz'], variable['vev']],
                                        stdout=subprocess.PIPE,universal_newlines=True)
             print(running.stdout)
 

@@ -13,7 +13,7 @@
 #  10: charged W- Drell-Yan p p (pbar) --> W- --> l- vl~, in an invariant mass window between Qmin and Qmax,
 #  11: inclusive W+ H Higgs-strahlung production using dynamical factorization/renormalization scales,
 #  12: inclusive W- H Higgs-strahlung production using dynamical factorization/renormalization scales
-process = 8
+process = 1
 
 # Parton distribution functions:
 PDFset = PDF4LHC15_nnlo_mc
@@ -23,7 +23,7 @@ PDFnum = 0
 order = 3
 
 # Collider parameters: pp (0) or ppbar (1). Hadronic energy in TeV
-collider = 1
+collider = 0
 energy   = 13.0
 
 # Invariant lepton-mass Q in GeV (only for Drell-Yan processes)
@@ -44,7 +44,7 @@ xmuf     = 1.0
 
 # Choice of the renormalization scale mu_R = xmur*mu_R0:
 #   If mur0 = -1 (or absent), the default central scale choice is used:
-#     mu_R0 = MH for the bbH process for Drell-Yan processes
+#     mu_R0 = MH for the bbH process
 #     mu_R0 = muF0 for all the other processes
 #   Otherwise, mu_R0 = mur0 as input by the user
 #   If --scale or --7point flags are used, xmur value is discarded

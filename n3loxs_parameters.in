@@ -1,18 +1,20 @@
 #################### Parameters for the dyn3lo program ####################
 
 # Choice of the process:
-#   1: neutral (gamma*) Drell-Yan,
-#   2: charged W+ Drell-Yan,
-#   3: charged W- Drell-Yan,
+#   1: neutral Drell-Yan p p (pbar) --> gamma*/Z* --> l+ vl,
+#   2: charged W+ Drell-Yan p p (pbar) --> W+ --> l+ vl,
+#   3: charged W- Drell-Yan p p (pbar) --> W- --> l- vl~,
 #   4: inclusive W+ H Higgs-strahlung production (DY-type contributions only),
 #   5: inclusive W- H Higgs-strahlung production (DY-type contributions only),
-#   6: inclusive five-flavor scheme Higgs production in bottom-quark fusion,
-#   7: inclusive Higgs production in gluon fusion, either in the heavy top limit (HTL) or in the Born-improved HTL
-#   8: neutral (gamma*) Drell-Yan p p (pbar) --> gamma* --> l+ l-, in an invariant mass window between Qmin and Qmax,
-#   9: charged W+ Drell-Yan p p (pbar) --> W+ --> l+ vl, in an invariant mass window between Qmin and Qmax,
-#  10: charged W- Drell-Yan p p (pbar) --> W- --> l- vl~, in an invariant mass window between Qmin and Qmax,
-#  11: inclusive W+ H Higgs-strahlung production using dynamical factorization/renormalization scales,
-#  12: inclusive W- H Higgs-strahlung production using dynamical factorization/renormalization scales
+#   6: inclusive Z H Higgs-strahlung production (DY-type contributions only),
+#   7: inclusive five-flavor scheme Higgs production in bottom-quark fusion,
+#   8: inclusive Higgs production in gluon fusion, either in the heavy top limit (HTL) or in the Born-improved HTL
+#   9: neutral (gamma*) Drell-Yan p p (pbar) --> gamma* --> l+ l-, in an invariant mass window between Qmin and Qmax,
+#  10: charged W+ Drell-Yan p p (pbar) --> W+ --> l+ vl, in an invariant mass window between Qmin and Qmax,
+#  11: charged W- Drell-Yan p p (pbar) --> W- --> l- vl~, in an invariant mass window between Qmin and Qmax,
+#  12: inclusive W+ H Higgs-strahlung production using dynamical factorization/renormalization scales,
+#  13: inclusive W- H Higgs-strahlung production using dynamical factorization/renormalization scales
+#  14: inclusive Z H Higgs-strahlung production using dynamical factorization/renormalization scales
 process = 1
 
 # Parton distribution functions:
@@ -35,7 +37,8 @@ Qmax = 90.0
 # Choice of the factorization scale mu_F = xmuf*mu_F0:
 #   If muf0 = -1 (or absent), the default central scale choice is used:
 #     mu_F0 = Q for Drell-Yan processes
-#     mu_F0 = MH+MW for the WH processes (M_HW for processes 11 and 12)
+#     mu_F0 = MH+MW for the WH processes (M_HW for processes 12 and 13, muf0 value discarded)
+#     mu_F0 = MH+MZ for the ZH process (M_HZ for process 14, muf0 value discarded)
 #     mu_F0 = (MH+2*mb_pole)/4 for the bbH process
 #     mu_F0 = MH/2 for the ggH process
 #   Otherwise, mu_F0 = muf0 as input by the user
@@ -52,12 +55,13 @@ mur0     = -1
 xmur     = 1.0
 
 # Mass parameters (in GeV):
-#   W boson mass, W boson decay width,
-#   Z boson mass, Higgs boson mass, top-quark pole mass, bottom-quark pole mass,
+#   W boson mass, W boson decay width, Z boson mass, Z boson decay width,
+#   Higgs boson mass, top-quark pole mass, bottom-quark pole mass,
 #   top-quark MSbar mass, bottom-quark MSbar mass, vacuum expectation value, EM constant
 MW      = 80.398
 GammaW  = 2.085
 MZ      = 91.1876
+GammaZ  = 2.4952
 MH      = 125.09
 Mt      = 172.5
 Mb      = 4.58
@@ -71,3 +75,6 @@ mt_scheme = 1
 
 # Flag for ggH process: (0) for heavy-top-limit-only prediction, (1) for Born-improved prediction
 htl_flag = 1
+
+# Channel for neutral DY process: (0) for off-shell photon contribution only, (1) for full process (Z* + photon*)
+ncdy_flag = 1

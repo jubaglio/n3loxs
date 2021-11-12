@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-//#include <cmath> // sin, cos, exp
 #include "qmc.hpp"
 
 #include <stdlib.h>
@@ -29,6 +28,7 @@ struct {
 struct parampdf_struc parampdf;
 
 double constants::MW;
+double constants::GammaW;
 double constants::MZ;
 
 double constants::vev;
@@ -626,7 +626,7 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p (q) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q (r) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
@@ -641,12 +641,13 @@ int main(int argc, char **argv) {
       std::cout << "l:  PDF set (string)" << std::endl;
       std::cout << "m:  PDF member (integer)" << std::endl;
       std::cout << "n:  W mass in GeV (double)" << std::endl;
-      std::cout << "o:  Z mass in GeV (double)" << std::endl;
-      std::cout << "p:  Vacuum expectation value in GeV (double)" << std::endl;
-      std::cout << "q:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
+      std::cout << "o:  W total decay width in GeV (double)" << std::endl;
+      std::cout << "p:  Z mass in GeV (double)" << std::endl;
+      std::cout << "q:  Vacuum expectation value in GeV (double)" << std::endl;
+      std::cout << "r:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
       return 0;
     }
-  if(argc < 17)
+  if(argc < 18)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -697,8 +698,9 @@ int main(int argc, char **argv) {
       LHAPDF::setVerbosity(0); // default is 1;
 
       constants::MW     = atof(argv[14]);
-      constants::MZ     = atof(argv[15]);
-      constants::vev    = atof(argv[16]);
+      constants::GammaW = atof(argv[15]);
+      constants::MZ     = atof(argv[16]);
+      constants::vev    = atof(argv[17]);
       if(muf0 == -1)
 	{
 	  scalemuF0     = Q;
@@ -868,12 +870,17 @@ int main(int argc, char **argv) {
 	}
 
       // Building the cross section: adding back alphaS, evolve to muR, add DY normalization
-      // Result of this code: xs(p p / p pbar -> W+*/W-* + X) in pb for an off-shell W boson
-      // To obtain the differential cross section Q^2*dxs/dQ^2 including W-> l nu_l: [result of this code] * MW^2/(12*Pi^2*vev^2) * BW
+      // Result of this code: Q^2*dxs(p p / p pbar -> W+*/W-* + X -> l nu_l + X)/dQ^2 in pb for an off-shell W boson at a given Q
+      // Obtained with [result of previous version of the code] * MW^2/(12*Pi^2*vev^2) * BW
       // where BW = Q^4/( (Q^2-MW^2)^2 + MW^2*Gamma_W^2)
       
-      double BornDY = constants::gevtopb*constants::Pi*constants::MW*constants::MW
-	/(Q*Q*constants::Nc*constants::vev*constants::vev);
+      //      BornDY = constants::gevtopb*constants::Pi*constants::MW*constants::MW
+      //	/(Q*Q*constants::Nc*constants::vev*constants::vev);
+      //      BornDY = BornDY*constants::MW*constants::MW/(12*constants::Pi*constants::Pi*constants::vev*constants::vev)*
+      //	Q*Q*Q*Q/((Q*Q-constants::MW*constants::MW)*(Q*Q-constants::MW*constants::MW) + constants::MW*constants::MW*constants::GammaW*constants::GammaW);
+      double BornDY = constants::gevtopb*constants::MW*constants::MW*constants::MW*constants::MW
+	/(12*constants::Nc*constants::Pi*constants::vev*constants::vev*constants::vev*constants::vev)*
+	Q*Q/((Q*Q-constants::MW*constants::MW)*(Q*Q-constants::MW*constants::MW) + constants::MW*constants::MW*constants::GammaW*constants::GammaW);
 
       double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
@@ -910,7 +917,7 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=18 && std::strcmp(argv[17],"--scale") == 0)
+      if(argc>=19 && std::strcmp(argv[18],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);
@@ -932,7 +939,7 @@ int main(int argc, char **argv) {
 		{
 		  filename << "dy_xs_wminus_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
-	      header = "# Drell-Yan cross section xs(p p -> W-*) at a given off-shell W- virtuality Q = ";
+	      header = "# Drell-Yan cross section Q^2*dxs(p p -> W-* -> l- ~nu_l)/dQ^2 at a given off-shell W- virtuality Q = ";
 	    }
 	  else
 	    {
@@ -944,7 +951,7 @@ int main(int argc, char **argv) {
 		{
 		  filename << "dy_xs_wplus_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
-	      header = "# Drell-Yan cross section xs(p p -> W+*) at a given off-shell W+ virtuality Q = ";
+	      header = "# Drell-Yan cross section Q^2*dxs(p p -> W+* -> l+ nu_l)/dQ^2 at a given off-shell W+ virtuality Q = ";
 	    }
 	}
       else
@@ -959,7 +966,7 @@ int main(int argc, char **argv) {
 		{
 		  filename << "dy_xs_wminus_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
-	      header = "# Drell-Yan cross section xs(p pbar -> W-*) at a given off-shell W- virtuality Q = ";
+	      header = "# Drell-Yan cross section Q^2*dxs(p pbar -> W-* -> l- ~nu_l)/dQ^2 at a given off-shell W- virtuality Q = ";
 	    }
 	  else
 	    {
@@ -971,7 +978,7 @@ int main(int argc, char **argv) {
 		{
 		  filename << "dy_xs_wplus_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
-	      header = "# Drell-Yan cross section xs(p pbar -> W+*) at a given off-shell W+ virtuality Q = ";
+	      header = "# Drell-Yan cross section Q^2*dxs(p pbar -> W+* -> l+ nu_l)/dQ^2 at a given off-shell W+ virtuality Q = ";
 	    }
 	}
 
@@ -1034,16 +1041,16 @@ int main(int argc, char **argv) {
       switch(qcdorder)
 	{
 	case 0:
-	  fa << header << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 1:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 2:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "Q^2*dxs_NNLO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 3:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "Q^2*dxs_NNLO/dQ^2 (pb)\t" << "Q^2*dxs_N3LO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	}
       

@@ -21,7 +21,18 @@ Regular hard terms for all DY W subprocesses up to N3LO QCD including binning
 
 static const double eps = 1.e-10;
 
-//static const double GammaW = 2.085;
+
+double BW(const double Q2, const double tau)
+{
+  double result;
+
+  result = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
+  result = tau/result;
+
+  return result;
+}
+
 
 //////////////////////////////////////////////////
 ///////////////// d-ubar channel /////////////////
@@ -32,7 +43,7 @@ double dub_regular_nlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -43,10 +54,6 @@ double dub_regular_nlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -78,7 +85,7 @@ double dub_regular_nlo(const double X[], const double s,
   res = fac*res;
   res = res*dlumdub(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -89,7 +96,7 @@ double dub_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -102,10 +109,6 @@ double dub_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -147,7 +150,7 @@ double dub_regular_nnlo(const double X[], const double s,
   res = fac*((res0 + res1)*dlumdub(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumdub2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -157,7 +160,7 @@ double dub_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -170,10 +173,6 @@ double dub_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -225,7 +224,7 @@ double dub_regular_n3lo(const double X[], const double s,
   res = fac*((res0 + res01 + res1)*dlumdub(x2,tau/x1/x2,muf2,pdf) +
 	     (res02 + res2)*dlumdub2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -240,7 +239,7 @@ double gub_regular_nlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -251,10 +250,6 @@ double gub_regular_nlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -286,7 +281,7 @@ double gub_regular_nlo(const double X[], const double s,
   res = fac*res;
   res = res*dlumgub(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -296,7 +291,7 @@ double gub_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -309,10 +304,6 @@ double gub_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -348,7 +339,7 @@ double gub_regular_nnlo(const double X[], const double s,
 
   res = fac*(res1 + res2)*dlumgub(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
   
   return res;
 }
@@ -358,7 +349,7 @@ double gub_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -371,10 +362,6 @@ double gub_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -421,7 +408,7 @@ double gub_regular_n3lo(const double X[], const double s,
   res = fac*((res00 + res01 + res1)*dlumgub(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumgub2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -436,7 +423,7 @@ double gg_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -447,10 +434,6 @@ double gg_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -482,7 +465,7 @@ double gg_regular_nnlo(const double X[], const double s,
   
   res = fac*res*dlumgg(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -492,7 +475,7 @@ double gg_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -504,10 +487,6 @@ double gg_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -544,7 +523,7 @@ double gg_regular_n3lo(const double X[], const double s,
   
   res = fac*res*dlumgg(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -559,7 +538,7 @@ double gdb_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -571,10 +550,6 @@ double gdb_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -612,7 +587,7 @@ double gdb_regular_n3lo(const double X[], const double s,
   res = fac*(res1*dlumgu(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumgu2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -627,7 +602,7 @@ double cub_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -638,10 +613,6 @@ double cub_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -673,7 +644,7 @@ double cub_regular_nnlo(const double X[], const double s,
 
   res = fac*res*(dlumcub(x2,tau/x1/x2,muf2,pdf)+dlumcub2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -683,7 +654,7 @@ double cub_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -695,10 +666,6 @@ double cub_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -735,7 +702,7 @@ double cub_regular_n3lo(const double X[], const double s,
   
   res = fac*res*(dlumcub(x2,tau/x1/x2,muf2,pdf)+dlumcub2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -750,7 +717,7 @@ double qqb_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -762,10 +729,6 @@ double qqb_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -802,7 +765,7 @@ double qqb_regular_nnlo(const double X[], const double s,
   res = fac*(res1*dlumqqb(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumqqb2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -812,7 +775,7 @@ double qqb_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -825,10 +788,6 @@ double qqb_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -875,7 +834,7 @@ double qqb_regular_n3lo(const double X[], const double s,
   res = fac*((res01 + res1)*dlumqqb(x2,tau/x1/x2,muf2,pdf) +
 	     (res02 + res2)*dlumqqb2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -890,7 +849,7 @@ double qq_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -901,10 +860,6 @@ double qq_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -936,7 +891,7 @@ double qq_regular_nnlo(const double X[], const double s,
 
   res = fac*res*dlumqq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -946,7 +901,7 @@ double qq_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -958,10 +913,6 @@ double qq_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -998,7 +949,7 @@ double qq_regular_n3lo(const double X[], const double s,
 
   res = fac*res*dlumqq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1013,7 +964,7 @@ double qqprime_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1025,10 +976,6 @@ double qqprime_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1065,7 +1012,7 @@ double qqprime_regular_nnlo(const double X[], const double s,
   res = fac*(res1*dlumqqprime(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumqqprime2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1075,7 +1022,7 @@ double qqprime_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1088,10 +1035,6 @@ double qqprime_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1138,7 +1081,7 @@ double qqprime_regular_n3lo(const double X[], const double s,
   res = fac*((res01 + res1)*dlumqqprime(x2,tau/x1/x2,muf2,pdf) +
 	     (res02 + res2)*dlumqqprime2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1153,7 +1096,7 @@ double qbqprimeb_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1165,10 +1108,6 @@ double qbqprimeb_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1205,7 +1144,7 @@ double qbqprimeb_regular_nnlo(const double X[], const double s,
   res = fac*(res1*dlumqbqprimeb(x2,tau/x1/x2,muf2,pdf) +
 	     res2*dlumqbqprimeb2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1215,7 +1154,7 @@ double qbqprimeb_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1228,10 +1167,6 @@ double qbqprimeb_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1278,7 +1213,7 @@ double qbqprimeb_regular_n3lo(const double X[], const double s,
   res = fac*((res01 + res1)*dlumqbqprimeb(x2,tau/x1/x2,muf2,pdf) +
 	     (res02 + res2)*dlumqbqprimeb2(x2,tau/x1/x2,muf2,pdf))/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1293,7 +1228,7 @@ double ds_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1304,10 +1239,6 @@ double ds_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1339,7 +1270,7 @@ double ds_regular_nnlo(const double X[], const double s,
 
   res = fac*res*dlumds(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1349,7 +1280,7 @@ double ds_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1361,10 +1292,6 @@ double ds_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1401,7 +1328,7 @@ double ds_regular_n3lo(const double X[], const double s,
 
   res = fac*res*dlumds(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1416,7 +1343,7 @@ double ubcb_regular_nnlo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1427,10 +1354,6 @@ double ubcb_regular_nnlo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1462,7 +1385,7 @@ double ubcb_regular_nnlo(const double X[], const double s,
 
   res = fac*res*dlumubcb(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }
@@ -1472,7 +1395,7 @@ double ubcb_regular_n3lo(const double X[], const double s,
 		       const double muf0, const double xmuf, const double mur0, const double xmur,
 		       const double q2min, const double q2max, const double asopimz, LHAPDF::PDF const* const pdf)
 {
-  double tau, Q2, BW;
+  double tau, Q2;
   double x1, x2;
   double fac;
   double res;
@@ -1484,10 +1407,6 @@ double ubcb_regular_n3lo(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -1524,7 +1443,7 @@ double ubcb_regular_n3lo(const double X[], const double s,
 
   res = fac*res*dlumubcb(x2,tau/x1/x2,muf2,pdf)/x1/x2;
 
-  res = res*BW;
+  res = res*BW(Q2,tau);
 
   return res;
 }

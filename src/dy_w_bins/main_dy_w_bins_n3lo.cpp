@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-//#include <cmath> // sin, cos, exp
 #include "qmc.hpp"
 
 #include <stdlib.h>

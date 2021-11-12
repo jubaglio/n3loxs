@@ -23,6 +23,7 @@ namespace constants
   extern double MH;     // H pole mass
   extern double MW;     // W pole mass
   extern double GammaW; // W total decay width
+  extern double GammaZ; // Z total decay width
   extern double MZ;     // Z pole mass
   extern double Mb;     // bottom-quark pole mass
   extern double Mt;     // top-quark pole mass or MSbar mass mt(mt) (depending on the scheme)
@@ -37,6 +38,19 @@ namespace constants
   // alpha(0):
   extern double alphainv; // 1/alpha(0) fine-structure constant
   // double ee2 = 4.0*constants::Pi/137.035999139;
+
+  // CKM parameters:
+  const double absckmud = 0.97446;   // 21, |V_ud|
+  const double absckmus = 0.22452;   // 23, |V_us|
+  const double absckmub = 0.00365;   // 25, |V_ub|
+
+  const double absckmcd = 0.22438;   // 41, |V_cd|
+  const double absckmcs = 0.97359;   // 43, |V_cs|
+  const double absckmcb = 0.04214;   // 45, |V_cb|
+
+  const double absckmtd = 0.00896;   // 61, |V_td|
+  const double absckmts = 0.04133;   // 63, |V_ts|
+  const double absckmtb = 0.999105;  // 65, |V_tb|
 
   // QCD parameters:
   const double Nc = 3;

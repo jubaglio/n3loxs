@@ -2,17 +2,15 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 11/05/2021
-Regular hard terms kernels for the DY process q qb -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 13/09/2021
+Regular hard functions for the DY process q qb -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-#include "dy_kernels.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-
-// NLO q-qbar regular term kernel
+// NLO q-qbar regular term
 double qqb_regular_kernel_nlo(const double x1, const double log1)
 {
   double res;
@@ -20,18 +18,18 @@ double qqb_regular_kernel_nlo(const double x1, const double log1)
   res = 4.0/3.0*
     (-(1.0 + x1)*(log1 + 2.0*log(1.0-x1)) +
      ((1.0 + intpow(x1,2))*log(x1))/(-1.0 + x1));
-  
+
   return res;
 }
 
 /////////////////////////////////
 
-// NNLO q-qbar regular term kernel
-std::pair<double, double> qqb_regular_kernel_nnlo(const double x1, const double log1)
+// NNLO q-qbar regular term
+std::tuple<double, double> qqb_regular_kernel_nnlo(const double x1, const double log1)
 {
   double w, zb;
-  double resuec2, rescsum2;
   double log2;
+  double rescsum2, resuec2;
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -1845,18 +1843,18 @@ std::pair<double, double> qqb_regular_kernel_nnlo(const double x1, const double 
          10.66666666666666666666666666666666666667*intpow(log(zb),2)));
     }
 
-  return std::make_pair(resuec2, rescsum2);
+  return std::make_tuple(resuec2, rescsum2);
 }
 
 
 /////////////////////////////////////////
 
-// N3LO q-qbar regular term kernel
+// N3LO q-qbar regular term
 std::tuple<double, double, double> qqb_regular_kernel_n3lo(const double x1, const double log1)
 {
   double w, zb;
-  double resuec2, rescsum2, resueccsum;
   double log2,log3;
+  double rescsum2, resuec2, resueccsum;
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;

@@ -29,7 +29,17 @@ double intpow(const double& x,int m){
 
 static const double eps = 1.e-10;
 
-//static const double GammaW = 2.085;
+
+double BW2(const double Q2, const double tau)
+{
+  double result;
+
+  result = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
+    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
+  result = tau/result;
+
+  return result;
+}
 
 
 // Virtual delta(z) contribution up to N3LO
@@ -40,7 +50,7 @@ double delta(const double X[], const double s,
 /* *******************************************************************
 ***  Declaration of variables 
 ********************************************************************* */
-  double tau, Q2, BW;
+  double tau, Q2;
   double delterms;
   double z;
   double fac;
@@ -54,10 +64,6 @@ double delta(const double X[], const double s,
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
   
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
-
   if(muf0==-1)
     {
       muf2 = Q2*xmuf*xmuf;
@@ -139,7 +145,7 @@ double delta(const double X[], const double s,
   res = fac*delterms;
   res = res*dlumdub(z,tau/z,muf2,pdf)/z;
 
-  res = res*BW;
+  res = res*BW2(Q2,tau);
 
   return res;
 }
@@ -172,7 +178,7 @@ double PlusConst(const double X[], const double s,
 /* *******************************************************************
 ***  Declaration of variables 
 ********************************************************************* */
-  double tau, Q2, BW;
+  double tau, Q2;
   double plusterms[6];
   double x2;
   double fac;
@@ -185,10 +191,6 @@ double PlusConst(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[1];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -298,7 +300,7 @@ double PlusConst(const double X[], const double s,
   res = fac*res;
   res = res*dlumdub(x2,tau/x2,muf2,pdf)/x2;
 
-  res = res*BW;
+  res = res*BW2(Q2,tau);
 
   return res;
 }
@@ -311,7 +313,7 @@ double PlusInt1(const double X[], const double s,
 /* *******************************************************************
 ***  Declaration of variables 
 ********************************************************************* */
-  double tau, Q2, BW;
+  double tau, Q2;
   double plusterms[6];
   double x1,x2;
   double fac;
@@ -324,10 +326,6 @@ double PlusInt1(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -438,7 +436,7 @@ double PlusInt1(const double X[], const double s,
   res = fac*res;
   res = res*( dlumdub(x2,tau/x1/x2,muf2,pdf)/x1/x2 - dlumdub(x2,tau/x2,muf2,pdf)/x2 );
 
-  res = res*BW;
+  res = res*BW2(Q2,tau);
 
   return res;
 }
@@ -452,7 +450,7 @@ double PlusInt2(const double X[], const double s,
 /* *******************************************************************
 ***  Declaration of variables 
 ********************************************************************* */
-  double tau, Q2, BW;
+  double tau, Q2;
   double plusterms[6];
   double x1,x2;
   double fac;
@@ -465,10 +463,6 @@ double PlusInt2(const double X[], const double s,
   Q2 = q2min*(1.0+eps)+(q2max*(1.0-eps)-q2min*(1.0+eps))*X[2];
   fac = (q2max*(1.0-eps)-q2min*(1.0+eps));
   tau = Q2/s;
-
-  BW = (Q2-constants::MW*constants::MW)*(Q2-constants::MW*constants::MW) +
-    constants::MW*constants::MW*constants::GammaW*constants::GammaW;
-  BW = tau/BW;
 
   if(muf0==-1)
     {
@@ -579,7 +573,7 @@ double PlusInt2(const double X[], const double s,
   res = -fac*res;
   res = res*dlumdub(x2,tau/x2,muf2,pdf)/x2;
 
-  res = res*BW;
+  res = res*BW2(Q2,tau);
 
   return res;
 }

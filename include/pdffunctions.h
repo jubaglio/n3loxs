@@ -29,11 +29,17 @@ double dlumgg(const double, const double, const double, LHAPDF::PDF const* const
 
 // q-q luminosities
 double dlumqq(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumuu(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumdd(const double, const double, const double, LHAPDF::PDF const* const);
 
 // non-singlet q-Q and u-d luminosities
 double dlumqQq(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumuUq(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumdDq(const double, const double, const double, LHAPDF::PDF const* const);
 double dlumud(const double, const double, const double, LHAPDF::PDF const* const);
 
 // non-singlet q-Qbar and u-dbar luminosities
 double dlumqQqb(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumuUqb(const double, const double, const double, LHAPDF::PDF const* const);
+double dlumdDqb(const double, const double, const double, LHAPDF::PDF const* const);
 double dlumudb(const double, const double, const double, LHAPDF::PDF const* const);

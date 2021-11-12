@@ -2,22 +2,20 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 11/05/2021
-Regular hard terms kernels for the DY process q q -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 10/09/2021
+Regular hard functions for the DY process q q -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-#include "dy_kernels.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-
-// NNLO q-q regular term kernel
+// NNLO q-q regular term
 double qq_regular_kernel_nnlo(const double x1, const double log1)
 {
   double w, zb;
-  double res;
   double log2;
+  double res;
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -1236,12 +1234,12 @@ double qq_regular_kernel_nnlo(const double x1, const double log1)
 
 /////////////////////////////////
 
-// N3LO q-q regular term kernel
+// N3LO q-q regular term
 double qq_regular_kernel_n3lo(const double x1, const double log1)
 {
   double w, zb;
-  double res;
   double log2,log3;
+  double res;
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -2798,6 +2796,6 @@ double qq_regular_kernel_n3lo(const double x1, const double log1)
       (9.12546012095852248381842392878625163 + 5.979450743260267069790879314688838498*log1)*intpow(log(zb),3) + 
       3.149496934576299655664735029814394894*intpow(log(zb),4));
     }
-      
+
   return res;
 }

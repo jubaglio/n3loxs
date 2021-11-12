@@ -2,21 +2,20 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 15/05/2021
-Regular hard terms kernels for the DY process g g -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 13/09/2021
+Regular hard functions for the DY process g g -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-#include "dy_kernels.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-// NNLO g-g regular term kernel
+// NNLO g-g regular term
 double gg_regular_kernel_nnlo(const double x1, const double log1)
 {
   double w, zb;
-  double res;
   double log2;
+  double res;
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -1340,8 +1339,8 @@ double gg_regular_kernel_nnlo(const double x1, const double log1)
 
 /////////////////////////////////
 
-// N3LO g-g regular term kernel
-std::pair<double, double> gg_regular_kernel_n3lo(const double x1,  const double log1)
+// N3LO g-g regular term
+std::tuple<double, double> gg_regular_kernel_n3lo(const double x1, const double log1)
 {
   double w, zb;
   double log2,log3;
@@ -4083,5 +4082,5 @@ std::pair<double, double> gg_regular_kernel_n3lo(const double x1,  const double 
       0.01302083333333333333333333333333333333333*intpow(log(zb),4));
     }
 
-  return std::make_pair(rescsum2, rescsumsq);;
+  return std::make_tuple(rescsum2, rescsumsq);
 }

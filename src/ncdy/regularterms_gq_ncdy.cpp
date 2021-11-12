@@ -2,46 +2,22 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 24/09/2020
-Regular hard terms for the DY process g q -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 10/09/2021
+Regular hard functions for the DY process g q -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-// pdf functions
-#include "pdffunctions.h"
-
-#include "dy_functions.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-static const double eps = 1.e-12;
-
-// NLO g-q regular term, electric charge stripped out and included in dlumgq
-double gq_regular_nlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// NLO g-q regular term
+double gq_regular_kernel_nlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
-  double fac;
   double res;
-  double muf2;
-  double log1;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
-
-  log1 = log(Q2/muf2);
 
   res = (1 + (6 - 7*x1)*x1 + (2 + 4*(-1 + x1)*x1)*log1
 	 + (4 + 8*(-1 + x1)*x1)*log(1-x1) - 
 	 2*(1 + 2*(-1 + x1)*x1)*log(x1))/8.0;
-
-  res = fac*res*dlumgq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
 
   return res;
 }
@@ -49,29 +25,16 @@ double gq_regular_nlo(const double X[], const double s, const double Q2, const d
 
 /////////////////////////////////
 
-// NNLO g-q regular term, electric charge stripped out and included in dlumgq
-double gq_regular_nnlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// NNLO g-q regular term
+double gq_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double fac;
+  double log2;
   double res;
-  double muf2;
-  double log1,log2;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
 
   if(x1<=constants::zsmall0)
@@ -1094,43 +1057,22 @@ double gq_regular_nnlo(const double X[], const double s, const double Q2, const 
       (-18.9375 + 5.25*log1)*intpow(log(zb),2) + 3.569444444444444444444444444444444444444*intpow(log(zb),3));
     }
 
-  res = fac*res*dlumgq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
-
   return res;
 }
 
 /////////////////////////////////
 
 
-// N3LO g-q regular term, electric charge stripped out and included in dlumgq
-double gq_regular_n3lo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// N3LO g-q regular term
+std::tuple<double, double, double> gq_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double csum2 = 11.0/9.0;
-  // csum = 1/3
-  const double csumQuoverQu2 = 0.5;
-  const double csumQdoverQd2 = -1.0;
-  double fac;
+  double log2,log3;
   double rescsum2, resuec2, resueccsum;
-  double res;
-  double muf2;
-  double log1,log2,log3;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
   log3 = log1*log2;
 
@@ -4301,12 +4243,5 @@ double gq_regular_n3lo(const double X[], const double s, const double Q2, const 
       0.033275462962962962962962962962962962963*intpow(log(zb),3));
     }
 
-  res = fac*(resuec2*dlumgq(x2,tau/x1/x2,muf2,pdf) +
-	     rescsum2*csum2*(9.0/4.0*dlumgu(x2,tau/x1/x2,muf2,pdf) +
-			     9.0*dlumgd(x2,tau/x1/x2,muf2,pdf)) +
-	     resueccsum*(csumQuoverQu2*dlumgu(x2,tau/x1/x2,muf2,pdf) +
-			 csumQdoverQd2*dlumgd(x2,tau/x1/x2,muf2,pdf)))/x1/x2;
-  res = res*tau;
-
-  return res;
+  return std::make_tuple(resuec2, rescsum2, resueccsum);
 }

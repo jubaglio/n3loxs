@@ -483,7 +483,7 @@ if __name__ == "__main__":
 
     elif variable['type'] == 10 or variable['type'] == 11:
         # Drell-Yan p p(pbar) --> W+ + X --> l+ nu_l + X / W- + X --> l- ~nu_l + X in an invariant mass window between Qmin and Qmax
-        if variable['type'] == 9:
+        if variable['type'] == 10:
             print('\n\t  Now calculating for charged W+ Drell-Yan process in a binned region...\n')
             wtype='1'
             proctag='dy_xs_wplus'

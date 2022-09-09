@@ -2,84 +2,38 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 18/09/2020
-Regular hard terms for the DY process q qb -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 13/09/2021
+Regular hard functions for the DY process q qb -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-// pdf functions
-#include "pdffunctions.h"
-
-#include "dy_functions.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-static const double eps = 1.e-12;
-
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
-
-// NLO q-qbar regular term, electric charge stripped out and included in dlumqqb
-double qqb_regular_nlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// NLO q-qbar regular term
+double qqb_regular_kernel_nlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
-  double fac;
   double res;
-  double muf2;
-  double log1;
 
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
-
-  log1 = log(Q2/muf2);
   res = 4.0/3.0*
     (-(1.0 + x1)*(log1 + 2.0*log(1.0-x1)) +
-     ((1.0 + pow(x1,2))*log(x1))/(-1.0 + x1));
-
-  res = fac*res;
-  res = res*tau*dlumqqb(x2,tau/x1/x2,muf2,pdf)/x1/x2;
+     ((1.0 + intpow(x1,2))*log(x1))/(-1.0 + x1));
 
   return res;
 }
 
 /////////////////////////////////
 
-// NNLO q-qbar regular term, electric charge stripped out and included in dlumqqb
-double qqb_regular_nnlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// NNLO q-qbar regular term
+std::tuple<double, double> qqb_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double csum2 = 11.0/9.0;
-  double fac;
+  double log2;
   double rescsum2, resuec2;
-  double res;
-  double muf2;
-  double log1,log2;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
 
   if(x1<=constants::zsmall0)
@@ -1888,46 +1842,23 @@ double qqb_regular_nnlo(const double X[], const double s, const double Q2, const
          25.7777777777777777777777777777777777778*log(zb) + 
          10.66666666666666666666666666666666666667*intpow(log(zb),2)));
     }
-      
-  res = fac*(resuec2*dlumqqb(x2,tau/x1/x2,muf2,pdf) +
-	 rescsum2*csum2*(9.0/4.0*dlumuub(x2,tau/x1/x2,muf2,pdf) +
-			 9.0*dlumddb(x2,tau/x1/x2,muf2,pdf)))/x1/x2;
-  res = res*tau;
 
-  return res;
+  return std::make_tuple(resuec2, rescsum2);
 }
 
 
 /////////////////////////////////////////
 
-// N3LO q-qbar regular term, electric charge stripped out and included in dlumqqb
-double qqb_regular_n3lo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// N3LO q-qbar regular term
+std::tuple<double, double, double> qqb_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double csum2 = 11.0/9.0;
-  // csum = 1/3
-  const double csumQuoverQu2 = 0.5;
-  const double csumQdoverQd2 = -1.0;
-  double fac;
+  double log2,log3;
   double rescsum2, resuec2, resueccsum;
-  double res;
-  double muf2;
-  double log1,log2,log3;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
   log3 = log1*log2;
 
@@ -6873,12 +6804,5 @@ double qqb_regular_n3lo(const double X[], const double s, const double Q2, const
       0.1543209876543209876543209876543209877*intpow(log(zb),2));
     }
 
-  res = fac*(resuec2*dlumqqb(x2,tau/x1/x2,muf2,pdf) +
-	     rescsum2*csum2*(9.0/4.0*dlumuub(x2,tau/x1/x2,muf2,pdf) +
-			     9.0*dlumddb(x2,tau/x1/x2,muf2,pdf)) +
-	     resueccsum*(csumQuoverQu2*dlumuub(x2,tau/x1/x2,muf2,pdf) +
-			 csumQdoverQd2*dlumddb(x2,tau/x1/x2,muf2,pdf)))/x1/x2;
-  res = res*tau;
-
-  return res;
+  return std::make_tuple(resuec2, rescsum2, resueccsum);
 }

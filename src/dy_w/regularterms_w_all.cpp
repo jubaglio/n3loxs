@@ -32,12 +32,12 @@ double dub_regular_nlo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
   res = dub_regular_kernel_nlo(x1, log1);
@@ -60,12 +60,12 @@ double dub_regular_nnlo(const double X[], const double s, const double Q2, const
   double res1, res2;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
   auto result0 = dub_regular_kernel_nnlo(x1, log1);
@@ -91,12 +91,12 @@ double dub_regular_n3lo(const double X[], const double s, const double Q2, const
   double res1, res2;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
   auto result0 = dub_regular_kernel_n3lo(x1, log1);
@@ -126,12 +126,12 @@ double gub_regular_nlo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -154,12 +154,12 @@ double gub_regular_nnlo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -183,12 +183,12 @@ double gub_regular_n3lo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -219,12 +219,12 @@ double gg_regular_nnlo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -247,12 +247,12 @@ double gg_regular_n3lo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -281,12 +281,12 @@ double gdb_regular_n3lo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -317,12 +317,12 @@ double cub_regular_nnlo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -345,12 +345,12 @@ double cub_regular_n3lo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -379,12 +379,12 @@ double qqb_regular_nnlo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -411,12 +411,12 @@ double qqb_regular_n3lo(const double X[], const double s, const double Q2, const
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -447,12 +447,12 @@ double qq_regular_nnlo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -475,12 +475,12 @@ double qq_regular_n3lo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -509,12 +509,12 @@ double qqprime_regular_nnlo(const double X[], const double s, const double Q2, c
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -541,12 +541,12 @@ double qqprime_regular_n3lo(const double X[], const double s, const double Q2, c
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -578,12 +578,12 @@ double qbqprimeb_regular_nnlo(const double X[], const double s, const double Q2,
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -610,12 +610,12 @@ double qbqprimeb_regular_n3lo(const double X[], const double s, const double Q2,
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -646,12 +646,12 @@ double ds_regular_nnlo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -674,12 +674,12 @@ double ds_regular_n3lo(const double X[], const double s, const double Q2, const 
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -707,12 +707,12 @@ double ubcb_regular_nnlo(const double X[], const double s, const double Q2, cons
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 
@@ -735,12 +735,12 @@ double ubcb_regular_n3lo(const double X[], const double s, const double Q2, cons
   double log1;
 
   tau = Q2/s;
-  muf2 = pow(muf,2);
+  muf2 = muf*muf;
 
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(Q2/muf2);
 

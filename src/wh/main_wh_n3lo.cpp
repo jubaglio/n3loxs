@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-//#include <cmath> // sin, cos, exp
 #include "qmc.hpp"
 
 #include <stdlib.h>
@@ -14,7 +13,7 @@
 // Global constants and QCD parameters
 #include "constants.h"
 
-// Header for the routines alphaS(muR) and mb_msbar(muR)
+// Header for the routines alphaS(muR)
 #include "alphaS.h"
 
 struct {
@@ -27,17 +26,12 @@ struct {
 #include "pdfpar_w.h"
 struct parampdf_struc parampdf;
 
-//const int scalemuF0 = constants::MH + constants::MW;
 
 double constants::MW;
 double constants::MZ;
 double constants::MH;
-double constants::Mb;
-double constants::Mt;
-double constants::Mbmb;
 
 double constants::vev;
-double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -572,8 +566,24 @@ struct functor_ubarcbar_N3LO_t  {
 } functor_ubarcbar_N3LO;
 
 
+// static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+//   str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+//   double numb = std::stod(str);
+//   if(int(numb)/numb==1)
+//     {
+//       str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+//     }
+// }
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str = std::to_string(int(numb));
+    }
+  else
+    {
+      str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -634,7 +644,9 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
       int wchoice = atoi(argv[6]);
@@ -642,7 +654,6 @@ int main(int argc, char **argv) {
       parampdf.wchoice = wchoice;
       double xmuf = atof(argv[7]);
 
-      // new:
       double muf0 = atof(argv[8]);
       double xmur = atof(argv[9]);
       double mur0 = atof(argv[10]);
@@ -650,7 +661,6 @@ int main(int argc, char **argv) {
       int mur_flag;
       double scalemuF0;
       double scalemuR0;
-      // end new
 
       // init PDF set
       const std::string setname = argv[11];
@@ -829,11 +839,8 @@ int main(int argc, char **argv) {
 	    }
 	}
 
-      // Building the cross section: adding back alphaS, evolve to muR, add Born normalization
+      // Building the cross section: adding back alphaS, evolve to muR
       // Result of this code: xs(p p / p pbar -> W+/W- + H + X) in pb
-
-      double BornDY = constants::gevtopb*constants::MW*constants::MW*constants::MW*constants::MW
-      	/(48*constants::Pi*constants::Nc*constants::vev*constants::vev*constants::vev*constants::vev);
 
       double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
@@ -861,7 +868,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
       std::string muf0header;
       std::string mur0header;
 
@@ -886,11 +892,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WminusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WminusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WminusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WminusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}      
 	      header = "# Standard Model Higgs-strahlung cross section xs(p p -> W- H), sqrt(S) = ";
 	    }
@@ -898,11 +904,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WplusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WplusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WplusH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WplusH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p p -> W+ H), sqrt(S) = ";
 	    }
@@ -913,11 +919,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WminusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WminusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WminusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WminusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p pbar -> W- H), sqrt(S) = ";
 	    }
@@ -925,11 +931,11 @@ int main(int argc, char **argv) {
 	    {
 	      if(imax==1)
 		{
-		  filename << "WplusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+		  filename << "WplusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 		}
 	      else
 		{
-		  filename << "WplusH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+		  filename << "WplusH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 		}
 	      header = "# Standard Model Higgs-strahlung cross section xs(p pbar -> W+ H), sqrt(S) = ";
 	    }
@@ -938,9 +944,6 @@ int main(int argc, char **argv) {
       
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
 
       if(muf_flag == 0)
 	{
@@ -1013,8 +1016,8 @@ int main(int argc, char **argv) {
 
       if(qcdorder>=0)
       	{
-      	  xslo_result = BornDY*dubar_lo_result;
-      	  xslo_error  = BornDY*dubar_lo_error;
+      	  xslo_result = dubar_lo_result;
+      	  xslo_error  = dubar_lo_error;
 	  if(qcdorder==0)
 	    {
 	      fa << std::fixed << std::setprecision(3) << xmur << "\t" << xmuf << "\t"
@@ -1027,8 +1030,8 @@ int main(int argc, char **argv) {
 	  asopi = as_n3loxs(mur, 1, asopimz);
       	  asopi2 = asopi*asopi;
 
-      	  xsnlo_result = BornDY*(dubar_lo_result + asopi*(dubar_nlo_result + result_gubar_NLO.integral));
-      	  xsnlo_error  = BornDY*sqrt(pow(dubar_lo_error,2) + asopi2*(pow(dubar_nlo_error,2) + pow(result_gubar_NLO.error,2)));
+      	  xsnlo_result = dubar_lo_result + asopi*(dubar_nlo_result + result_gubar_NLO.integral);
+      	  xsnlo_error  = sqrt(pow(dubar_lo_error,2) + asopi2*(pow(dubar_nlo_error,2) + pow(result_gubar_NLO.error,2)));
 
 	  if(qcdorder==1)
 	    {
@@ -1045,15 +1048,14 @@ int main(int argc, char **argv) {
       	  asopi4 = asopi2*asopi2;
       	  logmu1 = log(mur2/muf2);
 
-      	  xsnnlo_result = BornDY*
-      	    (dubar_lo_result +
-      	     asopi*(dubar_nlo_result + result_gubar_NLO.integral) +
-      	     asopi2*(dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
-      		     result_cubar_NNLO.integral + result_qqbar_NNLO.integral + result_qq_NNLO.integral + 
-      		     result_qqprime_NNLO.integral + result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral + 
-		     constants::b0*logmu1*(dubar_nlo_result + result_gubar_NLO.integral))
-      	     );
-      	  xsnnlo_error  = BornDY*
+      	  xsnnlo_result = 
+      	    dubar_lo_result +
+	    asopi*(dubar_nlo_result + result_gubar_NLO.integral) +
+	    asopi2*(dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
+		    result_cubar_NNLO.integral + result_qqbar_NNLO.integral + result_qq_NNLO.integral + 
+		    result_qqprime_NNLO.integral + result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral + 
+		    constants::b0*logmu1*(dubar_nlo_result + result_gubar_NLO.integral));
+      	  xsnnlo_error  =
       	    sqrt(pow(dubar_lo_error,2) +
       		 asopi2*(pow(dubar_nlo_error,2) + pow(result_gubar_NLO.error,2)) +
       		 asopi4*(pow(dubar_nnlo_error,2) + pow(result_gubar_NNLO.error,2) +
@@ -1081,25 +1083,24 @@ int main(int argc, char **argv) {
 
       	  logmu2 = logmu1*logmu1;
 
-      	  xsn3lo_result = BornDY*
-      	    (dubar_lo_result +
-      	     asopi*(dubar_nlo_result + result_gubar_NLO.integral) +
-      	     asopi2*(dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
-      		     result_cubar_NNLO.integral + result_qqbar_NNLO.integral + result_qq_NNLO.integral +
-		     result_qqprime_NNLO.integral + result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral + 
-      		     constants::b0*logmu1*(dubar_nlo_result + result_gubar_NLO.integral)) +
-      	     asopi3*(dubar_n3lo_result + result_gubar_N3LO.integral + result_gg_N3LO.integral +
-      		     result_cubar_N3LO.integral + result_qqbar_N3LO.integral + result_qq_N3LO.integral +
-		     result_qqprime_N3LO.integral + result_qbarqprimebar_N3LO.integral +
-		     result_ubarcbar_N3LO.integral + result_gdbar_N3LO.integral +
-      		     (pow(constants::b0,2)*logmu2 + constants::b1*logmu1)*(dubar_nlo_result + result_gubar_NLO.integral) +
-      		     2*constants::b0*logmu1*
-      		     (dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
-      		      result_cubar_NNLO.integral + result_qqbar_NNLO.integral +
-		      result_qq_NNLO.integral + result_qqprime_NNLO.integral +
-		      result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral))
-      	     );
-      	  xsn3lo_error = BornDY*
+      	  xsn3lo_result = 
+      	    dubar_lo_result +
+	    asopi*(dubar_nlo_result + result_gubar_NLO.integral) +
+	    asopi2*(dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
+		    result_cubar_NNLO.integral + result_qqbar_NNLO.integral + result_qq_NNLO.integral +
+		    result_qqprime_NNLO.integral + result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral + 
+		    constants::b0*logmu1*(dubar_nlo_result + result_gubar_NLO.integral)) +
+	    asopi3*(dubar_n3lo_result + result_gubar_N3LO.integral + result_gg_N3LO.integral +
+		    result_cubar_N3LO.integral + result_qqbar_N3LO.integral + result_qq_N3LO.integral +
+		    result_qqprime_N3LO.integral + result_qbarqprimebar_N3LO.integral +
+		    result_ubarcbar_N3LO.integral + result_gdbar_N3LO.integral +
+		    (pow(constants::b0,2)*logmu2 + constants::b1*logmu1)*(dubar_nlo_result + result_gubar_NLO.integral) +
+		    2*constants::b0*logmu1*
+		    (dubar_nnlo_result + result_gubar_NNLO.integral + result_gg_NNLO.integral +
+		     result_cubar_NNLO.integral + result_qqbar_NNLO.integral +
+		     result_qq_NNLO.integral + result_qqprime_NNLO.integral +
+		     result_qbarqprimebar_NNLO.integral + result_ubarcbar_NNLO.integral));
+      	  xsn3lo_error = 
       	    sqrt(pow(dubar_lo_error,2) +
       		 asopi2*(pow(dubar_nlo_error,2) + pow(result_gubar_NLO.error,2)) +
       		 asopi4*(pow(dubar_nnlo_error,2) + pow(result_gubar_NNLO.error,2) + pow(result_gg_NNLO.error,2) +

@@ -2,44 +2,24 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 22/09/2020
-Regular hard terms for the DY process g g -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 13/09/2021
+Regular hard functions for the DY process g g -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-// pdf functions
-#include "pdffunctions.h"
-
-#include "dy_functions.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-static const double eps = 1.e-12;
-
 // NNLO g-g regular term
-double gg_regular_nnlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+double gg_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double csum2 = 11.0/9.0;
-  double fac;
+  double log2;
   double res;
-  double muf2;
-  double log1,log2;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
 
   if(x1<=constants::zsmall0)
@@ -1354,40 +1334,21 @@ double gg_regular_nnlo(const double X[], const double s, const double Q2, const 
       log1*(-0.5 + 0.5*log(zb)) - log(zb) + 0.5*intpow(log(zb),2));
     }
 
-  res = fac*res*csum2*dlumgg(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
-
   return res;
 }
 
 /////////////////////////////////
 
 // N3LO g-g regular term
-double gg_regular_n3lo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+std::tuple<double, double> gg_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double csum2 = 11.0/9.0;
-  double csumsq = 1.0/9.0;
-  double fac;
-  double res;
-  double muf2;
-  double log1,log2,log3;
+  double log2,log3;
   double rescsum2,rescsumsq;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
   log3 = log1*log2;
 
@@ -4121,8 +4082,5 @@ double gg_regular_n3lo(const double X[], const double s, const double Q2, const 
       0.01302083333333333333333333333333333333333*intpow(log(zb),4));
     }
 
-  res = fac*(csum2*rescsum2+csumsq*rescsumsq)*dlumgg(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
-
-  return res;
+  return std::make_tuple(rescsum2, rescsumsq);
 }

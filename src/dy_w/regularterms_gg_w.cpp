@@ -3,7 +3,7 @@
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
 Date of Programming Function: 08/10/2020
-Regular hard terms kernel for the DY process g g -> W- -> l- ~nu_l q q'bar up to N3LO QCD
+Regular hard terms kernel for the DY process g g -> W- -> l- ~nu_l q qbar up to N3LO QCD
 *********************************************************************
 ********************************************************************* */
 

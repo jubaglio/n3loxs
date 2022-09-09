@@ -2,43 +2,24 @@
 *********************************************************************
 Author: Julien Baglio
 E-mail: julien.baglio@cern.ch
-Date of Programming Function: 23/09/2020
-Regular hard terms for the DY process q q -> gamma* -> l l up to N3LO QCD
+Date of Programming Function: 10/09/2021
+Regular hard functions for the DY process q q -> gamma* / Z -> l l up to N3LO QCD (vector part)
 *********************************************************************
 ********************************************************************* */
 
-// pdf functions
-#include "pdffunctions.h"
-
-#include "dy_functions.h"
-
+#include "ncdy_kernels.h"
 #include "constants.h"
 
-static const double eps = 1.e-12;
-
-// NNLO q-q regular term, electric charge stripped out and included in dlumqq
-double qq_regular_nnlo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// NNLO q-q regular term
+double qq_regular_kernel_nnlo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double fac;
+  double log2;
   double res;
-  double muf2;
-  double log1,log2;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
 
   if(x1<=constants::zsmall0)
@@ -1248,37 +1229,21 @@ double qq_regular_nnlo(const double X[], const double s, const double Q2, const 
       1.325719665129138943830817298345242582*log(zb) + 0.862766439909297052154195011337868481*intpow(log(zb),2));
     }
 
-  res = fac*res*dlumqq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
-
   return res;
 }
 
 /////////////////////////////////
 
-// N3LO q-q regular term, electric charge stripped out and included in dlumqq
-double qq_regular_n3lo(const double X[], const double s, const double Q2, const double muf, LHAPDF::PDF const* const pdf)
+// N3LO q-q regular term
+double qq_regular_kernel_n3lo(const double x1, const double log1)
 {
-  double tau;
-  double x1, x2;
   double w, zb;
-  double fac;
+  double log2,log3;
   double res;
-  double muf2;
-  double log1,log2,log3;
-
-  tau = Q2/s;
-  muf2 = muf*muf;
-
-
-  x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
-  x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
 
-  log1 = log(Q2/muf2);
   log2 = log1*log1;
   log3 = log1*log2;
 
@@ -2831,9 +2796,6 @@ double qq_regular_n3lo(const double X[], const double s, const double Q2, const 
       (9.12546012095852248381842392878625163 + 5.979450743260267069790879314688838498*log1)*intpow(log(zb),3) + 
       3.149496934576299655664735029814394894*intpow(log(zb),4));
     }
-      
-  res = fac*res*dlumqq(x2,tau/x1/x2,muf2,pdf)/x1/x2;
-  res = res*tau;
 
   return res;
 }

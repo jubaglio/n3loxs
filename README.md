@@ -3,12 +3,12 @@ N3LO cross sections calculator
 
 A tool suite to calculate up to N3LO in QCD various cross sections at hadron colliders:
 
-* Neutral Drell-Yan p p(pbar) --> gamma* + X (--> l+ l- + X)
+* Neutral Drell-Yan p p(pbar) --> gamma*/Z + X (--> l+ l- + X)
 * Charged Drell-Yan p p(pbar) --> W+/W- + X (--> l+ nu_l / l- ~nu_l + X)
-* Higgsstrahlung p p(pbar) --> W+/W- H + X 
+* Higgsstrahlung p p(pbar) --> W+/W- H + X
+* Higgsstrahlung p p(pbar) --> Z H + X
 * Higgs production via gluon fusion g g --> H in the Born-improved approximation
-* Bottom-quark fusion Higgs production b bbar --> H + X in the
-  five-flavor scheme
+* Bottom-quark fusion Higgs production b bbar --> H + X in the five-flavor scheme
 
 ## Installation
 
@@ -48,7 +48,7 @@ $ ./make all
 
 The main executable is the Python script `n3loxs`. It accesses the
 subprograms located in the directory `subprograms`. If you change the
-location of the main executable, you have to update the 44th line of
+location of the main executable, you have to update the 51st line of
 the script so that it accesses correctly the subprograms:
 ```shell
 maindir=[put here the absolute path of the directory n3loxs on your computer in single quotes]
@@ -60,13 +60,17 @@ The program calculates hadronic cross sections for various
 processes up to N3LO in QCD:
 
 * Drell-Yan (DY) processes are calculated for an off-shell gauge boson
-(photon and W bosons) at a given virtuality Q, that is chosen as the
-central scale by default.
-* The Higgs-strahlung processes (WH production) are inclusive
+(photon/Z and W bosons) at a given virtuality Q, that is chosen as the
+central scale by default. The user can choose between calculating the
+differential cross section Q^2*dxs/dQ^2 at a given Q, or calculating
+the integrated cross section in a bin range Qmin <= Q <= Qmax.
+* The Higgs-strahlung processes (WH and ZH productions) are inclusive
 calculations and the central scale by default is the sum of the Higgs
-and W boson masses. Only DY-type contributions are taken into acccount
-for the Higgs-strahlung  processes. They are by far the dominant
-contributions.
+and gauge boson masses. Only DY-type contributions are taken into
+acccount for the Higgs-strahlung  processes, which are by far the
+dominant contributions. There is also an alternative version where the
+central scale is dynamical and by default the invariant mass M_HW or
+M_HZ.
 * The gluon fusion process (ggH) is an inclusive calculation, in
 the so-called Born-improved high top-mass limit (Born-improved HTL),
 where the calculation is performed in an effective theory in which the
@@ -74,7 +78,7 @@ top-quark is decoupled, matched to the full Standard Model. The
 predictions are rescaled to the exact leading order (one-loop) result
 including the top-quark mass. The code allows the user to get results
 either in the pure HTL (no rescaling) or in the Born-improved HTL, and
-also to chose between the on-shell (OS) scheme or the MSbar scheme for
+also to choose between the on-shell (OS) scheme or the MSbar scheme for
 the top-quark mass. The central scale is by default muF = muR = MH/2.
 * The bottom-quark fusion pocess (bbH) is an inclusive
 calculation in the five-flavor scheme (5FS) for which the central
@@ -94,25 +98,54 @@ seed=1.
 predictions for the renormalization scale varied between 0.5 and 2
 times the central scales of the process (`--scale`
 flag); or an optional flag to calculate the seven-point scale
-variation around the central scales of the process.
+variation around the central scales of the process (`--7point`
+flag). They are mutually exclusive.
 
 The user can type `./n3loxs --help` or `./n3loxs -h` to display
-the informations about these command-line arguments.
+informations about these command-line arguments.
 
 The program uses an input file for the physical parameters, by default
 this is `n3loxs_parameters.in`. Please note that it is possible to use
-a custom input file, but this file needs to have the same structure as
-the default input file. The following parameters can be modified:
+a custom input file (as stated above), but this file needs to have the
+same structure as the default input file. The following parameters can
+be modified:
 
 ---
 `process`
 
-An integer to select the process to be studied. At the
-moment, 1 is for neutral Drell-Yan production (offshell photon), 2 is
-for charged W+ Drell-Yan production, 3 is for charged W- Drell-Yan
-production, 4 is for inclusive W+ H Higgs-strahlung production, 5 is
-for inclusive W- H Higgs-strahlung production, 6 is for the inclusive
-5FS bbH process, 7 is for the inclusive ggH process.
+An integer to select the process to be studied. The program allows for
+the following options:
+* 1 is for the differential cross section Q^2*dxs/dQ^2 in neutral
+Drell-Yan production
+* 2 is for the differential cross section Q^2*dxs/dQ^2 in charged W+
+Drell-Yan production
+* 3 is for the differential cross section Q^2*dxs/dQ^2 in charged W-
+Drell-Yan production
+* 4 is for the inclusive cross section in W+ H Higgs-strahlung
+production with a fixed scale
+* 5 is for the inclusive cross section in W- H Higgs-strahlung
+production with a fixed scale
+* 6 is for the inclusive cross section in Z H Higgs-strahlung
+  production with a fixed scale
+* 7 is for the inclusive cross section in 5FS bbH process at a fixed
+scale
+* 8 is for the inclusive cross section in ggH process at a fixed
+scale.
+* 9 is for the neutral Drell-Yan production cross section in an
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 10 is for the charged W+ Drell-Yan production cross section in an 
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 11 is for the charged W- Drell-Yan production cross section in an 
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 12 is for the inclusive cross section in W+ H Higgs-strahlung
+production with a dynamical scale
+* 13 is for the inclusive cross section in W- H Higgs-strahlung
+production with a dynamical scale
+* 14 is for the inclusive cross section in Z H Higgs-strahlung
+  production with a dynamical scale
 
 ---
 `PDFset`
@@ -153,7 +186,24 @@ The hadronic center-of-mass energy of the collider, in TeV. Default:
 `Q`
 
 The value, in GeV, for the virtuality of the gauge bosons in the
-Drell-Yan processes (only relevan for these DY processes). Default: `100.0`.
+Drell-Yan processes (only relevan for these DY processes). Default:
+`100.0`.
+
+---
+
+`Qmin`
+
+The value, in GeV, for the minimum virtuality of the gauge bosons in
+the Drell-Yan processes when calculated in a bin range. In this case
+the value for `Q` is ignored. Default: `80.0`.
+
+---
+
+`Qmax`
+
+The value, in GeV, for the maximum virtuality of the gauge bosons in
+the Drell-Yan processes when calculated in a bin range. In this case
+the value for `Q` is ignored. Default: `90.0`.
 
 ---
 
@@ -167,8 +217,8 @@ central scale of the chosen process. Default: `-1`.
 
 `xmuf`
 
-Floating-point coefficient rescaling the factorization scale `muF`, so
-that `muF = xmuf*muF0` where `muF0` stands for the central
+Floating-point coefficient rescaling the central factorization scale
+`muF0`, so that `muF = xmuf*muF0` where `muF0` stands for the central
 factorization scale of the chosen process. Default: `1.0`.
 
 ---
@@ -183,10 +233,10 @@ central scale of the chosen process. Default: `-1`.
 
 `xmur`
 
-Floating-point coefficient rescaling the factorization scale `muR`, so
-that `muR = xmur*muR0` where `muR0` stands for the central
+Floating-point coefficient rescaling the central factorization scale
+`muR0`, so that `muR = xmur*muR0` where `muR0` stands for the central 
 renormalization scale of the chosen process. This parameter is
-discarded if the flags `--scale` or `--7point` are used. Default:
+ignored if the flags `--scale` or `--7point` are used. Default:
 `1.0`.
 
 ---
@@ -209,9 +259,15 @@ The value, in GeV, of the Z-boson mass. Default: `91.1876`.
 
 ---
 
+`GammaZ`
+
+The value, in GeV, of the Z-boson total decay width. Default: `2.4952`.
+
+---
+
 `MH`
 
-The value, in GeV, of the Higgs mass. Default: `125.09`.
+The value, in GeV, of the Higgs boson mass. Default: `125.09`.
 
 ---
 
@@ -268,10 +324,19 @@ for Born-improved predictions (`1`). Default: `1`.
 
 ---
 
+`ncdy_flag`
+
+The neutral Drell-Yan process can be calculated either with only the
+off-shell photon contribution (`0`) or with both off-shell Z and
+photon contributions (full process, `1`). Default: `1`.
+
+---
+
 The CKM parameters are hard-coded in the
 include file `constants.h` located in the `include` directory at the
 moment. The user can modify these parameters, however it requires a
-new compilation of the code to be taken into account.
+new compilation of the code for the modification to be taken into
+account.
 
 The program produces an output file containing the cross sections up
 to the desired order in QCD, including the numerical error of the
@@ -288,10 +353,16 @@ consistently done at the given QCD order.
 
 ## Citation policy
 
+The user should cite the publication describing this computer program,
+
+[1] J. Baglio, C. Duhr, B. Mistlberger, and R. Szafron, "Inclusive
+Production Cross Sections at N3LO".
+arXiv:[2209.XXXX](https://arxiv.org/abs/2209.XXXX).
+
 The program uses a quasi-Monte-Carlo (QMC) integration as implemented
 by
 
-[1] S. Borowka, G. Heinrich, S. Jahn, S. P. Jones, M. Kerner, and
+[2] S. Borowka, G. Heinrich, S. Jahn, S. P. Jones, M. Kerner, and
 J. Schenk, "A GPU compatible quasi-Monte Carlo integrator interfaced
 to pySecDec". Comp. Phys. Commun. 240 (2019) 120. DOI:
 [10.1016/j.cpc.2019.02.015](https://dx.doi.org/10.1016/j.cpc.2019.02.015),
@@ -303,27 +374,32 @@ Their implementation can be found at
 The calculations underlying the Drell-Yan processes have
 been described in the following references,
 
-[2] C. Duhr, F. Dulat, and B. Mistlberger, "The Drell-Yan cross
+[3] C. Duhr, F. Dulat, and B. Mistlberger, "The Drell-Yan cross
 section to third order in the strong coupling
 constant". Phys. Rev. Lett. 125 (2020) 172001. DOI:
 [10.1103/PhysRevLett.125.172001](https://dx.doi.org/10.1103/PhysRevLett.125.172001),
 arXiv:[2001.07717](https://arxiv.org/abs/2001.07717).
 
-[3] C. Duhr, F. Dulat, and B. Mistlberger, "Charged Current Drell-Yan
+[4] C. Duhr, F. Dulat, and B. Mistlberger, "Charged Current Drell-Yan
 Production at N3LO". JHEP 11 (2020) 143. DOI:
 [10.1007/JHEP11(2020)143](https://dx.doi.org/10.1007/JHEP11(2020)143),
 arXiv:[2007.13313](https://arxiv.org/abs/2007.13313).
 
+[5] C. Duhr and B. Mistlberger, "Lepton-pair production at hadron
+colliders at N3LO in QCD". JHEP 03 (2022) 116. DOI:
+[10.1007/JHEP03(2022)116](https://dx.doi.org/10.1007/JHEP03(2022)116),
+arXiv:[2111.10379](https://arxiv.org/abs/2111.10379).
+
 The user should refer to the following papers when using the program
 for the bottom-quark fusion process,
 
-[4] C. Duhr, F. Dulat, and B. Mistlberger, "Higgs Boson Production in
+[6] C. Duhr, F. Dulat, and B. Mistlberger, "Higgs Boson Production in
 Bottom-Quark Fusion to Third Order in the Strong
 Coupling". Phys. Rev. Lett. 125 (2020) 051804. DOI:
 [10.1103/PhysRevLett.125.051804](https://dx.doi.org/10.1103/PhysRevLett.125.051804),
 arXiv:[1904.09990](https://arxiv.org/abs/1904.09990).
 
-[5] C. Duhr, F. Dulat, V. Hirschi, and B. Mistlberger, "Higgs
+[7] C. Duhr, F. Dulat, V. Hirschi, and B. Mistlberger, "Higgs
 production in bottom quark fusion: matching the 4- and 5-flavour
 schemes to third order in the strong coupling". JHEP 08
 (2020) 017. DOI:
@@ -333,18 +409,18 @@ arXiv:[2004.04752](https://arxiv.org/abs/2004.04752).
 When using the program for the gluon fusion process, at least the following
 references should be cited,
 
-[6] C. Anastasiou, C. Duhr, F. Dulat, E. Furland, T. Gehrmann,
+[8] C. Anastasiou, C. Duhr, F. Dulat, E. Furland, T. Gehrmann,
 F. Herzog, and B. Mistlberger, "Higgs boson gluon-fusion production at
 threshold in N3LO QCD". Phys. Lett. B 737 (2014) 325-328. DOI:
 [10.1016/j.physletb.2014.08.067](https://dx.doi.org/10.1016/j.physletb.2014.08.067),
 arXiv:[1403.4616](https://arxiv.org/abs/1403.4616).
 
-[7] B. Mistlberger, "Higgs boson production at hadron colliders at
+[9] B. Mistlberger, "Higgs boson production at hadron colliders at
 N3LO in QCD". JHEP 05 (2018) 028. DOI:
 [10.1007/JHEP05(2018)028](https://dx.doi.org/10.1007/JHEP(2018)028),
 arXiv:[1802.00833](https://arxiv.org/abs/1802.00833).
 
-but the user is reminded that many other pappers relevant for the
+but the user is reminded that many other papers relevant for the
 desired process should also be referenced (e.g. LO, NLO, NNLO
 calculations for example).
 

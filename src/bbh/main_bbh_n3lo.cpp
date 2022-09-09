@@ -30,15 +30,12 @@ struct parampdf_struc parampdf;
 //const double scalemuF0 = (constants::MH + 2*constants::Mbpole)/4.0;
 //const double scalemuR0 = constants::MH;
 
-double constants::MW;
 double constants::MZ;
 double constants::MH;
 double constants::Mb;
-double constants::Mt;
 double constants::Mbmb;
 
 double constants::vev;
-double constants::alphainv;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -463,9 +460,27 @@ struct functor_qqbar_N3LO_t  {
   }
 } functor_qqbar_N3LO;
 
+
+// static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+//   str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+//   double numb = std::stod(str);
+//   if(int(numb)/numb==1)
+//     {
+//       str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+//     }
+// }
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str = std::to_string(int(numb));
+    }
+  else
+    {
+      str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+    }
 }
+
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -489,7 +504,7 @@ int main(int argc, char **argv) {
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
-      std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is (MH + Mb)/4" << std::endl;
+      std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is (MH + 2 Mb)/4" << std::endl;
       std::cout << "h:  x_mur so that mu_R = x_mur*mu_R0 (double)" << std::endl;
       std::cout << "i:  mu_R0: central renormalization scale (double); if set to -1, default value is MH" << std::endl;
       std::cout << "j:  PDF set (string)" << std::endl;
@@ -525,12 +540,13 @@ int main(int argc, char **argv) {
 	  parampdf.collidertype = -1;
 	}
 
-      double energy = atof(argv[5]); // energy in TeV
+      std::string energyheader = argv[5];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
       double xmuf = atof(argv[6]);
 
-      // new:
       double muf0 = atof(argv[7]);
       double xmur = atof(argv[8]);
       double mur0 = atof(argv[9]);
@@ -538,7 +554,6 @@ int main(int argc, char **argv) {
       int mur_flag;
       double scalemuF0;
       double scalemuR0;
-      // end new
 
       // init PDF set
       const std::string setname = argv[10];
@@ -744,7 +759,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
       std::string muf0header;
       std::string mur0header;
       
@@ -768,11 +782,11 @@ int main(int argc, char **argv) {
 	{
 	  if(imax==1)
 	    {
-	      filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      filename << "bbH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	    }
 	  else
 	    {
-	      filename << "bbH_xs_pp_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      filename << "bbH_xs_pp_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
 	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-p collider, sqrt(S) = ";
 	}
@@ -780,11 +794,11 @@ int main(int argc, char **argv) {
 	{
 	  if(imax==1)
 	    {
-	      filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      filename << "bbH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
 	    }
 	  else
 	    {
-	      filename << "bbH_xs_ppbar_" << energy << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      filename << "bbH_xs_ppbar_" << energyheader << "tev_pdf" << setimem << "_muf" << xmuf << ".txt";
 	    }
 	  header = "# Inclusive cross section for SM Higgs production in bottom-quark fusion xs(b bbbar -> H) in the 5FS, p-pbar collider, sqrt(S) = ";
 	}
@@ -792,9 +806,6 @@ int main(int argc, char **argv) {
       
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
 
       if(muf_flag == 0)
 	{

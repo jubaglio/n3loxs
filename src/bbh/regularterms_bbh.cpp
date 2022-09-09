@@ -18,15 +18,6 @@ static const double eps = 1.e-12;
 
 //static const double MH2 = constants::MH*constants::MH;
 
-
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
-
 // NLO b-bbar regular term
 double bbb_regular_nlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
 {
@@ -44,7 +35,7 @@ double bbb_regular_nlo(const double X[], const double s, const double muf, LHAPD
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(MH2/muf2);
   res = 4.0/3.0*
@@ -60,7 +51,7 @@ double bbb_regular_nlo(const double X[], const double s, const double muf, LHAPD
 
 /////////////////////////////////
 
-// NNLO b-bbar regular term in low-x1 region
+// NNLO b-bbar regular term
 double bbb_regular_nnlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
 {
   double tau;
@@ -78,7 +69,7 @@ double bbb_regular_nnlo(const double X[], const double s, const double muf, LHAP
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -1344,7 +1335,7 @@ double bbb_regular_nnlo(const double X[], const double s, const double muf, LHAP
 
 /////////////////////////////////////////
 
-// N3LO b-bbar regular term in low-x1 region
+// N3LO b-bbar regular term
 double bbb_regular_n3lo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
 {
   double tau;
@@ -1362,7 +1353,7 @@ double bbb_regular_n3lo(const double X[], const double s, const double muf, LHAP
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;

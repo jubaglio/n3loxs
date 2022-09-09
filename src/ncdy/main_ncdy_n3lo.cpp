@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-//#include <cmath>
 #include "qmc.hpp"
 
 #include <stdlib.h>
@@ -9,34 +8,40 @@
 #include "LHAPDF/LHAPDF.h"
 
 // Auxiliary functions for the integration
-#include "dy_functions.h"
+#include "ncdy_functions.h"
 
 // Global constants and QCD parameters
 #include "constants.h"
+#include "ncdy_couplings.h"
 
-// Header for the routines alphaS(muR) and mb_msbar(muR)
+// Header for the routine alphaS(muR)
 #include "alphaS.h"
 
 struct {
+  int proc;
   double s;
   double Q;
   double xmuf;
   double scalemuF0;
   const LHAPDF::PDF* pdf;
-} global_param_gamma;
+} global_param_ncdy;
 
 #include "pdfpar.h"
 struct parampdf_struc parampdf;
 
-double constants::MW;
 double constants::MZ;
-double constants::MH;
-double constants::Mb;
+double constants::GammaZ;
+double constants::MW;
 double constants::Mt;
-double constants::Mbmb;
 
-double constants::vev;
 double constants::alphainv;
+
+double ncdycouplings::sw;
+double ncdycouplings::cw;
+double ncdycouplings::ee2;
+double ncdycouplings::vecu;
+double ncdycouplings::vecd;
+double ncdycouplings::vecl;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -56,10 +61,10 @@ struct functor_delta_t  {
     double integrand;
 
     x[0] = y[0];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = delta(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
+    integrand = delta(x, global_param_ncdy.s, Q2, muf, k, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -78,10 +83,10 @@ struct functor_PlusConst_t  {
     double integrand;
 
     x[0] = y[0];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = PlusConst(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
+    integrand = PlusConst(x, global_param_ncdy.s, Q2, muf, k, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -100,10 +105,10 @@ struct functor_PlusInt1_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = PlusInt1(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
+    integrand = PlusInt1(x, global_param_ncdy.s, Q2, muf, k, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -122,10 +127,10 @@ struct functor_PlusInt2_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = PlusInt2(x, global_param_gamma.s, Q2, muf, k, global_param_gamma.pdf);
+    integrand = PlusInt2(x, global_param_ncdy.s, Q2, muf, k, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -143,10 +148,10 @@ struct functor_RegNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = qqb_regular_nlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qqb_regular_nlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -164,10 +169,10 @@ struct functor_RegNNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = qqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qqb_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -185,10 +190,10 @@ struct functor_RegN3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = qqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qqb_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -208,10 +213,10 @@ struct functor_gq_NLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = gq_regular_nlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gq_regular_nlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -229,10 +234,10 @@ struct functor_gq_NNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = gq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gq_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -250,10 +255,10 @@ struct functor_gq_N3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = gq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gq_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -273,10 +278,10 @@ struct functor_gg_NNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = gg_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gg_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -294,10 +299,10 @@ struct functor_gg_N3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = gg_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = gg_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -317,10 +322,10 @@ struct functor_qq_NNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = qq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qq_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -338,10 +343,10 @@ struct functor_qq_N3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
-    integrand = qq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+    integrand = qq_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -361,12 +366,11 @@ struct functor_qQq_NNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
     integrand =
-      qQq_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQq_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -384,12 +388,11 @@ struct functor_qQq_N3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
     integrand =
-      qQq_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      ud_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQq_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -409,12 +412,11 @@ struct functor_qQqb_NNLO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
     integrand =
-      qQqb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_nnlo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQqb_regular_nnlo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -432,12 +434,11 @@ struct functor_qQqb_N3LO_t  {
 
     x[0] = y[0];
     x[1] = y[1];
-    Q2 = global_param_gamma.Q*global_param_gamma.Q;
-    muf = global_param_gamma.xmuf*global_param_gamma.scalemuF0;
+    Q2 = global_param_ncdy.Q*global_param_ncdy.Q;
+    muf = global_param_ncdy.xmuf*global_param_ncdy.scalemuF0;
 
     integrand =
-      qQqb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf) +
-      udb_regular_n3lo(x, global_param_gamma.s, Q2, muf, global_param_gamma.pdf);
+      qQqb_regular_n3lo(x, global_param_ncdy.s, Q2, muf, global_param_ncdy.proc, global_param_ncdy.pdf);
 
     return integrand;
 
@@ -445,8 +446,24 @@ struct functor_qQqb_N3LO_t  {
 } functor_qQqb_N3LO;
 
 
+// static void removeTrailingCharacters(std::string &str, const char charToRemove) {
+//   str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+//   double numb = std::stod(str);
+//   if(int(numb)/numb==1)
+//     {
+//       str.erase (str.find_last_not_of('.') + 1, std::string::npos );
+//     }
+// }
 static void removeTrailingCharacters(std::string &str, const char charToRemove) {
-  str.erase (str.find_last_not_of(charToRemove) + 2, std::string::npos );
+  double numb = std::stod(str);
+  if(int(numb)/numb==1)
+    {
+      str = std::to_string(int(numb));
+    }
+  else
+    {
+      str.erase (str.find_last_not_of(charToRemove) + 1, std::string::npos );
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -464,25 +481,29 @@ int main(int argc, char **argv) {
     }
   if(argc==2 && (std::strcmp(argv[1],"--help") == 0 || std::strcmp(argv[1],"-h") == 0))
     {
-      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n (o) with:" << std::endl;
+      std::cout << "Usage:  " << argv[0] << " a b c d e f g h i j k l m n o p q r (s) with:" << std::endl;
       std::cout << "a:  Lattice size (integer)" << std::endl;
       std::cout << "b:  Seed (integer)" << std::endl;
       std::cout << "c:  QCD order (integer, between O for LO and 3 for N3LO)" << std::endl;
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
-      std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
-      std::cout << "f:  Invariant lepton-mass Q in GeV (double)" << std::endl;
-      std::cout << "g:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
-      std::cout << "h:  mu_F0: central factorization scale (double); if set to -1, default value is Q" << std::endl;
-      std::cout << "i:  x_mur so that mu_R = x_mur*mu_R0 (double)" << std::endl;
-      std::cout << "j:  mu_R0: central renormalization scale (double); if set to -1, default value is Q" << std::endl;
-      std::cout << "k:  PDF set (string)" << std::endl;
-      std::cout << "l:  PDF member (integer)" << std::endl;
-      std::cout << "m:  Z mass in GeV (double)" << std::endl;
-      std::cout << "n:  1/alpha(0) fine structure constant (double)" << std::endl;
-      std::cout << "o:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
+      std::cout << "e:  Process choice: (0) for off-shell photon only; (1) for full process (Z+photon)" << std::endl;
+      std::cout << "f:  Hadronic energy in TeV (double)" << std::endl;
+      std::cout << "g:  Invariant lepton-mass Q in GeV (double)" << std::endl;
+      std::cout << "h:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
+      std::cout << "i:  mu_F0: central factorization scale (double); if set to -1, default value is Q" << std::endl;
+      std::cout << "j:  x_mur so that mu_R = x_mur*mu_R0 (double)" << std::endl;
+      std::cout << "k:  mu_R0: central renormalization scale (double); if set to -1, default value is Q" << std::endl;
+      std::cout << "l:  PDF set (string)" << std::endl;
+      std::cout << "m:  PDF member (integer)" << std::endl;
+      std::cout << "n:  W mass in GeV (double)" << std::endl;
+      std::cout << "o:  Z mass in GeV (double)" << std::endl;
+      std::cout << "p:  Z total decay width in GeV (double)" << std::endl;
+      std::cout << "q:  Top-quark pole mass in GeV (double)" << std::endl;
+      std::cout << "r:  1/alpha(0) fine structure constant (double)" << std::endl;
+      std::cout << "s:  --scale: optional flag to calculate various mu_R predictions. If absent, mu_R = x_mur*mu_R0" << std::endl;
       return 0;
     }
-  if(argc < 15)
+  if(argc < 19)
     {
       printf("\nNot enough arguments, program will stop!!\n");
       exit(1);
@@ -504,31 +525,43 @@ int main(int argc, char **argv) {
 	{
 	  parampdf.collidertype = -1;
 	}
-
-      double energy = atof(argv[5]); // energy in TeV
+      int proc = atoi(argv[5]);
+      global_param_ncdy.proc  = proc;
+      std::string energyheader = argv[6];
+      removeTrailingCharacters(energyheader, '0');
+      double energy = std::stod(energyheader); // energy in TeV
       double s;
       s = energy*energy*1.e6;
-      double Q    = atof(argv[6]);
-      double xmuf = atof(argv[7]);
+      std::string qheader = argv[7];
+      removeTrailingCharacters(qheader, '0');
+      double Q    = std::stod(qheader);
+      double xmuf = atof(argv[8]);
 
-      // new:
-      double muf0 = atof(argv[8]);
-      double xmur = atof(argv[9]);
-      double mur0 = atof(argv[10]);
+      double muf0 = atof(argv[9]);
+      double xmur = atof(argv[10]);
+      double mur0 = atof(argv[11]);
       int muf_flag;
       int mur_flag;
       double scalemuF0;
       double scalemuR0;
-      // end new
 
       // init PDF set
-      const std::string setname = argv[11];
-      const int setimem = atoi(argv[12]);
+      const std::string setname = argv[12];
+      const int setimem = atoi(argv[13]);
       const LHAPDF::PDF* basepdf = LHAPDF::mkPDF( setname, setimem);
       LHAPDF::setVerbosity(0); // default is 1;
 
-      constants::MZ       = atof(argv[13]);
-      constants::alphainv = atof(argv[14]);
+      constants::MW       = atof(argv[14]);
+      constants::MZ       = atof(argv[15]);
+      constants::GammaZ   = atof(argv[16]);
+      constants::Mt       = atof(argv[17]);
+      constants::alphainv = atof(argv[18]);
+      ncdycouplings::sw   = sqrt(1.0-constants::MW*constants::MW/constants::MZ/constants::MZ);
+      ncdycouplings::cw   = constants::MW/constants::MZ;
+      ncdycouplings::ee2  = 4.0*constants::Pi/constants::alphainv;
+      ncdycouplings::vecu = ncdycouplings::sw*ncdycouplings::sw*ncdycouplings::qu - ncdycouplings::axu;
+      ncdycouplings::vecd = ncdycouplings::sw*ncdycouplings::sw*ncdycouplings::qd - ncdycouplings::axd;
+      ncdycouplings::vecl = ncdycouplings::sw*ncdycouplings::sw*ncdycouplings::ql - ncdycouplings::axl;
       if(muf0 == -1)
 	{
 	  scalemuF0     = Q;
@@ -549,13 +582,13 @@ int main(int argc, char **argv) {
 	  scalemuR0     = mur0;
 	  mur_flag      = 1;
 	}
-      global_param_gamma.scalemuF0  = scalemuF0;
+      global_param_ncdy.scalemuF0  = scalemuF0;
 
       // init parameters for all functors      
-      global_param_gamma.s       = s;
-      global_param_gamma.Q       = Q;
-      global_param_gamma.xmuf    = xmuf;
-      global_param_gamma.pdf     = basepdf;
+      global_param_ncdy.s       = s;
+      global_param_ncdy.Q       = Q;
+      global_param_ncdy.xmuf    = xmuf;
+      global_param_ncdy.pdf     = basepdf;
 
       //      integrators::Qmc<double,double,MAXVAR,integrators::transforms::Korobov<2>::type,integrators::fitfunctions::PolySingular::type> real_integrator;
       integrators::Qmc<double,double,MAXVAR,integrators::transforms::Korobov<2>::type> real_integrator;
@@ -683,13 +716,8 @@ int main(int argc, char **argv) {
 	    }
 	}
 
-      // Building the cross section: adding back alphaS, evolve to muR, add DY normalization
-      // Result of this code: xs(p p / p pbar -> gamma* + X) in pb for an off-shell photon
-      // To obtain the differential cross section Q^2*dxs/dQ^2 including gamma* -> l+ l-: [result of this code] * e^2/(12*Pi^2)
-
-      double BornDY;
-      double ee2 = 4.0*constants::Pi/constants::alphainv;
-      BornDY = constants::gevtopb*constants::Pi*ee2/(constants::Nc*Q*Q);
+      // Building the cross section: adding back alphaS, evolve to muR
+      // Result of this code: Q^2*dxs(p p / p pbar -> gamma*/Z -> l+ l- + X)/dQ^2 in pb
       
       double muf  = xmuf*scalemuF0;
       double muf2 = muf*muf;
@@ -717,8 +745,6 @@ int main(int argc, char **argv) {
       std::string finalfile;
       std::stringstream filename;
       std::string header;
-      std::string energyheader;
-      std::string qheader;
       std::string muf0header;
       std::string mur0header;
 
@@ -727,7 +753,7 @@ int main(int argc, char **argv) {
 
       double asopimz = (basepdf->alphasQ(constants::MZ))/constants::Pi;
 
-      if(argc>=16 && std::strcmp(argv[15],"--scale") == 0)
+      if(argc>=20 && std::strcmp(argv[19],"--scale") == 0)
 	{
 	  imax = 16;
 	  dxmur = 1.5/(imax-1);
@@ -741,34 +767,53 @@ int main(int argc, char **argv) {
 	{
 	  if(imax==1)
 	    {
-	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      if(proc==0) {
+		filename << "dy_xs_gamma_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      } else {
+		filename << "ncdy_xs_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      }
 	    }
 	  else
 	    {
-	      filename << "dy_xs_gamma_pp_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      if(proc==0) {
+		filename << "dy_xs_gamma_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      } else {
+		filename << "ncdy_xs_pp_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      }
 	    }
-	  header = "# Drell-Yan cross section xs(p p -> gamma*) at a given photon virtuality Q = ";
+	  if(proc==0) {
+	    header = "# Drell-Yan cross section Q^2*dxs(p p -> gamma* -> l+ l-)/dQ^2 at a given photon virtuality Q = ";
+	  } else {
+	    header = "# Drell-Yan cross section Q^2*dxs(p p -> gamma*/Z* -> l+ l-)/dQ^2 at a given photon/Z* virtuality Q = ";
+	  }
 	}
       else
 	{
 	  if(imax==1)
 	    {
-	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      if(proc==0) {
+		filename << "dy_xs_gamma_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      } else {
+		filename << "ncdy_xs_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << "_mur" << xmur << ".txt";
+	      }
 	    }
 	  else
 	    {
-	      filename << "dy_xs_gamma_ppbar_" << energy << "tev_q" << int(Q) << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      if(proc==0) {
+		filename << "dy_xs_gamma_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      } else {
+		filename << "ncdy_xs_ppbar_" << energyheader << "tev_q" << qheader << "_pdf" << setimem << "_muf" << xmuf << ".txt";
+	      }
 	    }
-	  header = "# Drell-Yan cross section xs(p pbar -> gamma*) at a given photon virtuality Q = ";
+	  if(proc==0) {
+	    header = "# Drell-Yan cross section Q^2*dxs(p pbar -> gamma* -> l+ l-)/dQ^2 at a given photon virtuality Q = ";
+	  } else {
+	    header = "# Drell-Yan cross section Q^2*dxs(p pbar -> gamma*/Z* -> l+ l-)/dQ^2 at a given photon/Z* virtuality Q = ";
+	  }	  
 	}
 
       filename >> finalfile;
       std::ofstream fa(finalfile);
-
-      energyheader = std::to_string(energy);
-      removeTrailingCharacters(energyheader, '0');
-      qheader = std::to_string(Q);
-      removeTrailingCharacters(qheader, '0');
 
       if(muf_flag == 0)
 	{
@@ -825,16 +870,16 @@ int main(int argc, char **argv) {
       switch(qcdorder)
 	{
 	case 0:
-	  fa << header << "xs_LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 1:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 2:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "Q^2*dxs_NNLO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	case 3:
-	  fa << header << "xs_LO (pb)\t" << "xs_NLO (pb)\t" << "xs_NNLO (pb)\t" << "xs_N3LO (pb)\t" << "num error (respective xs)" << std::endl;
+	  fa << header << "Q^2*dxs_LO/dQ^2 (pb)\t" << "Q^2*dxs_NLO/dQ^2 (pb)\t" << "Q^2*dxs_NNLO/dQ^2 (pb)\t" << "Q^2*dxs_N3LO/dQ^2 (pb)\t" << "num error (respective xs)" << std::endl;
 	  break;
 	}
       
@@ -849,8 +894,8 @@ int main(int argc, char **argv) {
 
       if(qcdorder>=0)
       	{
-      	  xslo_result = BornDY*qqb_lo_result;
-      	  xslo_error  = BornDY*qqb_lo_error;
+      	  xslo_result = qqb_lo_result;
+      	  xslo_error  = qqb_lo_error;
 	  if(qcdorder==0)
 	    {
 	      fa << std::fixed << std::setprecision(3) << xmur << "\t" << xmuf << "\t"
@@ -859,12 +904,12 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=1)
       	{
-	  // alphaS(mur) and a mb(mur) at NLO
+	  // alphaS(mur) at NLO
 	  asopi   = as_n3loxs(mur, 1, asopimz);
       	  asopi2 = asopi*asopi;
 
-      	  xsnlo_result = BornDY*(qqb_lo_result + asopi*(qqb_nlo_result + result_gq_NLO.integral));
-      	  xsnlo_error  = BornDY*sqrt(pow(qqb_lo_error,2) + asopi2*(pow(qqb_nlo_error,2) + pow(result_gq_NLO.error,2)));
+      	  xsnlo_result = (qqb_lo_result + asopi*(qqb_nlo_result + result_gq_NLO.integral));
+      	  xsnlo_error  = sqrt(pow(qqb_lo_error,2) + asopi2*(pow(qqb_nlo_error,2) + pow(result_gq_NLO.error,2)));
 
 	  if(qcdorder==1)
 	    {
@@ -875,20 +920,20 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder>=2)
       	{
-	  // alphaS(mur) and a mb(mur) at NNLO
+	  // alphaS(mur) at NNLO
 	  asopi   = as_n3loxs(mur, 2, asopimz);
 	  asopi2 = asopi*asopi;
       	  asopi4 = asopi2*asopi2;
       	  logmu1 = log(mur2/muf2);
 
-      	  xsnnlo_result = BornDY*
+      	  xsnnlo_result = 
       	    (qqb_lo_result +
       	     asopi*(qqb_nlo_result + result_gq_NLO.integral) +
       	     asopi2*(qqb_nnlo_result + result_gq_NNLO.integral + result_gg_NNLO.integral +
       		     result_qq_NNLO.integral + result_qQq_NNLO.integral + result_qQqb_NNLO.integral +
       		     constants::b0*logmu1*(qqb_nlo_result + result_gq_NLO.integral))
       	     );
-      	  xsnnlo_error  = BornDY*
+      	  xsnnlo_error  = 
       	    sqrt(pow(qqb_lo_error,2) +
       		 asopi2*(pow(qqb_nlo_error,2) + pow(result_gq_NLO.error,2)) +
       		 asopi4*(pow(qqb_nnlo_error,2) + pow(result_gq_NNLO.error,2) +
@@ -906,7 +951,7 @@ int main(int argc, char **argv) {
       	}
       if(qcdorder==3)
       	{
-	  // alphaS(mur) and a mb(mur) at NNLO
+	  // alphaS(mur) at N3LO
 	  asopi   = as_n3loxs(mur, 3, asopimz);
 	  asopi2 = asopi*asopi;
       	  asopi3 = asopi*asopi2;
@@ -915,7 +960,7 @@ int main(int argc, char **argv) {
 
       	  logmu2 = logmu1*logmu1;
 
-      	  xsn3lo_result = BornDY*
+      	  xsn3lo_result = 
       	    (qqb_lo_result +
       	     asopi*(qqb_nlo_result + result_gq_NLO.integral) +
       	     asopi2*(qqb_nnlo_result + result_gq_NNLO.integral + result_gg_NNLO.integral +
@@ -928,7 +973,7 @@ int main(int argc, char **argv) {
       		     (qqb_nnlo_result + result_gq_NNLO.integral + result_gg_NNLO.integral +
       		      result_qq_NNLO.integral + result_qQq_NNLO.integral + result_qQqb_NNLO.integral))
       	     );
-      	  xsn3lo_error = BornDY*
+      	  xsn3lo_error = 
       	    sqrt(pow(qqb_lo_error,2) +
       		 asopi2*(pow(qqb_nlo_error,2) + pow(result_gq_NLO.error,2)) +
       		 asopi4*(pow(qqb_nnlo_error,2) + pow(result_gq_NNLO.error,2) + pow(result_gg_NNLO.error,2) +

@@ -16,6 +16,8 @@ pdf luminosities for the DY process p p -> gamma* -> l l up to N3LO QCD
 #include <fstream>
 #include <cmath>
 
+#include "constants.h"
+
 #include "pdffunctions_w.h"
 
 #include "pdfpar_w.h"
@@ -34,31 +36,31 @@ double dlumdub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckm[2][1] = 0.97446;
+  absckm[2][1] = constants::absckmud;
   absckm[1][2] = absckm[2][1];
 
-  absckm[2][3] = 0.22452;
+  absckm[2][3] = constants::absckmus;
   absckm[3][2] = absckm[2][3];
 
-  absckm[2][5] = 0.00365;
+  absckm[2][5] = constants::absckmub;
   absckm[5][2] = absckm[2][5];
 
-  absckm[4][1] = 0.22438;
+  absckm[4][1] = constants::absckmcd;
   absckm[1][4] = absckm[4][1];
 
-  absckm[4][3] = 0.97359;
+  absckm[4][3] = constants::absckmcs;
   absckm[3][4] = absckm[4][3];
 
-  absckm[4][5] = 0.04214;
+  absckm[4][5] = constants::absckmcb;
   absckm[5][4] = absckm[4][5];
 
-  absckm[6][1] = 0.00896;
+  absckm[6][1] = constants::absckmtd;
   absckm[1][6] = absckm[6][1];
 
-  absckm[6][3] = 0.04133;
+  absckm[6][3] = constants::absckmts;
   absckm[3][6] = absckm[6][3];
 
-  absckm[6][5] = 0.999105;
+  absckm[6][5] = constants::absckmtb;
   absckm[5][6] = absckm[6][5];
 
   res = 0.0;
@@ -81,9 +83,6 @@ double dlumdub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 double dlumdub2(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2], v2d[3];
 
@@ -93,24 +92,12 @@ double dlumdub2(const double x1, const double x2, const double muf2, LHAPDF::PDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
   for (int i=1;i<6;i = i + 2)
@@ -134,9 +121,6 @@ double dlumgub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 {
   double res;
   int j;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2], v2d[3];
 
@@ -146,24 +130,12 @@ double dlumgub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
   for (int i=1;i<6;i = i + 2)
@@ -191,9 +163,6 @@ double dlumgub2(const double x1, const double x2, const double muf2, LHAPDF::PDF
 {
   double res;
   int j;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2all;
 
@@ -203,21 +172,9 @@ double dlumgub2(const double x1, const double x2, const double muf2, LHAPDF::PDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
   v2all =
-    absckmud*absckmud + absckmus*absckmus + absckmub*absckmub +
-    absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+    constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub +
+    constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
   for (int i=1;i<6;i = i + 2)
@@ -246,9 +203,6 @@ double dlumgu(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 {
   double res;
   int j;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2], v2d[3];
 
@@ -258,24 +212,12 @@ double dlumgu(const double x1, const double x2, const double muf2, LHAPDF::PDF c
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
   for (int i=1;i<6;i = i + 2)
@@ -303,9 +245,6 @@ double dlumgu2(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 {
   double res;
   int j;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2all;
 
@@ -315,21 +254,9 @@ double dlumgu2(const double x1, const double x2, const double muf2, LHAPDF::PDF 
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
   v2all =
-    absckmud*absckmud + absckmus*absckmus + absckmub*absckmub +
-    absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+    constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub +
+    constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
   for (int i=1;i<6;i = i + 2)
@@ -358,9 +285,6 @@ double dlumgg(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 {
   double res;
 
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2all;
 
@@ -370,21 +294,9 @@ double dlumgg(const double x1, const double x2, const double muf2, LHAPDF::PDF c
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
   v2all =
-    absckmud*absckmud + absckmus*absckmus + absckmub*absckmub +
-    absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+    constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub +
+    constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
   res = pdf->xfxQ2(0,x1,muf2) * pdf->xfxQ2(0,x2,muf2) * v2all;
 
@@ -397,9 +309,6 @@ double dlumgg(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 double dlumcub(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2uall;
 
@@ -409,19 +318,7 @@ double dlumcub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2uall = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
+  v2uall = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
 
   res =
     (pdf->xfxQ2(4*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(-2*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
@@ -437,9 +334,6 @@ double dlumcub(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 double dlumcub2(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   if (x1>1.0-_almost_zero or x2>1.0-_almost_zero or x1<_almost_zero or x2<_almost_zero)
     {
@@ -447,34 +341,22 @@ double dlumcub2(const double x1, const double x2, const double muf2, LHAPDF::PDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
   res =
     (pdf->xfxQ2(-3*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(1*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(1*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-3*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(-5*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(1*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(1*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-5*parampdf.wchoice*parampdf.collidertype,x2,muf2))
-    * (absckmud*absckmud + absckmcd*absckmcd) +
+    * (constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd) +
     (pdf->xfxQ2(-1*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(3*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(3*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-1*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(-5*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(3*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(3*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-5*parampdf.wchoice*parampdf.collidertype,x2,muf2))
-    * (absckmus*absckmus + absckmcs*absckmcs) +    
+    * (constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs) +    
     (pdf->xfxQ2(-1*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(5*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(5*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-1*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(-3*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(5*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
      pdf->xfxQ2(5*parampdf.wchoice,x1,muf2) * pdf->xfxQ2(-3*parampdf.wchoice*parampdf.collidertype,x2,muf2))
-    * (absckmub*absckmub + absckmcb*absckmcb);
+    * (constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb);
   
   res = res/x1/x2;
   return res;
@@ -485,9 +367,6 @@ double dlumcub2(const double x1, const double x2, const double muf2, LHAPDF::PDF
 double dlumqqb(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2], v2d[3];
 
@@ -497,24 +376,12 @@ double dlumqqb(const double x1, const double x2, const double muf2, LHAPDF::PDF 
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
 
@@ -537,9 +404,6 @@ double dlumqqb(const double x1, const double x2, const double muf2, LHAPDF::PDF 
 double dlumqqb2(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2all;
 
@@ -549,21 +413,9 @@ double dlumqqb2(const double x1, const double x2, const double muf2, LHAPDF::PDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
   v2all =
-    absckmud*absckmud + absckmus*absckmus + absckmub*absckmub +
-    absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+    constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub +
+    constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
 
@@ -582,9 +434,6 @@ double dlumqqb2(const double x1, const double x2, const double muf2, LHAPDF::PDF
 double dlumqq(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2], v2d[3];
 
@@ -594,24 +443,12 @@ double dlumqq(const double x1, const double x2, const double muf2, LHAPDF::PDF c
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
 
@@ -633,9 +470,6 @@ double dlumqq(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 double dlumqqprime(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2[3][2];
 
@@ -645,24 +479,12 @@ double dlumqqprime(const double x1, const double x2, const double muf2, LHAPDF::
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2[0][0] = absckmud*absckmud;
-  v2[1][0] = absckmus*absckmus;
-  v2[2][0] = absckmub*absckmub;
-  v2[0][1] = absckmcd*absckmcd;
-  v2[1][1] = absckmcs*absckmcs;
-  v2[2][1] = absckmcb*absckmcb;
+  v2[0][0] = constants::absckmud*constants::absckmud;
+  v2[1][0] = constants::absckmus*constants::absckmus;
+  v2[2][0] = constants::absckmub*constants::absckmub;
+  v2[0][1] = constants::absckmcd*constants::absckmcd;
+  v2[1][1] = constants::absckmcs*constants::absckmcs;
+  v2[2][1] = constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
 
@@ -683,9 +505,6 @@ double dlumqqprime(const double x1, const double x2, const double muf2, LHAPDF::
 double dlumqqprime2(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2d[3];
 
@@ -695,21 +514,9 @@ double dlumqqprime2(const double x1, const double x2, const double muf2, LHAPDF:
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
 
   res = 0.0;
@@ -732,9 +539,6 @@ double dlumqqprime2(const double x1, const double x2, const double muf2, LHAPDF:
 double dlumqbqprimeb(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2[3][2];
 
@@ -744,24 +548,12 @@ double dlumqbqprimeb(const double x1, const double x2, const double muf2, LHAPDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2[0][0] = absckmud*absckmud;
-  v2[1][0] = absckmus*absckmus;
-  v2[2][0] = absckmub*absckmub;
-  v2[0][1] = absckmcd*absckmcd;
-  v2[1][1] = absckmcs*absckmcs;
-  v2[2][1] = absckmcb*absckmcb;
+  v2[0][0] = constants::absckmud*constants::absckmud;
+  v2[1][0] = constants::absckmus*constants::absckmus;
+  v2[2][0] = constants::absckmub*constants::absckmub;
+  v2[0][1] = constants::absckmcd*constants::absckmcd;
+  v2[1][1] = constants::absckmcs*constants::absckmcs;
+  v2[2][1] = constants::absckmcb*constants::absckmcb;
 
   res = 0.0;
 
@@ -782,9 +574,6 @@ double dlumqbqprimeb(const double x1, const double x2, const double muf2, LHAPDF
 double dlumqbqprimeb2(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2];
 
@@ -794,20 +583,8 @@ double dlumqbqprimeb2(const double x1, const double x2, const double muf2, LHAPD
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
 
   res = 0.0;
@@ -830,9 +607,6 @@ double dlumqbqprimeb2(const double x1, const double x2, const double muf2, LHAPD
 double dlumds(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2d[3];
 
@@ -842,21 +616,9 @@ double dlumds(const double x1, const double x2, const double muf2, LHAPDF::PDF c
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2d[0] = absckmud*absckmud + absckmcd*absckmcd;
-  v2d[1] = absckmus*absckmus + absckmcs*absckmcs;
-  v2d[2] = absckmub*absckmub + absckmcb*absckmcb;
+  v2d[0] = constants::absckmud*constants::absckmud + constants::absckmcd*constants::absckmcd;
+  v2d[1] = constants::absckmus*constants::absckmus + constants::absckmcs*constants::absckmcs;
+  v2d[2] = constants::absckmub*constants::absckmub + constants::absckmcb*constants::absckmcb;
 
 
   res = (pdf->xfxQ2(1*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(3*parampdf.wchoice*parampdf.collidertype,x2,muf2) +
@@ -874,9 +636,6 @@ double dlumds(const double x1, const double x2, const double muf2, LHAPDF::PDF c
 double dlumubcb(const double x1, const double x2, const double muf2, LHAPDF::PDF const* const pdf)
 {
   double res;
-  double absckmud, absckmus, absckmub;
-  double absckmcd, absckmcs, absckmcb;
-  double absckmtd, absckmts, absckmtb;
 
   double v2u[2];
 
@@ -886,20 +645,8 @@ double dlumubcb(const double x1, const double x2, const double muf2, LHAPDF::PDF
       std::cout << "warning edges of pdfs!!!" << std::endl;
     }
 
-  absckmud = 0.97446;  // 21
-  absckmus = 0.22452;  // 23
-  absckmub = 0.00365;  // 25
-
-  absckmcd = 0.22438;  // 41
-  absckmcs = 0.97359;  // 43
-  absckmcb = 0.04214;  // 45
-
-  absckmtd = 0.00896;  // 61
-  absckmts = 0.04133;  // 63
-  absckmtb = 0.999105;  // 65
-
-  v2u[0] = absckmud*absckmud + absckmus*absckmus + absckmub*absckmub;
-  v2u[1] = absckmcd*absckmcd + absckmcs*absckmcs + absckmcb*absckmcb;
+  v2u[0] = constants::absckmud*constants::absckmud + constants::absckmus*constants::absckmus + constants::absckmub*constants::absckmub;
+  v2u[1] = constants::absckmcd*constants::absckmcd + constants::absckmcs*constants::absckmcs + constants::absckmcb*constants::absckmcb;
 
 
   res = (pdf->xfxQ2(-2*parampdf.wchoice,x1,muf2)  * pdf->xfxQ2(-4*parampdf.wchoice*parampdf.collidertype,x2,muf2) +

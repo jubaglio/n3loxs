@@ -19,14 +19,6 @@ Based on arXiv:hep-ph/0302135 and arXiv:1802.00833
 static const double eps = 1.e-12;
 
 
-double intpow(const double& x,int m){
-        double res=1.0;
-        for (int i=0;i<m;i++){
-            res *= x;
-        }
-        return res;
-    }
-
 // NLO gg regular term
 double gg_regular_nlo(const double X[], const double s, const double muf, LHAPDF::PDF const* const pdf)
 {
@@ -44,18 +36,14 @@ double gg_regular_nlo(const double X[], const double s, const double muf, LHAPDF
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   log1 = log(MH2/muf2);
-  // commented out, to comply with the convention now used in the Dplus distributions
-  // res = -11.0*pow(1 - x1, 3)/2.0 -
-  //   6*log1*x1*(2 - x1*(1 - x1)) - 
-  //   6*x1*(2 - x1*(1 - x1))*(2*log(1 - x1) - log(x1)) -
-  //   6*log(x1)/(1 - x1);
-  res = -11*pow(1 - x1, 3)/2.0 +
+
+  res = -11*intpow(1 - x1, 3)/2.0 +
     log1*(6.0 - 6*x1*(2 + (-1 + x1)*x1)) - 
     12*(-1 + x1*(2.0 - x1*(1 - x1)))*log(1 - x1) -
-    6*pow(1 - x1*(1 - x1), 2)*log(x1)/(1.0 - x1);
+    6*intpow(1 - x1*(1 - x1), 2)*log(x1)/(1.0 - x1);
   
   res = fac*res;
   res = res*tau*dlumgg(x2,tau/x1/x2,muf2,pdf)/x1/x2/x1;
@@ -84,7 +72,7 @@ double gg_regular_nnlo(const double X[], const double s, const double muf, LHAPD
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;
@@ -786,7 +774,7 @@ double gg_regular_n3lo(const double X[], const double s, const double muf, LHAPD
 
   x1 = exp((eps+(1.0-2.0*eps)*X[0])*log(tau));
   x2 = tau/x1 + (1.0-tau/x1)*(eps+(1.0-2.0*eps)*X[1]);
-  fac = -pow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
+  fac = -intpow(1.0-2.0*eps,2)*x1*(1.0-tau/x1)*log(tau);
 
   w  = 0.5 - x1;
   zb = 1.0 - x1;

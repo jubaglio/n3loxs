@@ -504,7 +504,7 @@ int main(int argc, char **argv) {
       std::cout << "d:  p-p (0) or p-pbar (1) collider" << std::endl;
       std::cout << "e:  Hadronic energy in TeV (double)" << std::endl;
       std::cout << "f:  x_muf so that mu_F = x_muf*mu_F0 (double)" << std::endl;
-      std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is (MH + Mb)/4" << std::endl;
+      std::cout << "g:  mu_F0: central factorization scale (double); if set to -1, default value is (MH + 2 Mb)/4" << std::endl;
       std::cout << "h:  x_mur so that mu_R = x_mur*mu_R0 (double)" << std::endl;
       std::cout << "i:  mu_R0: central renormalization scale (double); if set to -1, default value is MH" << std::endl;
       std::cout << "j:  PDF set (string)" << std::endl;

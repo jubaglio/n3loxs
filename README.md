@@ -3,7 +3,7 @@ N3LO cross sections calculator
 
 A tool suite to calculate up to N3LO in QCD various cross sections at hadron colliders:
 
-* Neutral Drell-Yan p p(pbar) --> gamma*/Z* + X (--> l+ l- + X)
+* Neutral Drell-Yan p p(pbar) --> gamma*/Z + X (--> l+ l- + X)
 * Charged Drell-Yan p p(pbar) --> W+/W- + X (--> l+ nu_l / l- ~nu_l + X)
 * Higgsstrahlung p p(pbar) --> W+/W- H + X
 * Higgsstrahlung p p(pbar) --> Z H + X
@@ -113,12 +113,39 @@ be modified:
 ---
 `process`
 
-An integer to select the process to be studied. At the
-moment, 1 is for neutral Drell-Yan production (offshell photon), 2 is
-for charged W+ Drell-Yan production, 3 is for charged W- Drell-Yan
-production, 4 is for inclusive W+ H Higgs-strahlung production, 5 is
-for inclusive W- H Higgs-strahlung production, 6 is for the inclusive
-5FS bbH process, 7 is for the inclusive ggH process.
+An integer to select the process to be studied. The program allows for
+the following options:
+* 1 is for the differential cross section Q^2*dxs/dQ^2 in neutral
+Drell-Yan production
+* 2 is for the differential cross section Q^2*dxs/dQ^2 in charged W+
+Drell-Yan production
+* 3 is for the differential cross section Q^2*dxs/dQ^2 in charged W-
+Drell-Yan production
+* 4 is for the inclusive cross section in W+ H Higgs-strahlung
+production with a fixed scale
+* 5 is for the inclusive cross section in W- H Higgs-strahlung
+production with a fixed scale
+* 6 is for the inclusive cross section in Z H Higgs-strahlung
+  production with a fixed scale
+* 7 is for the inclusive cross section in 5FS bbH process at a fixed
+scale
+* 8 is for the inclusive cross section in ggH process at a fixed
+scale.
+* 9 is for the neutral Drell-Yan production cross section in an
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 10 is for the charged W+ Drell-Yan production cross section in an 
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 11 is for the charged W- Drell-Yan production cross section in an 
+  invariant mass windows between Qmin and Qmax for the invariant
+  lepton pair Q
+* 12 is for the inclusive cross section in W+ H Higgs-strahlung
+production with a dynamical scale
+* 13 is for the inclusive cross section in W- H Higgs-strahlung
+production with a dynamical scale
+* 14 is for the inclusive cross section in Z H Higgs-strahlung
+  production with a dynamical scale
 
 ---
 `PDFset`
@@ -190,8 +217,8 @@ central scale of the chosen process. Default: `-1`.
 
 `xmuf`
 
-Floating-point coefficient rescaling the factorization scale `muF`, so
-that `muF = xmuf*muF0` where `muF0` stands for the central
+Floating-point coefficient rescaling the central factorization scale
+`muF0`, so that `muF = xmuf*muF0` where `muF0` stands for the central
 factorization scale of the chosen process. Default: `1.0`.
 
 ---
@@ -206,8 +233,8 @@ central scale of the chosen process. Default: `-1`.
 
 `xmur`
 
-Floating-point coefficient rescaling the factorization scale `muR`, so
-that `muR = xmur*muR0` where `muR0` stands for the central
+Floating-point coefficient rescaling the central factorization scale
+`muR0`, so that `muR = xmur*muR0` where `muR0` stands for the central 
 renormalization scale of the chosen process. This parameter is
 ignored if the flags `--scale` or `--7point` are used. Default:
 `1.0`.
@@ -329,7 +356,8 @@ consistently done at the given QCD order.
 The user should cite the publication describing this computer program,
 
 [1] J. Baglio, C. Duhr, B. Mistlberger, and R. Szafron, "Inclusive
-N3LO QCD production cross sections at hadron colliders". To appear (2021).
+Production Cross Sections at N3LO".
+arXiv:[2209.XXXX](https://arxiv.org/abs/2209.XXXX).
 
 The program uses a quasi-Monte-Carlo (QMC) integration as implemented
 by
@@ -357,8 +385,10 @@ Production at N3LO". JHEP 11 (2020) 143. DOI:
 [10.1007/JHEP11(2020)143](https://dx.doi.org/10.1007/JHEP11(2020)143),
 arXiv:[2007.13313](https://arxiv.org/abs/2007.13313).
 
-[5] C. Duhr and B. Mistlberger, "Neutral Current Drell-Yan
-Production at N3LO". To appear (2021).
+[5] C. Duhr and B. Mistlberger, "Lepton-pair production at hadron
+colliders at N3LO in QCD". JHEP 03 (2022) 116. DOI:
+[10.1007/JHEP03(2022)116](https://dx.doi.org/10.1007/JHEP03(2022)116),
+arXiv:[2111.10379](https://arxiv.org/abs/2111.10379).
 
 The user should refer to the following papers when using the program
 for the bottom-quark fusion process,
@@ -390,7 +420,7 @@ N3LO in QCD". JHEP 05 (2018) 028. DOI:
 [10.1007/JHEP05(2018)028](https://dx.doi.org/10.1007/JHEP(2018)028),
 arXiv:[1802.00833](https://arxiv.org/abs/1802.00833).
 
-but the user is reminded that many other pappers relevant for the
+but the user is reminded that many other papers relevant for the
 desired process should also be referenced (e.g. LO, NLO, NNLO
 calculations for example).
 
